@@ -1,5 +1,11 @@
 .DS_Store
 *.swp
-
-
+*.*~
+*~
+*.o
+*.cmi
+*.cmxi
+*.mli
+*.cmo
+*.mll
 
