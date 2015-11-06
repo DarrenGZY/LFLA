@@ -91,8 +91,9 @@ vector_elements_list :
     | vector_elements_list COMMA LITERAL    { $3::$1 }
 
 matrix_declaration_expression :
-    MATRIX ID { Vardecl({vname = $2; value = Notknown; data_type = Matrix }) }
-    | MATRIX ID ASSIGN LBRACK matrix_elements_list RBRACK { Vardecl({vname = $2; value = MatValue($5); data_type = Matrix }) }
+    MATRIX ID   { Vardecl({vname = $2; value = Notknown; data_type = Matrix }) }
+    | MATRIX ID ASSIGN LBRACK matrix_elements_list RBRACK 
+                { Vardecl({vname = $2; value = MatValue($5); data_type = Matrix }) }
 
 matrix_elements_list :
     SEMI { [] }
@@ -104,19 +105,22 @@ row_elements_list :
 
 vecspace_declaration_expression :
     VECSPACE ID { Vardecl({vname = $2; value = Notknown; data_type = VecSpace }) }
-    | VECSPACE ID ASSIGN VSCONST LPAREN vecspace_elements_list RPAREN { Vardecl({vname = $2; value = VecSpValue($6); data_type = VecSpace }) }
+    | VECSPACE ID ASSIGN VSCONST LPAREN vecspace_elements_list RPAREN 
+                { Vardecl({vname = $2; value = VecSpValue($6); data_type = VecSpace }) }
 
 vecspace_elements_list :
     ID {[$1]}
     | vecspace_elements_list COMMA ID { $3::$1 }
 
 inspace_declaration_expression :
-    INSPACE ID { Vardecl({vname = $2; value = Notknown; data_type = InSpace }) }
-    | INSPACE ID ASSIGN INSPACE LPAREN ID COMMA ID RPAREN { Vardecl({vname = $2; value = InSpValue($6,$8); data_type = InSpace }) }
+    INSPACE ID  { Vardecl({vname = $2; value = Notknown; data_type = InSpace }) }
+    | INSPACE ID ASSIGN INSPACE LPAREN ID COMMA ID RPAREN 
+                { Vardecl({vname = $2; value = InSpValue($6,$8); data_type = InSpace }) }
 
 affspace_declaration_expression :
     AFFSPACE ID { Vardecl({vname = $2; value = Notknown; data_type = AffSpace }) }
-    | AFFSPACE ID ASSIGN AFFSPACE LPAREN ID COMMA ID RPAREN { Vardecl({vname = $2; value = AffSpValue($6, $8); data_type = AffSpace }) }
+    | AFFSPACE ID ASSIGN AFFSPACE LPAREN ID COMMA ID RPAREN 
+                { Vardecl({vname = $2; value = AffSpValue($6, $8); data_type = AffSpace }) }
 
 array_declaration_expression :
     VAR ID LBRACK LITERAL RBRACK 
@@ -145,20 +149,22 @@ array_declaration_expression :
             { Arraydecl({ aname = $2; elements = $8; data_type = VecSpace; length = List.length $8})}
 
 array_elements_list :
-    ID  { [Id($1)] }
-    | LITERAL { [Literal($1)] }
-    | array_elements_list COMMA ID { Id($3)::$1 }
+    ID                                  { [Id($1)] }
+    | LITERAL                           { [Literal($1)] }
+    | array_elements_list COMMA ID      { Id($3)::$1 }
     | array_elements_list COMMA LITERAL { Literal($3)::$1 }
 
 
 statement :
-    expression SEMI { Expr($1) }
-    | RETURN expression SEMI { Return($2) }
-    | LBRACE statement_list RBRACE { Block(List.rev $2) }
-    | IF expression LBRACE statement_list RBRACE %prec NOELSE { If($2, $4, []) }
-    | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE { If($2, $4, $8) }
+    expression SEMI                 { Expr($1) }
+    | RETURN expression SEMI        { Return($2) }
+    | LBRACE statement_list RBRACE  { Block(List.rev $2) }
+    | IF expression LBRACE statement_list RBRACE %prec NOELSE 
+                                    { If($2, $4, []) }
+    | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
+                                    { If($2, $4, $8) }
     | FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE statement_list RBRACE 
-            { For(int_of_string($5), int_of_string($7),$9) } /* TODO: if var is needed here */
+                                    { For(int_of_string($5), int_of_string($7),$9) } /* TODO: if var is needed here */
     | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
 
 statement_list :
