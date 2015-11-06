@@ -26,16 +26,16 @@ type prim_type =
   | AffSpace
 
 type prim_value = 
-    VValue of var_value
-  | VecValue of vec_value
-  | MatValue of mat_value
+    VValue of string
+  | VecValue of string list
+  | MatValue of string list list
   | VecSpValue of string list
   | InSpValue of string * string
   | AffSpValue of string * string
   | Notknown
 
 type expr =
-    Literal of int
+    Literal of string
   | Id of string
   | Binop of expr * op * expr
   | Assign of string * expr
@@ -43,10 +43,11 @@ type expr =
   | Noexpr
 
 type stmt =
+    Block of stmt list
   | Expr of expr
   | Return of expr
   | If of expr * stmt list * stmt list
-  | For of int * int * stmt
+  | For of int * int * stmt list
   | While of expr * stmt list
 
 type var_decl = {
@@ -57,7 +58,7 @@ type var_decl = {
 
 type array_decl = {
     aname : string;
-    value : prim_value list;
+    elements : expr list;
     data_type : prim_type;
     length : int;
 }
