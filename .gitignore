@@ -8,4 +8,6 @@
 *.mli
 *.cmo
 *.mll
-
+*.sh
+parser.ml
+scanner.ml
