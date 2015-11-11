@@ -8,7 +8,6 @@ let compile (normals, functions) =
     let pyFile = Out_channel.create "test.py" in
     fprintf pyFile "%s\n" "import numpy as np";
     
-    
     let rec print_func funcs = 
         match funcs with
         | [] -> fprintf pyFile "%s\n" "#end"
