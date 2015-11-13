@@ -1,20 +1,8 @@
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq
+type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq|AddDot|SubDot|MultDot|DivDot|Belongs|LieBracket|InnerProduct
 
-(* store var type value *)
-type var = 
-    Int of String
-  | Float of String 
+type uniop = Transpose
 
-	
-type prim_value = 
-	Var of var
-  | Vector of var array
-  | Matrix of var array array
-  | VectorSpace of Vector list 
-  | InSpace of  Vector list * Matrix
-  | AffSpace  of Vecotr * VectorSpace
 
-  
 (* prime type used in variable declarations, function declarations  *)
 type prim_type = 
     VaR     (* type of var *)
@@ -26,10 +14,15 @@ type prim_type =
 
 type expr =
   Liter of String
-  | Prim of prim_value  
-  | Arra of  prim_value array	
+  | Vector of expr list
+  | Matrix of expr list list
+  | VectorSpace of expr list 
+  | InSpace of  expr * expr
+  | AffSpace  of expr * expr
+  | Arra of  expr list	
   | Id of string
   | Binop of expr * op * expr
+  | Transpose of expr 
   | Assign of string * expr
   | Call of string * expr list
   | Noexpr
@@ -39,7 +32,7 @@ type stmt =
   | Expr of expr
   | Return of expr
   | If of expr * stmt list * stmt list
-  | For of int * int * stmt list
+  | For of string * string * stmt list
   | While of expr * stmt list
 
 type var_decl = {
