@@ -61,4 +61,5 @@ rule token = parse
 | ['0'-'9']+ | ('.'['0'-'9']+Exp? | ['0'-'9']+ ('.'['0'-'9']*Exp? | Exp))as num  { LITERAL(num) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as id { ID(id) }
 | eof   { EOF }
+| _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
