@@ -96,8 +96,8 @@ matrix_declaration_expression :
                 { Vardecl({vname = $2; value = MatValue($5); data_type = Matrix }) }
 
 matrix_elements_list :
-    SEMI { [] }
-    | row_elements_list SEMI matrix_elements_list { $1::$3 }
+    /* nothing */  { [] }
+    | row_elements_list SEMI matrix_elements_list { (List.rev $1)::$3 }
 
 row_elements_list :
     LITERAL {[$1]}

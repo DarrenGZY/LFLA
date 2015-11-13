@@ -34,7 +34,7 @@ let rec string_of_stmt = function
 let string_of_prim_value = function
     VValue(s) -> s
     | VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
-    | MatValue(s) -> String.concat "," (List.map (String.concat ",") s)
+    | MatValue(s) -> "np.matrix((" ^ String.concat "," (List.map (fun s -> "(" ^ s ^ ")") (List.map (String.concat ",") s)) ^ "))"
     | VecSpValue(s) -> String.concat "," s
     | InSpValue(s1, s2) -> s1 ^ "," ^ s2
     | AffSpValue(s1, s2) -> s1 ^ "," ^ s2
