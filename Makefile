@@ -9,7 +9,7 @@ TARFILES = Makefile scanner.mll parser.mly \
 	ast.ml compile.ml LFLA.ml 
 
 LFLA : $(OBJS)
-	ocamlfind ocamlc -linkpkg -thread -package core  -o LFLA $(OBJS)
+	ocamlc  -o LFLA $(OBJS)
 
 scanner.ml : scanner.mll
 	ocamllex scanner.mll
@@ -18,7 +18,7 @@ parser.ml parser.mli : parser.mly
 	$(YACC) parser.mly
 
 %.cmo : %.ml
-	ocamlfind ocamlc -linkpkg -thread -package core -c $<
+	ocamlc -c $<
 
 %.cmi : %.mli
 	ocamlc -c $<
