@@ -33,7 +33,7 @@ let rec string_of_stmt = function
 
 let string_of_prim_value = function
     VValue(s) -> s
-    | VecValue(s) -> String.concat "," s
+    | VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
     | MatValue(s) -> String.concat "," (List.map (String.concat ",") s)
     | VecSpValue(s) -> String.concat "," s
     | InSpValue(s1, s2) -> s1 ^ "," ^ s2
@@ -47,7 +47,7 @@ let string_of_normal_decl = function
 
 let string_of_func_decl fdecl =
     "def " ^ fdecl.fname ^ "() :\n" ^ "   " ^ String.concat "   " (List.map string_of_normal_decl fdecl.locals) ^ 
-    "\n" ^ "   " ^  String.concat "" (List.map string_of_stmt fdecl.body) ^ "\n"
+    "\n" ^ "   " ^  String.concat "   " (List.map string_of_stmt fdecl.body) ^ "\n"
 
 (* input is ast tree(normal_decl list * func_decl list), output is a python file *)
 let compile (normals, functions) = 
