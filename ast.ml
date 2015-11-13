@@ -17,12 +17,12 @@ type prim_value =
   
 (* prime type used in variable declarations, function declarations  *)
 type prim_type = 
-    VAR     (* type of var *)
-  | VEC		(* type of vector *)
-  | MAT		(* type of matrix *)
-  | VECSPA	(* type of vector space *)
-  | INSPA	(* type of inner space *)
-  | AFFSPA  (* type of affine space *)
+    VaR     (* type of var *)
+  | VeC		(* type of vector *)
+  | MaT		(* type of matrix *)
+  | VecspA	(* type of vector space *)
+  | InspA	(* type of inner space *)
+  | AffspA  (* type of affine space *)
 
 type expr =
   Liter of String
