@@ -34,7 +34,7 @@ program:
 programs :
     /* nothing */                   { [], [] }
     | programs funtion_declaration  { fst $1, ($2::snd $1) }
-    | programs normal_declaration   { ($2::fst $1), snd $1 } 
+    | programs vdecl   { ($2::fst $1), snd $1 } 
 
 funtion_declaration :
     FUNCTION ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE { 
@@ -49,7 +49,7 @@ formals_opt:
   
 formal_list :
 	|formal  { $1 }
-    | formal_list COMMA  formal  { $2 :: $1}
+    | formal_list COMMA  formal  { $3 :: $1 }
 	
 formal :	
 	primitive_type ID                  { Vardecl({vname = name; data_type = $1})}
@@ -82,7 +82,7 @@ primitive_type:
 	
 stmt_list:
 	 /* nothing */                               { [] }
-	 function_statements                         {$1}
+	 |function_statements                         { $1 }
     	
    
 function_statements : 
@@ -92,14 +92,14 @@ function_statements :
 statement :
     expression SEMI                 { Expr($1) }
     | RETURN expression SEMI        { Return($2) }
-    | LBRACE statement_list RBRACE  { Block($2) }
-    | IF expression LBRACE statement_list RBRACE %prec NOELSE   /* How to recognize NOELSE*/
+    | LBRACE stmt_list RBRACE  { Block($2) }
+    | IF expression LBRACE stmt_list RBRACE %prec NOELSE   /* How to recognize NOELSE*/
                                     { If($2, $4, []) }
-    | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
+    | IF expression LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE 
                                     { If($2, $4, $8) }
-    | FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE statement_list RBRACE 
+    | FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE stmt_list RBRACE 
                                     { For($5, $7,$9) } /* TODO: if var is needed here */
-    | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
+    | WHILE expression LBRACE stmt_list RBRACE { While($2, $4) }
 
 
 
@@ -125,8 +125,8 @@ expression:
     | LPAREN expression RPAREN      { $2 }
 	| expression TRANSPOSE     		{Transpose($1)}
 	| LBRACK LBRACK expression COMMA expression RBRACK RBRACK    {Binop($3,LieBracket,$5)}
-	| expression @ expression      {Binop($1,Belongs, $3)}
-	| LT COMMA RT                  {Binop($1, InnerProduct, $3)} 
+	| expression BELONGS expression      {Binop($1,Belongs, $3)}
+	| LT expression COMMA expression  GT                  {Binop($2, InnerProduct, $4)} 
 	| vector                       {$1} 
     | matrix                        {$1}
 	| vector_space                   {$1} 
@@ -135,18 +135,18 @@ expression:
     | arrays                       {$1}  
    
 vector :
-	LBRACK expression_list RBRACK   {Vector($2))} 
+	LBRACK expression_list RBRACK   {Vector($2)} 
 	
 expression_list :
-	exprssion        {[$1]}
-	expression COMMA expression_list  {$1 :: $3}
+	expression        {[$1]}
+	|expression COMMA expression_list  {$1 :: $3}
 	
 matrix : 
-	LBRACK matrix_elements_list: RBRACK  {Matrix ($2)}
+	LBRACK matrix_elements_list RBRACK  {Matrix($2)}
 	
 matrix_elements_list :	
 	row_elements_list    {$1}
-	row_elements_list matrix_elements_list {$1 :: $2}
+	|row_elements_list matrix_elements_list {$1 :: $2}
 /* should change the definition of matrix, the semicolon conflicts with the break of statement*/
 row_elements_list :
     expression_list SEMI {$1}
@@ -162,11 +162,10 @@ aff_space :
 		 
 	
 arrays :
-    LBRACE expresion_list RBRACE {Arra($2)} 	
+    LBRACE expression_list RBRACE {Arra($2)} 	
 	
-                          
-   
-
+ arguments_opt :
+	 /* nothing */                               { [] }
+	 | expression_list                           {$1}
  
-
-
+ 

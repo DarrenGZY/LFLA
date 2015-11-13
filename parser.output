@@ -1,0 +1,3208 @@
+   0  $accept : %entry% $end
+
+   1  program : programs EOF
+
+   2  programs :
+   3           | programs funtion_declaration
+   4           | programs vdecl
+
+   5  funtion_declaration : FUNCTION ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+
+   6  formals_opt :
+   7              | formal_list
+
+   8  formal_list : formal
+   9              | formal_list COMMA formal
+
+  10  formal : primitive_type ID
+  11         | primitive_type ID LBRACK RBRACK
+
+  12  vdecl_list :
+  13             | vdecl_list vdecl
+
+  14  vdecl : primitive_type varid SEMI
+  15        | primitive_type arrayid SEMI
+
+  16  varid : ID
+  17        | varid COMMA ID
+
+  18  arrayid : ID LBRACK RBRACK
+  19          | arrayid COMMA ID LBRACK RBRACK
+
+  20  primitive_type : VAR
+  21                 | VECTOR
+  22                 | VECSPACE
+  23                 | MATRIX
+  24                 | INSPACE
+  25                 | AFFSPACE
+
+  26  stmt_list :
+  27            | function_statements
+
+  28  function_statements : statement
+  29                      | statement function_statements
+
+  30  statement : expression SEMI
+  31            | RETURN expression SEMI
+  32            | LBRACE stmt_list RBRACE
+  33            | IF expression LBRACE stmt_list RBRACE
+  34            | IF expression LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE
+  35            | FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE stmt_list RBRACE
+  36            | WHILE expression LBRACE stmt_list RBRACE
+
+  37  expression : LITERAL
+  38             | ID
+  39             | expression PLUS_DOT expression
+  40             | expression MINUS_DOT expression
+  41             | expression TIMES_DOT expression
+  42             | expression DIVIDE_DOT expression
+  43             | expression PLUS expression
+  44             | expression MINUS expression
+  45             | expression TIMES expression
+  46             | expression DIVIDE expression
+  47             | expression EQ expression
+  48             | expression NEQ expression
+  49             | expression LT expression
+  50             | expression LEQ expression
+  51             | expression GT expression
+  52             | expression GEQ expression
+  53             | ID ASSIGN expression
+  54             | ID LPAREN arguments_opt RPAREN
+  55             | LPAREN expression RPAREN
+  56             | expression TRANSPOSE
+  57             | LBRACK LBRACK expression COMMA expression RBRACK RBRACK
+  58             | expression BELONGS expression
+  59             | LT expression COMMA expression GT
+  60             | vector
+  61             | matrix
+  62             | vector_space
+  63             | inner_space
+  64             | aff_space
+  65             | arrays
+
+  66  vector : LBRACK expression_list RBRACK
+
+  67  expression_list : expression
+  68                  | expression COMMA expression_list
+
+  69  matrix : LBRACK matrix_elements_list RBRACK
+
+  70  matrix_elements_list : row_elements_list
+  71                       | row_elements_list matrix_elements_list
+
+  72  row_elements_list : expression_list SEMI
+
+  73  vector_space : VSCONST LPAREN expression_list RPAREN
+
+  74  inner_space : INSPACE LPAREN expression COMMA expression RPAREN
+
+  75  aff_space : AFFSPACE LPAREN expression COMMA expression RPAREN
+
+  76  arrays : LBRACE expression_list RBRACE
+
+  77  arguments_opt :
+  78                | expression_list
+
+  79  %entry% : '\001' program
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . program  (79)
+	programs : .  (2)
+
+	.  reduce 2
+
+	program  goto 3
+	programs  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	%entry% : '\001' program .  (79)
+
+	.  reduce 79
+
+
+state 4
+	program : programs . EOF  (1)
+	programs : programs . funtion_declaration  (3)
+	programs : programs . vdecl  (4)
+
+	VAR  shift 5
+	VECTOR  shift 6
+	VECSPACE  shift 7
+	MATRIX  shift 8
+	INSPACE  shift 9
+	AFFSPACE  shift 10
+	FUNCTION  shift 11
+	EOF  shift 12
+	.  error
+
+	funtion_declaration  goto 13
+	vdecl  goto 14
+	primitive_type  goto 15
+
+
+state 5
+	primitive_type : VAR .  (20)
+
+	.  reduce 20
+
+
+state 6
+	primitive_type : VECTOR .  (21)
+
+	.  reduce 21
+
+
+state 7
+	primitive_type : VECSPACE .  (22)
+
+	.  reduce 22
+
+
+state 8
+	primitive_type : MATRIX .  (23)
+
+	.  reduce 23
+
+
+state 9
+	primitive_type : INSPACE .  (24)
+
+	.  reduce 24
+
+
+state 10
+	primitive_type : AFFSPACE .  (25)
+
+	.  reduce 25
+
+
+state 11
+	funtion_declaration : FUNCTION . ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE  (5)
+
+	ID  shift 16
+	.  error
+
+
+state 12
+	program : programs EOF .  (1)
+
+	.  reduce 1
+
+
+state 13
+	programs : programs funtion_declaration .  (3)
+
+	.  reduce 3
+
+
+state 14
+	programs : programs vdecl .  (4)
+
+	.  reduce 4
+
+
+state 15
+	vdecl : primitive_type . varid SEMI  (14)
+	vdecl : primitive_type . arrayid SEMI  (15)
+
+	ID  shift 17
+	.  error
+
+	varid  goto 18
+	arrayid  goto 19
+
+
+state 16
+	funtion_declaration : FUNCTION ID . LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE  (5)
+
+	LPAREN  shift 20
+	.  error
+
+
+state 17
+	varid : ID .  (16)
+	arrayid : ID . LBRACK RBRACK  (18)
+
+	LBRACK  shift 21
+	SEMI  reduce 16
+	COMMA  reduce 16
+
+
+state 18
+	vdecl : primitive_type varid . SEMI  (14)
+	varid : varid . COMMA ID  (17)
+
+	SEMI  shift 22
+	COMMA  shift 23
+	.  error
+
+
+state 19
+	vdecl : primitive_type arrayid . SEMI  (15)
+	arrayid : arrayid . COMMA ID LBRACK RBRACK  (19)
+
+	SEMI  shift 24
+	COMMA  shift 25
+	.  error
+
+
+state 20
+	funtion_declaration : FUNCTION ID LPAREN . formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE  (5)
+	formals_opt : .  (6)
+
+	VAR  shift 5
+	VECTOR  shift 6
+	VECSPACE  shift 7
+	MATRIX  shift 8
+	INSPACE  shift 9
+	AFFSPACE  shift 10
+	RPAREN  reduce 6
+
+	formals_opt  goto 26
+	formal_list  goto 27
+	formal  goto 28
+	primitive_type  goto 29
+
+
+state 21
+	arrayid : ID LBRACK . RBRACK  (18)
+
+	RBRACK  shift 30
+	.  error
+
+
+state 22
+	vdecl : primitive_type varid SEMI .  (14)
+
+	.  reduce 14
+
+
+state 23
+	varid : varid COMMA . ID  (17)
+
+	ID  shift 31
+	.  error
+
+
+state 24
+	vdecl : primitive_type arrayid SEMI .  (15)
+
+	.  reduce 15
+
+
+state 25
+	arrayid : arrayid COMMA . ID LBRACK RBRACK  (19)
+
+	ID  shift 32
+	.  error
+
+
+state 26
+	funtion_declaration : FUNCTION ID LPAREN formals_opt . RPAREN LBRACE vdecl_list stmt_list RBRACE  (5)
+
+	RPAREN  shift 33
+	.  error
+
+
+state 27
+	formals_opt : formal_list .  (7)
+	formal_list : formal_list . COMMA formal  (9)
+
+	COMMA  shift 34
+	RPAREN  reduce 7
+
+
+state 28
+	formal_list : formal .  (8)
+
+	.  reduce 8
+
+
+state 29
+	formal : primitive_type . ID  (10)
+	formal : primitive_type . ID LBRACK RBRACK  (11)
+
+	ID  shift 35
+	.  error
+
+
+state 30
+	arrayid : ID LBRACK RBRACK .  (18)
+
+	.  reduce 18
+
+
+state 31
+	varid : varid COMMA ID .  (17)
+
+	.  reduce 17
+
+
+state 32
+	arrayid : arrayid COMMA ID . LBRACK RBRACK  (19)
+
+	LBRACK  shift 36
+	.  error
+
+
+state 33
+	funtion_declaration : FUNCTION ID LPAREN formals_opt RPAREN . LBRACE vdecl_list stmt_list RBRACE  (5)
+
+	LBRACE  shift 37
+	.  error
+
+
+state 34
+	formal_list : formal_list COMMA . formal  (9)
+
+	VAR  shift 5
+	VECTOR  shift 6
+	VECSPACE  shift 7
+	MATRIX  shift 8
+	INSPACE  shift 9
+	AFFSPACE  shift 10
+	.  error
+
+	formal  goto 38
+	primitive_type  goto 29
+
+
+state 35
+	formal : primitive_type ID .  (10)
+	formal : primitive_type ID . LBRACK RBRACK  (11)
+
+	LBRACK  shift 39
+	RPAREN  reduce 10
+	COMMA  reduce 10
+
+
+state 36
+	arrayid : arrayid COMMA ID LBRACK . RBRACK  (19)
+
+	RBRACK  shift 40
+	.  error
+
+
+state 37
+	funtion_declaration : FUNCTION ID LPAREN formals_opt RPAREN LBRACE . vdecl_list stmt_list RBRACE  (5)
+	vdecl_list : .  (12)
+
+	.  reduce 12
+
+	vdecl_list  goto 41
+
+
+state 38
+	formal_list : formal_list COMMA formal .  (9)
+
+	.  reduce 9
+
+
+state 39
+	formal : primitive_type ID LBRACK . RBRACK  (11)
+
+	RBRACK  shift 42
+	.  error
+
+
+state 40
+	arrayid : arrayid COMMA ID LBRACK RBRACK .  (19)
+
+	.  reduce 19
+
+
+state 41
+	funtion_declaration : FUNCTION ID LPAREN formals_opt RPAREN LBRACE vdecl_list . stmt_list RBRACE  (5)
+	vdecl_list : vdecl_list . vdecl  (13)
+	stmt_list : .  (26)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	VAR  shift 5
+	VECTOR  shift 6
+	VECSPACE  shift 7
+	MATRIX  shift 8
+	INSPACE  shift 48
+	AFFSPACE  shift 49
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 26
+
+	vdecl  goto 56
+	stmt_list  goto 57
+	primitive_type  goto 15
+	function_statements  goto 58
+	statement  goto 59
+	expression  goto 60
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 42
+	formal : primitive_type ID LBRACK RBRACK .  (11)
+
+	.  reduce 11
+
+
+state 43
+	vector_space : VSCONST . LPAREN expression_list RPAREN  (73)
+
+	LPAREN  shift 67
+	.  error
+
+
+state 44
+	statement : LBRACE . stmt_list RBRACE  (32)
+	arrays : LBRACE . expression_list RBRACE  (76)
+	stmt_list : .  (26)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 26
+
+	stmt_list  goto 70
+	function_statements  goto 58
+	statement  goto 59
+	expression  goto 71
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 72
+
+
+state 45
+	expression : LBRACK . LBRACK expression COMMA expression RBRACK RBRACK  (57)
+	vector : LBRACK . expression_list RBRACK  (66)
+	matrix : LBRACK . matrix_elements_list RBRACK  (69)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 74
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 75
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 76
+	matrix_elements_list  goto 77
+	row_elements_list  goto 78
+
+
+state 46
+	expression : LPAREN . expression RPAREN  (55)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 79
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 47
+	expression : LT . expression COMMA expression GT  (59)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 80
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 48
+	primitive_type : INSPACE .  (24)
+	inner_space : INSPACE . LPAREN expression COMMA expression RPAREN  (74)
+
+	LPAREN  shift 81
+	ID  reduce 24
+
+
+state 49
+	primitive_type : AFFSPACE .  (25)
+	aff_space : AFFSPACE . LPAREN expression COMMA expression RPAREN  (75)
+
+	LPAREN  shift 82
+	ID  reduce 25
+
+
+state 50
+	statement : WHILE . expression LBRACE stmt_list RBRACE  (36)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 83
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 51
+	statement : FOR . VAR ID ASSIGN LITERAL COLON LITERAL LBRACE stmt_list RBRACE  (35)
+
+	VAR  shift 84
+	.  error
+
+
+state 52
+	statement : IF . expression LBRACE stmt_list RBRACE  (33)
+	statement : IF . expression LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE  (34)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 85
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 53
+	statement : RETURN . expression SEMI  (31)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 86
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 54
+	expression : LITERAL .  (37)
+
+	.  reduce 37
+
+
+state 55
+	expression : ID .  (38)
+	expression : ID . ASSIGN expression  (53)
+	expression : ID . LPAREN arguments_opt RPAREN  (54)
+
+	LPAREN  shift 87
+	ASSIGN  shift 88
+	LBRACE  reduce 38
+	RBRACE  reduce 38
+	RBRACK  reduce 38
+	RPAREN  reduce 38
+	SEMI  reduce 38
+	COMMA  reduce 38
+	PLUS  reduce 38
+	MINUS  reduce 38
+	PLUS_DOT  reduce 38
+	MINUS_DOT  reduce 38
+	TIMES  reduce 38
+	DIVIDE  reduce 38
+	TIMES_DOT  reduce 38
+	DIVIDE_DOT  reduce 38
+	TRANSPOSE  reduce 38
+	BELONGS  reduce 38
+	LT  reduce 38
+	LEQ  reduce 38
+	GT  reduce 38
+	GEQ  reduce 38
+	EQ  reduce 38
+	NEQ  reduce 38
+
+
+state 56
+	vdecl_list : vdecl_list vdecl .  (13)
+
+	.  reduce 13
+
+
+state 57
+	funtion_declaration : FUNCTION ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list . RBRACE  (5)
+
+	RBRACE  shift 89
+	.  error
+
+
+state 58
+	stmt_list : function_statements .  (27)
+
+	.  reduce 27
+
+
+state 59
+	function_statements : statement .  (28)
+	function_statements : statement . function_statements  (29)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 28
+
+	function_statements  goto 90
+	statement  goto 59
+	expression  goto 60
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 60
+	statement : expression . SEMI  (30)
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	SEMI  shift 91
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 61
+	expression : vector .  (60)
+
+	.  reduce 60
+
+
+state 62
+	expression : matrix .  (61)
+
+	.  reduce 61
+
+
+state 63
+	expression : vector_space .  (62)
+
+	.  reduce 62
+
+
+state 64
+	expression : inner_space .  (63)
+
+	.  reduce 63
+
+
+state 65
+	expression : aff_space .  (64)
+
+	.  reduce 64
+
+
+state 66
+	expression : arrays .  (65)
+
+	.  reduce 65
+
+
+state 67
+	vector_space : VSCONST LPAREN . expression_list RPAREN  (73)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 75
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 108
+
+
+state 68
+	inner_space : INSPACE . LPAREN expression COMMA expression RPAREN  (74)
+
+	LPAREN  shift 81
+	.  error
+
+
+state 69
+	aff_space : AFFSPACE . LPAREN expression COMMA expression RPAREN  (75)
+
+	LPAREN  shift 82
+	.  error
+
+
+state 70
+	statement : LBRACE stmt_list . RBRACE  (32)
+
+	RBRACE  shift 109
+	.  error
+
+
+state 71
+	statement : expression . SEMI  (30)
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	expression_list : expression .  (67)
+	expression_list : expression . COMMA expression_list  (68)
+
+	SEMI  shift 91
+	COMMA  shift 110
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	RBRACE  reduce 67
+
+
+state 72
+	arrays : LBRACE expression_list . RBRACE  (76)
+
+	RBRACE  shift 111
+	.  error
+
+
+state 73
+	arrays : LBRACE . expression_list RBRACE  (76)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 75
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 72
+
+
+state 74
+	expression : LBRACK . LBRACK expression COMMA expression RBRACK RBRACK  (57)
+	expression : LBRACK LBRACK . expression COMMA expression RBRACK RBRACK  (57)
+	vector : LBRACK . expression_list RBRACK  (66)
+	matrix : LBRACK . matrix_elements_list RBRACK  (69)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 74
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 112
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 76
+	matrix_elements_list  goto 77
+	row_elements_list  goto 78
+
+
+state 75
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	expression_list : expression .  (67)
+	expression_list : expression . COMMA expression_list  (68)
+
+	COMMA  shift 110
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	RBRACE  reduce 67
+	RBRACK  reduce 67
+	RPAREN  reduce 67
+	SEMI  reduce 67
+
+
+state 76
+	vector : LBRACK expression_list . RBRACK  (66)
+	row_elements_list : expression_list . SEMI  (72)
+
+	RBRACK  shift 113
+	SEMI  shift 114
+	.  error
+
+
+state 77
+	matrix : LBRACK matrix_elements_list . RBRACK  (69)
+
+	RBRACK  shift 115
+	.  error
+
+
+state 78
+	matrix_elements_list : row_elements_list .  (70)
+	matrix_elements_list : row_elements_list . matrix_elements_list  (71)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACK  reduce 70
+
+	expression  goto 75
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 116
+	matrix_elements_list  goto 117
+	row_elements_list  goto 78
+
+
+state 79
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : LPAREN expression . RPAREN  (55)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	RPAREN  shift 118
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 80
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	expression : LT expression . COMMA expression GT  (59)
+
+	COMMA  shift 119
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 81
+	inner_space : INSPACE LPAREN . expression COMMA expression RPAREN  (74)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 120
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 82
+	aff_space : AFFSPACE LPAREN . expression COMMA expression RPAREN  (75)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 121
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 83
+	statement : WHILE expression . LBRACE stmt_list RBRACE  (36)
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	LBRACE  shift 122
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 84
+	statement : FOR VAR . ID ASSIGN LITERAL COLON LITERAL LBRACE stmt_list RBRACE  (35)
+
+	ID  shift 123
+	.  error
+
+
+state 85
+	statement : IF expression . LBRACE stmt_list RBRACE  (33)
+	statement : IF expression . LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE  (34)
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	LBRACE  shift 124
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 86
+	statement : RETURN expression . SEMI  (31)
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	SEMI  shift 125
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 87
+	expression : ID LPAREN . arguments_opt RPAREN  (54)
+	arguments_opt : .  (77)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	RPAREN  reduce 77
+
+	expression  goto 75
+	arguments_opt  goto 126
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 127
+
+
+state 88
+	expression : ID ASSIGN . expression  (53)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 128
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 89
+	funtion_declaration : FUNCTION ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE .  (5)
+
+	.  reduce 5
+
+
+state 90
+	function_statements : statement function_statements .  (29)
+
+	.  reduce 29
+
+
+state 91
+	statement : expression SEMI .  (30)
+
+	.  reduce 30
+
+
+state 92
+	expression : expression PLUS . expression  (43)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 129
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 93
+	expression : expression MINUS . expression  (44)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 130
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 94
+	expression : expression PLUS_DOT . expression  (39)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 131
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 95
+	expression : expression MINUS_DOT . expression  (40)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 132
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 96
+	expression : expression TIMES . expression  (45)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 133
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 97
+	expression : expression DIVIDE . expression  (46)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 134
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 98
+	expression : expression TIMES_DOT . expression  (41)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 135
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 99
+	expression : expression DIVIDE_DOT . expression  (42)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 136
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 100
+	expression : expression TRANSPOSE .  (56)
+
+	.  reduce 56
+
+
+state 101
+	expression : expression BELONGS . expression  (58)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 137
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 102
+	expression : expression LT . expression  (49)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 138
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 103
+	expression : expression LEQ . expression  (50)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 139
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 104
+	expression : expression GT . expression  (51)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 140
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 105
+	expression : expression GEQ . expression  (52)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 141
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 106
+	expression : expression EQ . expression  (47)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 142
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 107
+	expression : expression NEQ . expression  (48)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 143
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 108
+	vector_space : VSCONST LPAREN expression_list . RPAREN  (73)
+
+	RPAREN  shift 144
+	.  error
+
+
+state 109
+	statement : LBRACE stmt_list RBRACE .  (32)
+
+	.  reduce 32
+
+
+state 110
+	expression_list : expression COMMA . expression_list  (68)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 75
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 145
+
+
+state 111
+	arrays : LBRACE expression_list RBRACE .  (76)
+
+	.  reduce 76
+
+
+state 112
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : LBRACK LBRACK expression . COMMA expression RBRACK RBRACK  (57)
+	expression : expression . BELONGS expression  (58)
+	expression_list : expression .  (67)
+	expression_list : expression . COMMA expression_list  (68)
+
+	COMMA  shift 146
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	RBRACK  reduce 67
+	SEMI  reduce 67
+
+
+state 113
+	vector : LBRACK expression_list RBRACK .  (66)
+
+	.  reduce 66
+
+
+state 114
+	row_elements_list : expression_list SEMI .  (72)
+
+	.  reduce 72
+
+
+state 115
+	matrix : LBRACK matrix_elements_list RBRACK .  (69)
+
+	.  reduce 69
+
+
+state 116
+	row_elements_list : expression_list . SEMI  (72)
+
+	SEMI  shift 114
+	.  error
+
+
+state 117
+	matrix_elements_list : row_elements_list matrix_elements_list .  (71)
+
+	.  reduce 71
+
+
+state 118
+	expression : LPAREN expression RPAREN .  (55)
+
+	.  reduce 55
+
+
+state 119
+	expression : LT expression COMMA . expression GT  (59)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 147
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 120
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	inner_space : INSPACE LPAREN expression . COMMA expression RPAREN  (74)
+
+	COMMA  shift 148
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 121
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	aff_space : AFFSPACE LPAREN expression . COMMA expression RPAREN  (75)
+
+	COMMA  shift 149
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 122
+	statement : WHILE expression LBRACE . stmt_list RBRACE  (36)
+	stmt_list : .  (26)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 26
+
+	stmt_list  goto 150
+	function_statements  goto 58
+	statement  goto 59
+	expression  goto 60
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 123
+	statement : FOR VAR ID . ASSIGN LITERAL COLON LITERAL LBRACE stmt_list RBRACE  (35)
+
+	ASSIGN  shift 151
+	.  error
+
+
+state 124
+	statement : IF expression LBRACE . stmt_list RBRACE  (33)
+	statement : IF expression LBRACE . stmt_list RBRACE ELSE LBRACE stmt_list RBRACE  (34)
+	stmt_list : .  (26)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 26
+
+	stmt_list  goto 152
+	function_statements  goto 58
+	statement  goto 59
+	expression  goto 60
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 125
+	statement : RETURN expression SEMI .  (31)
+
+	.  reduce 31
+
+
+state 126
+	expression : ID LPAREN arguments_opt . RPAREN  (54)
+
+	RPAREN  shift 153
+	.  error
+
+
+state 127
+	arguments_opt : expression_list .  (78)
+
+	.  reduce 78
+
+
+state 128
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : ID ASSIGN expression .  (53)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	LBRACE  reduce 53
+	RBRACE  reduce 53
+	RBRACK  reduce 53
+	RPAREN  reduce 53
+	SEMI  reduce 53
+	COMMA  reduce 53
+
+
+state 129
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression PLUS expression .  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 43
+	RBRACE  reduce 43
+	RBRACK  reduce 43
+	RPAREN  reduce 43
+	SEMI  reduce 43
+	COMMA  reduce 43
+	PLUS  reduce 43
+	MINUS  reduce 43
+	PLUS_DOT  reduce 43
+	MINUS_DOT  reduce 43
+	LT  reduce 43
+	LEQ  reduce 43
+	GT  reduce 43
+	GEQ  reduce 43
+	EQ  reduce 43
+	NEQ  reduce 43
+
+
+state 130
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression MINUS expression .  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 44
+	RBRACE  reduce 44
+	RBRACK  reduce 44
+	RPAREN  reduce 44
+	SEMI  reduce 44
+	COMMA  reduce 44
+	PLUS  reduce 44
+	MINUS  reduce 44
+	PLUS_DOT  reduce 44
+	MINUS_DOT  reduce 44
+	LT  reduce 44
+	LEQ  reduce 44
+	GT  reduce 44
+	GEQ  reduce 44
+	EQ  reduce 44
+	NEQ  reduce 44
+
+
+state 131
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression PLUS_DOT expression .  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 39
+	RBRACE  reduce 39
+	RBRACK  reduce 39
+	RPAREN  reduce 39
+	SEMI  reduce 39
+	COMMA  reduce 39
+	PLUS  reduce 39
+	MINUS  reduce 39
+	PLUS_DOT  reduce 39
+	MINUS_DOT  reduce 39
+	LT  reduce 39
+	LEQ  reduce 39
+	GT  reduce 39
+	GEQ  reduce 39
+	EQ  reduce 39
+	NEQ  reduce 39
+
+
+state 132
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression MINUS_DOT expression .  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 40
+	RBRACE  reduce 40
+	RBRACK  reduce 40
+	RPAREN  reduce 40
+	SEMI  reduce 40
+	COMMA  reduce 40
+	PLUS  reduce 40
+	MINUS  reduce 40
+	PLUS_DOT  reduce 40
+	MINUS_DOT  reduce 40
+	LT  reduce 40
+	LEQ  reduce 40
+	GT  reduce 40
+	GEQ  reduce 40
+	EQ  reduce 40
+	NEQ  reduce 40
+
+
+state 133
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression TIMES expression .  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 45
+	RBRACE  reduce 45
+	RBRACK  reduce 45
+	RPAREN  reduce 45
+	SEMI  reduce 45
+	COMMA  reduce 45
+	PLUS  reduce 45
+	MINUS  reduce 45
+	PLUS_DOT  reduce 45
+	MINUS_DOT  reduce 45
+	TIMES  reduce 45
+	DIVIDE  reduce 45
+	TIMES_DOT  reduce 45
+	DIVIDE_DOT  reduce 45
+	LT  reduce 45
+	LEQ  reduce 45
+	GT  reduce 45
+	GEQ  reduce 45
+	EQ  reduce 45
+	NEQ  reduce 45
+
+
+state 134
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression DIVIDE expression .  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 46
+	RBRACE  reduce 46
+	RBRACK  reduce 46
+	RPAREN  reduce 46
+	SEMI  reduce 46
+	COMMA  reduce 46
+	PLUS  reduce 46
+	MINUS  reduce 46
+	PLUS_DOT  reduce 46
+	MINUS_DOT  reduce 46
+	TIMES  reduce 46
+	DIVIDE  reduce 46
+	TIMES_DOT  reduce 46
+	DIVIDE_DOT  reduce 46
+	LT  reduce 46
+	LEQ  reduce 46
+	GT  reduce 46
+	GEQ  reduce 46
+	EQ  reduce 46
+	NEQ  reduce 46
+
+
+state 135
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression TIMES_DOT expression .  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 41
+	RBRACE  reduce 41
+	RBRACK  reduce 41
+	RPAREN  reduce 41
+	SEMI  reduce 41
+	COMMA  reduce 41
+	PLUS  reduce 41
+	MINUS  reduce 41
+	PLUS_DOT  reduce 41
+	MINUS_DOT  reduce 41
+	TIMES  reduce 41
+	DIVIDE  reduce 41
+	TIMES_DOT  reduce 41
+	DIVIDE_DOT  reduce 41
+	LT  reduce 41
+	LEQ  reduce 41
+	GT  reduce 41
+	GEQ  reduce 41
+	EQ  reduce 41
+	NEQ  reduce 41
+
+
+state 136
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression DIVIDE_DOT expression .  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 42
+	RBRACE  reduce 42
+	RBRACK  reduce 42
+	RPAREN  reduce 42
+	SEMI  reduce 42
+	COMMA  reduce 42
+	PLUS  reduce 42
+	MINUS  reduce 42
+	PLUS_DOT  reduce 42
+	MINUS_DOT  reduce 42
+	TIMES  reduce 42
+	DIVIDE  reduce 42
+	TIMES_DOT  reduce 42
+	DIVIDE_DOT  reduce 42
+	LT  reduce 42
+	LEQ  reduce 42
+	GT  reduce 42
+	GEQ  reduce 42
+	EQ  reduce 42
+	NEQ  reduce 42
+
+
+state 137
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	expression : expression BELONGS expression .  (58)
+
+	.  reduce 58
+
+
+state 138
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression LT expression .  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 49
+	RBRACE  reduce 49
+	RBRACK  reduce 49
+	RPAREN  reduce 49
+	SEMI  reduce 49
+	COMMA  reduce 49
+	LT  reduce 49
+	LEQ  reduce 49
+	GT  reduce 49
+	GEQ  reduce 49
+	EQ  reduce 49
+	NEQ  reduce 49
+
+
+state 139
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression LEQ expression .  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 50
+	RBRACE  reduce 50
+	RBRACK  reduce 50
+	RPAREN  reduce 50
+	SEMI  reduce 50
+	COMMA  reduce 50
+	LT  reduce 50
+	LEQ  reduce 50
+	GT  reduce 50
+	GEQ  reduce 50
+	EQ  reduce 50
+	NEQ  reduce 50
+
+
+state 140
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression GT expression .  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 51
+	RBRACE  reduce 51
+	RBRACK  reduce 51
+	RPAREN  reduce 51
+	SEMI  reduce 51
+	COMMA  reduce 51
+	LT  reduce 51
+	LEQ  reduce 51
+	GT  reduce 51
+	GEQ  reduce 51
+	EQ  reduce 51
+	NEQ  reduce 51
+
+
+state 141
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression GEQ expression .  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 52
+	RBRACE  reduce 52
+	RBRACK  reduce 52
+	RPAREN  reduce 52
+	SEMI  reduce 52
+	COMMA  reduce 52
+	LT  reduce 52
+	LEQ  reduce 52
+	GT  reduce 52
+	GEQ  reduce 52
+	EQ  reduce 52
+	NEQ  reduce 52
+
+
+state 142
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression EQ expression .  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 47
+	RBRACE  reduce 47
+	RBRACK  reduce 47
+	RPAREN  reduce 47
+	SEMI  reduce 47
+	COMMA  reduce 47
+	LT  reduce 47
+	LEQ  reduce 47
+	GT  reduce 47
+	GEQ  reduce 47
+	EQ  reduce 47
+	NEQ  reduce 47
+
+
+state 143
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression NEQ expression .  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LBRACE  reduce 48
+	RBRACE  reduce 48
+	RBRACK  reduce 48
+	RPAREN  reduce 48
+	SEMI  reduce 48
+	COMMA  reduce 48
+	LT  reduce 48
+	LEQ  reduce 48
+	GT  reduce 48
+	GEQ  reduce 48
+	EQ  reduce 48
+	NEQ  reduce 48
+
+
+state 144
+	vector_space : VSCONST LPAREN expression_list RPAREN .  (73)
+
+	.  reduce 73
+
+
+state 145
+	expression_list : expression COMMA expression_list .  (68)
+
+	.  reduce 68
+
+
+state 146
+	expression : LBRACK LBRACK expression COMMA . expression RBRACK RBRACK  (57)
+	expression_list : expression COMMA . expression_list  (68)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 154
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+	expression_list  goto 145
+
+
+state 147
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	expression : LT expression COMMA expression . GT  (59)
+
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 155
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 148
+	inner_space : INSPACE LPAREN expression COMMA . expression RPAREN  (74)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 156
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 149
+	aff_space : AFFSPACE LPAREN expression COMMA . expression RPAREN  (75)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	.  error
+
+	expression  goto 157
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 150
+	statement : WHILE expression LBRACE stmt_list . RBRACE  (36)
+
+	RBRACE  shift 158
+	.  error
+
+
+state 151
+	statement : FOR VAR ID ASSIGN . LITERAL COLON LITERAL LBRACE stmt_list RBRACE  (35)
+
+	LITERAL  shift 159
+	.  error
+
+
+state 152
+	statement : IF expression LBRACE stmt_list . RBRACE  (33)
+	statement : IF expression LBRACE stmt_list . RBRACE ELSE LBRACE stmt_list RBRACE  (34)
+
+	RBRACE  shift 160
+	.  error
+
+
+state 153
+	expression : ID LPAREN arguments_opt RPAREN .  (54)
+
+	.  reduce 54
+
+
+154: shift/reduce conflict (shift 161, reduce 67) on RBRACK
+state 154
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : LBRACK LBRACK expression COMMA expression . RBRACK RBRACK  (57)
+	expression : expression . BELONGS expression  (58)
+	expression_list : expression .  (67)
+	expression_list : expression . COMMA expression_list  (68)
+
+	RBRACK  shift 161
+	COMMA  shift 110
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	SEMI  reduce 67
+
+
+155: shift/reduce conflict (shift 73, reduce 59) on LBRACE
+state 155
+	expression : expression GT . expression  (51)
+	expression : LT expression COMMA expression GT .  (59)
+
+	VSCONST  shift 43
+	LBRACE  shift 73
+	LBRACK  shift 45
+	LPAREN  shift 46
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 59
+	RBRACK  reduce 59
+	RPAREN  reduce 59
+	SEMI  reduce 59
+	COMMA  reduce 59
+	PLUS  reduce 59
+	MINUS  reduce 59
+	PLUS_DOT  reduce 59
+	MINUS_DOT  reduce 59
+	TIMES  reduce 59
+	DIVIDE  reduce 59
+	TIMES_DOT  reduce 59
+	DIVIDE_DOT  reduce 59
+	TRANSPOSE  reduce 59
+	BELONGS  reduce 59
+	LT  reduce 59
+	LEQ  reduce 59
+	GT  reduce 59
+	GEQ  reduce 59
+	EQ  reduce 59
+	NEQ  reduce 59
+
+	expression  goto 140
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 156
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	inner_space : INSPACE LPAREN expression COMMA expression . RPAREN  (74)
+
+	RPAREN  shift 162
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 157
+	expression : expression . PLUS_DOT expression  (39)
+	expression : expression . MINUS_DOT expression  (40)
+	expression : expression . TIMES_DOT expression  (41)
+	expression : expression . DIVIDE_DOT expression  (42)
+	expression : expression . PLUS expression  (43)
+	expression : expression . MINUS expression  (44)
+	expression : expression . TIMES expression  (45)
+	expression : expression . DIVIDE expression  (46)
+	expression : expression . EQ expression  (47)
+	expression : expression . NEQ expression  (48)
+	expression : expression . LT expression  (49)
+	expression : expression . LEQ expression  (50)
+	expression : expression . GT expression  (51)
+	expression : expression . GEQ expression  (52)
+	expression : expression . TRANSPOSE  (56)
+	expression : expression . BELONGS expression  (58)
+	aff_space : AFFSPACE LPAREN expression COMMA expression . RPAREN  (75)
+
+	RPAREN  shift 163
+	PLUS  shift 92
+	MINUS  shift 93
+	PLUS_DOT  shift 94
+	MINUS_DOT  shift 95
+	TIMES  shift 96
+	DIVIDE  shift 97
+	TIMES_DOT  shift 98
+	DIVIDE_DOT  shift 99
+	TRANSPOSE  shift 100
+	BELONGS  shift 101
+	LT  shift 102
+	LEQ  shift 103
+	GT  shift 104
+	GEQ  shift 105
+	EQ  shift 106
+	NEQ  shift 107
+	.  error
+
+
+state 158
+	statement : WHILE expression LBRACE stmt_list RBRACE .  (36)
+
+	.  reduce 36
+
+
+state 159
+	statement : FOR VAR ID ASSIGN LITERAL . COLON LITERAL LBRACE stmt_list RBRACE  (35)
+
+	COLON  shift 164
+	.  error
+
+
+state 160
+	statement : IF expression LBRACE stmt_list RBRACE .  (33)
+	statement : IF expression LBRACE stmt_list RBRACE . ELSE LBRACE stmt_list RBRACE  (34)
+
+	ELSE  shift 165
+	VSCONST  reduce 33
+	LBRACE  reduce 33
+	RBRACE  reduce 33
+	LBRACK  reduce 33
+	LPAREN  reduce 33
+	LT  reduce 33
+	INSPACE  reduce 33
+	AFFSPACE  reduce 33
+	WHILE  reduce 33
+	FOR  reduce 33
+	IF  reduce 33
+	RETURN  reduce 33
+	LITERAL  reduce 33
+	ID  reduce 33
+
+
+state 161
+	expression : LBRACK LBRACK expression COMMA expression RBRACK . RBRACK  (57)
+
+	RBRACK  shift 166
+	.  error
+
+
+state 162
+	inner_space : INSPACE LPAREN expression COMMA expression RPAREN .  (74)
+
+	.  reduce 74
+
+
+state 163
+	aff_space : AFFSPACE LPAREN expression COMMA expression RPAREN .  (75)
+
+	.  reduce 75
+
+
+state 164
+	statement : FOR VAR ID ASSIGN LITERAL COLON . LITERAL LBRACE stmt_list RBRACE  (35)
+
+	LITERAL  shift 167
+	.  error
+
+
+state 165
+	statement : IF expression LBRACE stmt_list RBRACE ELSE . LBRACE stmt_list RBRACE  (34)
+
+	LBRACE  shift 168
+	.  error
+
+
+state 166
+	expression : LBRACK LBRACK expression COMMA expression RBRACK RBRACK .  (57)
+
+	.  reduce 57
+
+
+state 167
+	statement : FOR VAR ID ASSIGN LITERAL COLON LITERAL . LBRACE stmt_list RBRACE  (35)
+
+	LBRACE  shift 169
+	.  error
+
+
+state 168
+	statement : IF expression LBRACE stmt_list RBRACE ELSE LBRACE . stmt_list RBRACE  (34)
+	stmt_list : .  (26)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 26
+
+	stmt_list  goto 170
+	function_statements  goto 58
+	statement  goto 59
+	expression  goto 60
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 169
+	statement : FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE . stmt_list RBRACE  (35)
+	stmt_list : .  (26)
+
+	VSCONST  shift 43
+	LBRACE  shift 44
+	LBRACK  shift 45
+	LPAREN  shift 46
+	LT  shift 47
+	INSPACE  shift 68
+	AFFSPACE  shift 69
+	WHILE  shift 50
+	FOR  shift 51
+	IF  shift 52
+	RETURN  shift 53
+	LITERAL  shift 54
+	ID  shift 55
+	RBRACE  reduce 26
+
+	stmt_list  goto 171
+	function_statements  goto 58
+	statement  goto 59
+	expression  goto 60
+	vector  goto 61
+	matrix  goto 62
+	vector_space  goto 63
+	inner_space  goto 64
+	aff_space  goto 65
+	arrays  goto 66
+
+
+state 170
+	statement : IF expression LBRACE stmt_list RBRACE ELSE LBRACE stmt_list . RBRACE  (34)
+
+	RBRACE  shift 172
+	.  error
+
+
+state 171
+	statement : FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE stmt_list . RBRACE  (35)
+
+	RBRACE  shift 173
+	.  error
+
+
+state 172
+	statement : IF expression LBRACE stmt_list RBRACE ELSE LBRACE stmt_list RBRACE .  (34)
+
+	.  reduce 34
+
+
+state 173
+	statement : FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE stmt_list RBRACE .  (35)
+
+	.  reduce 35
+
+
+State 154 contains 1 shift/reduce conflict.
+State 155 contains 1 shift/reduce conflict.
+
+
+50 terminals, 27 nonterminals
+80 grammar rules, 174 states
