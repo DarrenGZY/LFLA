@@ -22,6 +22,7 @@
 %left TIMES DIVIDE TIMES_DOT DIVIDE_DOT
 %left TRANSPOSE BELONGS
 
+
 %start program
 %type<Ast.program> program
 
