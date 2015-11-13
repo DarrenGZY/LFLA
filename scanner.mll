@@ -9,6 +9,8 @@ rule token = parse
 (* several kinds of delimiters *)
 | '{'   { LBRACE }
 | '}'   { RBRACE }
+| "[["	{ LLBRACK}
+| "]]"  { RRBRACK}
 | '['   { LBRACK }
 | ']'   { RBRACK }
 | '('   { LPAREN }
@@ -17,6 +19,8 @@ rule token = parse
 | ','   { COMMA }
 | ':'   { COLON }
 | '='   { ASSIGN }
+| "<<"  {LIN}
+| ">>"  {RIN}
 (* logical operators *)
 | "&&"  { AND }
 | "||"  { OR }

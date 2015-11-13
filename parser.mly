@@ -1,7 +1,7 @@
 %{ open Ast %}
 
 %token VSCONST
-%token LBRACE RBRACE LBRACK RBRACK LPAREN RPAREN COLON SEMI COMMA
+%token LBRACE RBRACE LBRACK RBRACK LPAREN RPAREN COLON SEMI COMMA LLBRACK RRBRACK LIN RIN
 %token AND OR  
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
 %token TIMES DIVIDE TIMES_DOT DIVIDE_DOT 
@@ -124,9 +124,9 @@ expression:
     | ID LPAREN arguments_opt RPAREN { Call($1, $3) } 
     | LPAREN expression RPAREN      { $2 }
 	| expression TRANSPOSE     		{Transpose($1)}
-	| LBRACK LBRACK expression COMMA expression RBRACK RBRACK    {Binop($3,LieBracket,$5)}
+	| LLBRACK   expression COMMA expression RRBRACK     {Binop($2,LieBracket,$4)}
 	| expression BELONGS expression      {Binop($1,Belongs, $3)}
-	| LT expression COMMA expression  GT                  {Binop($2, InnerProduct, $4)} 
+	| LIN expression COMMA expression  RIN                  {Binop($2, InnerProduct, $4)} 
 	| vector                       {$1} 
     | matrix                        {$1}
 	| vector_space                   {$1} 
