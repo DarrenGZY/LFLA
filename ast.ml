@@ -2,8 +2,8 @@ type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq
 
 (* store var type value *)
 type var = 
-    Int of int
-  | Float of float 
+    Int of String
+  | Float of String 
 
 	
 type prim_value = 
@@ -25,8 +25,9 @@ type prim_type =
   | AFFSPA  (* type of affine space *)
 
 type expr =
-  | Literal of prim_value  
-  | Arra of  Literal array	
+  Liter of String
+  | Prim of prim_value  
+  | Arra of  prim_value array	
   | Id of string
   | Binop of expr * op * expr
   | Assign of string * expr
