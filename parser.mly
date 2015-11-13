@@ -39,8 +39,8 @@ funtion_declaration :
     FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE function_statements RBRACE { 
         {   fname=$2; 
             params=$4; 
-            locals = fst $7; 
-            body=snd $7 } }
+            locals = List.rev (fst $7); 
+            body= List.rev (snd $7) } }
 
 parameter_list_opt :
     /* nothing */       { [] }
@@ -84,7 +84,7 @@ vector_declaration_expression :
 
 vector_elements_list_opt :
     /* nothing */           { [] }
-    | vector_elements_list  { $1 }
+    | vector_elements_list  { List.rev $1 }
 
 vector_elements_list :
     LITERAL                                 { [$1] }
