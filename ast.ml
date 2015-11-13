@@ -1,41 +1,32 @@
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq
 
 (* store var type value *)
-type var_value = 
+type var = 
     Int of int
   | Float of float 
 
-(* store vector type value *)
-type vec_value = 
-    var_value list
-
-(* store matrix type value *)
-type mat_value = 
-    var_value list list
-
-(* store vector space type value *)
-type vecspace_value =
-    vec_value list
-
-type prim_type = 
-    Var
-  | Vector
-  | Matrix
-  | VecSpace
-  | InSpace
-  | AffSpace
-
+	
 type prim_value = 
-    VValue of string
-  | VecValue of string list
-  | MatValue of string list list
-  | VecSpValue of string list
-  | InSpValue of string * string
-  | AffSpValue of string * string
-  | Notknown
+	Var of var
+  | Vector of var array
+  | Matrix of var array array
+  | VectorSpace of Vector list 
+  | InSpace of  Vector list * Matrix
+  | AffSpace  of Vecotr * VectorSpace
+
+  
+(* prime type used in variable declarations, function declarations  *)
+type prim_type = 
+    VAR     (* type of var *)
+  | VEC		(* type of vector *)
+  | MAT		(* type of matrix *)
+  | VECSPA	(* type of vector space *)
+  | INSPA	(* type of inner space *)
+  | AFFSPA  (* type of affine space *)
 
 type expr =
-    Literal of string
+  | Literal of prim_value  
+  | Arra of  Literal array	
   | Id of string
   | Binop of expr * op * expr
   | Assign of string * expr
@@ -52,13 +43,11 @@ type stmt =
 
 type var_decl = {
     vname : string;
-    value : prim_value;
     data_type : prim_type;
 }
 
 type array_decl = {
     aname : string;
-    elements : expr list;
     data_type : prim_type;
     length : int;
 }
