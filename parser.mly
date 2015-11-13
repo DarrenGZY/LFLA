@@ -36,22 +36,50 @@ programs :
     | programs normal_declaration   { ($2::fst $1), snd $1 } 
 
 funtion_declaration :
-    FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE function_statements RBRACE { 
+    FUNCTION ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE { 
         {   fname=$2; 
             params=$4; 
-            locals = fst $7; 
-            body=snd $7 } }
+            locals =  $7; 
+            body= $8 } }
 
-parameter_list_opt :
-    /* nothing */       { [] }
-    | parameter_list    { List.rev $1 }
+formals_opt:
+    /* nothing */ { [] }
+    | formal_list    { List.rev $1 }
+  
+formal_list :
+	|formal  { $1 }
+    | formal_list COMMA  formal  { $2 :: $1}
+	
+formal :	
+	primitive_type ID                  { Vardecl({vname = name; data_type = $1})}
+  | primitive_type  ID LBRACK RBRACK   { Arraydecl({aname = name; data_type = $1})}
+               
+ 
+vdecl_list :
+	/* nothing */ { [] }
+	|vdecl_list vdecl  { $2 :: $1  }
+	
+vdecl :
+	primitive_type varid  SEMI       { List.map( fun name -> Vardecl({vname = name; data_type = $1}) ) $2 }
+    | primitive_type  arrayid SEMI   { List.map( fun name -> Arraydecl({aname = name; data_type = $1}))$2 }  
+ 
+varid :
+    ID  {[$1]}	
+	| varid COMMA ID {$3 :: $1} 
 
-parameter_list :
-    primitive_type ID                                           { [Vardecl({vname = $2; value = Notknown; data_type = $1})] }
-    | primitive_type ID LBRACK RBRACK                           { [ Arraydecl({ aname = $2; elements = []; data_type = $1; length = 0})] } 
-    | parameter_list COMMA primitive_type ID                    { Vardecl({vname = $4; value = Notknown; data_type = $3})::$1 }
-    | parameter_list COMMA primitive_type ID LBRACK RBRACK      { Arraydecl({aname = $4; elements = []; data_type = $3; length = 0})::$1 }
+arrayid :
+    ID LBRACK RBRACK { [$1]}
+	| arrayid COMMA  ID LBRACK RBRACK {$3 :: $1}	
 
+primitive_type:
+    VAR         { VaR }
+    | VECTOR    { VeC }
+    | VECSPACE  { VecspA }
+    | MATRIX    { MaT }
+    | INSPACE   { InspA }
+    | AFFSPACE  { AffspA }	
+	
+	
 function_statements : 
     /* nothing */                               { [], [] }
     | function_statements normal_declaration    { ($2::fst $1), snd $1 }
@@ -196,11 +224,5 @@ arguments_list:
     expression        { [$1] }       
   | arguments_list COMMA expression { $3::$1 } 
 
-primitive_type:
-    VAR         { Var }
-    | VECTOR    { Vector }
-    | VECSPACE  { VecSpace }
-    | MATRIX    { Matrix }
-    | INSPACE   { InSpace }
-    | AFFSPACE  { AffSpace }
+
 
