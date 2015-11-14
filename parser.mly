@@ -66,7 +66,7 @@ vdecl :
  
 varid :
     ID  {[$1]}	
-	| varid COMMA ID {$3 :: $1} 
+	| varid COMMA ID {$3 :: $1}
 
 arrayid :
     ID LBRACK RBRACK { [$1]}

@@ -1,4 +1,5 @@
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq|AddDot|SubDot|MultDot|DivDot|Belongs|LieBracket|InnerProduct
+type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq 
+		| AddDot | SubDot | MultDot | DivDot | Belongs | LieBracket | InnerProduct
 
 type uniop = Transpose
 
@@ -13,7 +14,7 @@ type prim_type =
   | AffspA  (* type of affine space *)
 
 type expr =
-  Liter of String
+  Liter of string
   | Vector of expr list
   | Matrix of expr list list
   | VectorSpace of expr list 
