@@ -164,7 +164,7 @@ statement :
     | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
                                     { If($2, $4, $8) }
     | FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE statement_list RBRACE 
-                                    { For(int_of_string($5), int_of_string($7),$9) } /* TODO: if var is needed here */
+                                    { For($3, $5, $7,$9) } /* TODO: if var is needed here */
     | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
 
 statement_list :
@@ -172,21 +172,25 @@ statement_list :
     | statement_list statement { $2::$1 }
 
 expression:
-    LITERAL                         { Literal($1) }
-    | ID                            { Id($1) }
-    | expression PLUS   expression  { Binop($1, Add, $3) }
-    | expression MINUS  expression  { Binop($1, Sub, $3) }
-    | expression TIMES  expression  { Binop($1, Mult, $3) }
-    | expression DIVIDE expression  { Binop($1, Div, $3) }
-    | expression EQ     expression  { Binop($1, Equal, $3) }
-    | expression NEQ    expression  { Binop($1, Neq, $3) }
-    | expression LT     expression  { Binop($1, Less, $3) }
-    | expression LEQ    expression  { Binop($1, Leq, $3) }
-    | expression GT     expression  { Binop($1, Greater, $3) }
-    | expression GEQ    expression  { Binop($1, Geq, $3) }
-    | ID ASSIGN expression          { Assign($1, $3) }
-    | ID LPAREN arguments_opt RPAREN { Call($1, $3) } 
-    | LPAREN expression RPAREN      { $2 }
+    LITERAL                             { Literal($1) }
+    | ID                                { Id($1) }
+    | expression PLUS       expression  { Binop($1, Add, $3) }
+    | expression MINUS      expression  { Binop($1, Sub, $3) }
+    | expression TIMES      expression  { Binop($1, Mult, $3) }
+    | expression DIVIDE     expression  { Binop($1, Div, $3) }
+    | expression EQ         expression  { Binop($1, Equal, $3) }
+    | expression NEQ        expression  { Binop($1, Neq, $3) }
+    | expression LT         expression  { Binop($1, Less, $3) }
+    | expression LEQ        expression  { Binop($1, Leq, $3) }
+    | expression GT         expression  { Binop($1, Greater, $3) }
+    | expression GEQ        expression  { Binop($1, Geq, $3) }
+    | expression PLUS_DOT   expression  { Binop($1, Add_Dot, $3) }
+    | expression MINUS_DOT  expression  { Binop($1, Sub_Dot, $3) }
+    | expression TIMES_DOT  expression  { Binop($1, Mult_Dot, $3) }
+    | expression DIVIDE_DOT expression  { Binop($1, Div_Dot, $3) }
+    | ID    ASSIGN  expression          { Assign($1, $3) }
+    | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
+    | LPAREN    expression  RPAREN      { $2 }
 
 arguments_opt:
     /* nothing */   { [] }

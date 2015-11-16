@@ -1,4 +1,4 @@
-type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq
+type op = Add | Sub | Mult | Div | Add_Dot | Sub_Dot | Mult_Dot | Div_Dot | Equal | Neq | Less | Leq | Greater | Geq
 
 (* store var type value *)
 type var_value = 
@@ -47,7 +47,7 @@ type stmt =
   | Expr of expr
   | Return of expr
   | If of expr * stmt list * stmt list
-  | For of int * int * stmt list
+  | For of string * string * string * stmt list
   | While of expr * stmt list
 
 type var_decl = {
