@@ -12,3 +12,5 @@
 parser.ml
 scanner.ml
 LFLA
+.merlin
+a.out
