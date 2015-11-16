@@ -1,0 +1,7 @@
+function main()
+{
+    for var i = 1:5
+    {
+        print(i);
+    }
+}

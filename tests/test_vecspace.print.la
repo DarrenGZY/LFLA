@@ -1,0 +1,8 @@
+function main()
+{
+    vector v1 = [1,2,3];
+    vector v2 = [7,8,9];
+    vecspace vec = L(v1,v2);
+    inspace ins = inspace(vecs, m);
+    affspace afs = affspace(v1, vec);
+}
