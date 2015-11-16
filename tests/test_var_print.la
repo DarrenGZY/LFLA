@@ -4,7 +4,8 @@ function main()
 {
     var a = 1;
     var b = 5.33;
-    print(c);
+    print(a);
     print(b);
+    print(c);
 }
 
