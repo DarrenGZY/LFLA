@@ -5,13 +5,15 @@ module StringMap = Map.Make(String)
 let rec string_of_expr = function
     Literal(l) -> l
     | Id(s) -> s
+    | Transpose(e) -> "np.transpose(" ^ string_of_expr e ^ ")"
     | Binop(e1, o, e2) ->
         string_of_expr e1 ^ " " ^
         (match o with
         Add -> "+" | Sub -> "-" | Mult -> "*" | Div -> "/"
         | Add_Dot -> "+" | Sub_Dot -> "-" | Mult_Dot -> "*"    
         | Div_Dot -> "/" | Equal -> "==" | Neq -> "!="
-        | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">=") ^ " " ^
+        | Less -> "<" | Leq -> "<=" | Greater -> ">" | Geq -> ">="
+        | And -> "&&" | Or -> "||"   ) ^ " " ^
         string_of_expr e2   (*TODO: missed operators: &&, ||, ', @, <<>>, [[]], etc *)
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
     | Call(f, el) ->
@@ -34,7 +36,8 @@ let rec string_of_stmt num_ident = function
         ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
     | While(e, s) -> (String.make (num_ident*3) ' ') ^ "while " ^ string_of_expr e ^ ": \n" 
         ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
-
+    | Continue -> (String.make (num_ident*3) ' ') ^ "continue "
+    | Break -> (String.make (num_ident*3) ' ') ^ "break "
 
 let string_of_prim_value = function
     VValue(s) -> s

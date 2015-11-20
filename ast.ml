@@ -1,4 +1,6 @@
-type op = Add | Sub | Mult | Div | Add_Dot | Sub_Dot | Mult_Dot | Div_Dot | Equal | Neq | Less | Leq | Greater | Geq
+type op = Add | Sub | Mult | Div | Add_Dot | Sub_Dot | Mult_Dot 
+        | Div_Dot | Equal | Neq | Less | Leq | Greater | Geq
+        | And | Or | LieBracket | Belongs | InnerProduct 
 
 (* store var type value *)
 type var_value = 
@@ -38,6 +40,7 @@ type expr =
     Literal of string
   | Id of string
   | Binop of expr * op * expr
+  | Transpose of expr
   | Assign of string * expr
   | Call of string * expr list
   | Noexpr
@@ -49,6 +52,8 @@ type stmt =
   | If of expr * stmt list * stmt list
   | For of string * string * string * stmt list
   | While of expr * stmt list
+  | Continue
+  | Break
 
 type var_decl = {
     vname : string;
