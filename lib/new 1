@@ -1,0 +1,58 @@
+1. Innerproductsapce 
+	field: vectors b;
+		   matrix m;
+    function:  
+           var product(u,v)  // return the inner product <u,v>	
+				first solve:   a.vectors * u1 = u,  a.vectors * v1 = v, 
+                then return u1'* a.matrix * v1
+DONE
+
+ 
+2. vector space  v :
+    field :  vectors b;
+	function:
+		   1) _inital_ (self, vectors a)
+		      let b = an empty vectors
+			  for each vector w in a 
+			       if !linearindependent(b.add(w))
+				       b.remove(w)
+			   		   
+		   2) float belongs (vector w ) // return whether the vector w is in the space
+				return !linearindependent( v.vectors.add( w )) 
+		   3)int dimension()// find the dimension of the space
+                 return v.vectors.size()
+		   4)vectorSpace plus(vectorSpace v1) 
+		    // reutrn the sum of v and v1
+		        x = copy of v.vectors 
+                for each vector w in v1.vectors 
+					if  !linearindependent(x.vectors.add(w))
+						 x.vectors.remove(w)
+		       return L(x)
+		   5) vectors basis() // return a basis  
+		        return self.b
+
+
+3. affine space  a :
+     field:  vector v; 
+	         vectorSpace w;
+	function: 1) int dim() // return the dimension 
+	                return a.w.dim()
+			  2) boolean belongs(vector x) // tells whether x is in the affine space  	
+	             return self.w.belongs(x-self.v)
+	          3)    
+			function affSpace solveLinearEquation(matrix m, vector u)
+			//solve  equation   M*v = u, 
+			//solution set is an affine space :
+			let x be a solution of the equation i.e.(M*x = u), x is obtained by Gauss elimination method
+			let z = solveLinearEquation(M,0), z is obtained by Gauss elimination method
+			let w = z.space 
+		    let y = AffinSpace(x,w).
+			return y
+			           
+4. Lie bracket:  
+			given two matrix M1, M2, [[M1,M2]] = M1*M2-M2*M1   
+
+
+			
+							
+							
