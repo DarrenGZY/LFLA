@@ -7,6 +7,8 @@
                 then return u1'* a.matrix * v1
 DONE
 
+
+(b-b.last) * V = b.last
  
 2. vector space  v :
     field :  vectors b;
@@ -39,7 +41,8 @@ DONE
 	                return a.w.dim()
 			  2) boolean belongs(vector x) // tells whether x is in the affine space  	
 	             return self.w.belongs(x-self.v)
-	          3)    
+	          3)   
+	           
 			function affSpace solveLinearEquation(matrix m, vector u)
 			//solve  equation   M*v = u, 
 			//solution set is an affine space :

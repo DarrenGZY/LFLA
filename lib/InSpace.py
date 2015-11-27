@@ -8,6 +8,7 @@ class InSpace:
         vectors: A list of vectors
         matrix: A matrix
     """
+    
 	def __init__(self, vecs=None, mat=None):
 			self.vectors = vecs
 			self.matrix = mat
