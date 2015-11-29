@@ -43,6 +43,7 @@ type expr =
   | Transpose of expr
   | Assign of string * expr
   | Call of string * expr list
+  | ArrayEle of string * string
   | Noexpr
 
 type stmt =

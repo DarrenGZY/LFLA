@@ -106,7 +106,7 @@ row_elements_list :
 vecspace_declaration_expression :
     VECSPACE ID { Vardecl({vname = $2; value = Notknown; data_type = VecSpace }) }
     | VECSPACE ID ASSIGN VSCONST LPAREN vecspace_elements_list RPAREN 
-                { Vardecl({vname = $2; value = VecSpValue($6); data_type = VecSpace }) }
+                { Vardecl({vname = $2; value = VecSpValue(List.rev $6); data_type = VecSpace }) }
 
 vecspace_elements_list :
     ID {[$1]}
@@ -126,27 +126,27 @@ array_declaration_expression :
     VAR ID LBRACK LITERAL RBRACK 
             { Arraydecl({ aname = $2; elements = []; data_type = Var; length = 0}) }
     | VAR ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
-            { Arraydecl({ aname = $2; elements = $8; data_type = Var; length = List.length $8})}
+            { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = Var; length = List.length $8})}
     | VECTOR ID LBRACK LITERAL RBRACK 
             { Arraydecl({ aname = $2; elements = []; data_type = Vector; length = 0})}
     | VECTOR ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
-            { Arraydecl({ aname = $2; elements = $8; data_type = Vector; length = List.length $8})}
+            { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = Vector; length = List.length $8})}
     | MATRIX ID LBRACK LITERAL RBRACK 
             { Arraydecl({ aname = $2; elements = []; data_type = Matrix; length = 0})}
     | MATRIX ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
-            { Arraydecl({ aname = $2; elements = $8; data_type = Matrix; length = List.length $8})}
+            { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = Matrix; length = List.length $8})}
     | INSPACE ID LBRACK LITERAL RBRACK 
             { Arraydecl({ aname = $2; elements = []; data_type = InSpace; length = 0})}
     | INSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
-            { Arraydecl({ aname = $2; elements = $8; data_type = InSpace; length = List.length $8})}
+            { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = InSpace; length = List.length $8})}
     | AFFSPACE ID LBRACK LITERAL RBRACK 
             { Arraydecl({ aname = $2; elements = []; data_type = AffSpace; length = 0})}
     | AFFSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
-            { Arraydecl({ aname = $2; elements = $8; data_type = AffSpace; length = List.length $8})}
+            { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = AffSpace; length = List.length $8})}
     | VECSPACE ID LBRACK LITERAL RBRACK 
             { Arraydecl({ aname = $2; elements = []; data_type = VecSpace; length = 0})}
     | VECSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
-            { Arraydecl({ aname = $2; elements = $8; data_type = VecSpace; length = List.length $8})}
+            { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = VecSpace; length = List.length $8})}
 
 array_elements_list :
     ID                                  { [Id($1)] }
@@ -198,6 +198,7 @@ expression:
     | ID    ASSIGN  expression          { Assign($1, $3) }
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
+    | ID    LBRACK  LITERAL RBRACK      { ArrayEle($1, $3) }
 
 arguments_opt:
     /* nothing */   { [] }

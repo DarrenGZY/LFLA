@@ -18,6 +18,7 @@ let rec string_of_expr = function
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
     | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+    | ArrayEle(s1, s2) -> s1 ^ "[" ^ s2 ^ "]"
     | Noexpr -> ""
 
 (* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
@@ -43,15 +44,15 @@ let string_of_prim_value = function
     VValue(s) -> s
     | VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
     | MatValue(s) -> "np.matrix((" ^ String.concat "," (List.map (fun s -> "(" ^ s ^ ")") (List.map (String.concat ",") s)) ^ "))"
-    | VecSpValue(s) -> "vecspace(" ^ String.concat "," s ^ ")"      (*TODO: define vecspace in python*)
-    | InSpValue(s1, s2) -> "inspace(" ^ s1 ^ "," ^ s2 ^ ")"         (*TODO: define inspace in python*)
-    | AffSpValue(s1, s2) -> "affspace(" ^ s1 ^ "," ^ s2 ^ ")"       (*TODO: define affspace in python*)
+    | VecSpValue(s) -> "VecSpace([" ^ String.concat "," s ^ "])"      (*TODO: define vecspace in python*)
+    | InSpValue(s1, s2) -> "InSpace(" ^ s1 ^ "," ^ s2 ^ ")"         (*TODO: define inspace in python*)
+    | AffSpValue(s1, s2) -> "AffSpace(" ^ s1 ^ "," ^ s2 ^ ")"       (*TODO: define affspace in python*)
     | Notknown -> ""
 
 
 let string_of_normal_decl = function
     Vardecl(v) -> v.vname ^ "=" ^ string_of_prim_value v.value ^ "\n"
-    | Arraydecl(a) -> a.aname ^ "\n"
+    | Arraydecl(a) -> a.aname ^ "=[" ^ String.concat "," (List.map string_of_expr a.elements) ^ "]\n"
 
 let string_of_func_decl fdecl =
     "def " ^ fdecl.fname ^ "() :\n" ^ "   " ^ String.concat "   " (List.map string_of_normal_decl fdecl.locals) ^ 

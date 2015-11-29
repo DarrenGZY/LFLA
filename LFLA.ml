@@ -12,6 +12,9 @@ let _ =
         let pyFile = open_out "a.out" in
              fprintf pyFile "%s\n" "#!/usr/local/bin/python";
              fprintf pyFile "%s\n" "import numpy as np";
+             fprintf pyFile "%s\n" "from VecSpace import *";
+             fprintf pyFile "%s\n" "from InSpace import *";
+             fprintf pyFile "%s\n" "from AffSpace import *";
              fprintf pyFile "%s\n"  (Compile.compile program);
              close_out pyFile;
              Sys.command ("chmod +x a.out") ;
