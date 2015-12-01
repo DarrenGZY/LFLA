@@ -36,9 +36,13 @@ type prim_value =
   | AffSpValue of string * string
   | Notknown
 
+type elem = 
+    Nid of string  (* normal identifier *)
+  | Arrayid of string * string (* array identifier *)
+
 type expr =
     Literal of string
-  | Id of string
+  | Id of elem
   | Binop of expr * op * expr
   | Belongs of expr * expr
   | LieBracket of expr * expr
@@ -46,7 +50,7 @@ type expr =
   | Transpose of expr
   | Assign of string * expr
   | Call of string * expr list
-  | ArrayEle of string * string
+  | Builtin of elem * string
   | Noexpr
 
 type stmt =

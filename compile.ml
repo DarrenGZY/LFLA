@@ -2,9 +2,14 @@ open Ast
 open Parser
 
 module StringMap = Map.Make(String)
+
+let string_of_elem = function
+    Nid(s) -> s
+    | Arrayid(s1, s2) -> s1 ^ "[" ^ s2 ^ "]"
+
 let rec string_of_expr = function
     Literal(l) -> l
-    | Id(s) -> s
+    | Id(el) -> string_of_elem el
     | Transpose(e) -> "np.transpose(" ^ string_of_expr e ^ ")"
     | Binop(e1, o, e2) ->
         string_of_expr e1 ^ " " ^
@@ -21,9 +26,9 @@ let rec string_of_expr = function
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
     | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-    | ArrayEle(s1, s2) -> s1 ^ "[" ^ s2 ^ "]"
+    | Builtin(el, s) -> string_of_elem el ^ s
     | Noexpr -> ""
-
+    
 (* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
 let rec string_of_stmt num_ident = function
     Block(stmts) ->

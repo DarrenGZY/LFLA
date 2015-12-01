@@ -12,6 +12,7 @@
 %token WHILE FOR IF ELSE BREAK CONTINUE RETURN FUNCTION
 %token <string> LITERAL
 %token <string> ID
+%token <string> BUILTIN
 %token EOF
 
 %nonassoc NOELSE
@@ -151,9 +152,9 @@ array_declaration_expression :
             { Arraydecl({ aname = $2; elements = (List.rev $8); data_type = VecSpace; length = List.length $8})}
 
 array_elements_list :
-    ID                                  { [Id($1)] }
+    ID                                  { [Id(Nid($1))] }
     | LITERAL                           { [Literal($1)] }
-    | array_elements_list COMMA ID      { Id($3)::$1 }
+    | array_elements_list COMMA ID      { Id(Nid($3))::$1 }
     | array_elements_list COMMA LITERAL { Literal($3)::$1 }
 
 
@@ -176,7 +177,7 @@ statement_list :
 
 expression:
     LITERAL                             { Literal($1) }
-    | ID                                { Id($1) }
+    | element                           { Id($1) }
     | expression TRANSPOSE              { Transpose($1) }
     | expression PLUS       expression  { Binop($1, Add, $3) }
     | expression MINUS      expression  { Binop($1, Sub, $3) }
@@ -200,8 +201,14 @@ expression:
     | ID    ASSIGN  expression          { Assign($1, $3) }
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
-    | ID    LBRACK  LITERAL RBRACK      { ArrayEle($1, $3) }
-    | ID    LBRACK  ID      RBRACK      { ArrayEle($1, $3) }
+    | BUILTIN   LPAREN  element  RPAREN      { Builtin($3, $1) }
+    | VSCONST   LPAREN  element  RPAREN      { Builtin($3, "vecspace") }  /* some problem here, should be multiple elements */
+
+/* normal identifier and array identifier */
+element:
+    ID                          { Nid($1) }
+    | ID LBRACK LITERAL RBRACK    { Arrayid($1, $3) }
+    | ID LBRACK ID      RBRACK  { Arrayid($1, $3) }
 
 arguments_opt:
     /* nothing */   { [] }
