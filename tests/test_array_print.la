@@ -1,0 +1,9 @@
+function main()
+{
+    var a[4] = {2, 4, 5, 6};
+    vector v1 = [1, 2, 3];
+    vector v2 = [2, 3, 4];
+    vector v3 = [3, 4, 5];
+    vector b[3] = {v1, v2, v3};
+    print(b);
+}

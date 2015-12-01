@@ -1,0 +1,28 @@
+function linearIndep(vector[] vectors, var n)
+{
+    if n==1 { return 1; }
+    if n > dim(vectors[0])
+        { return 0; }
+    
+    vecspace vs;
+    for var i = 0:n-1
+    {
+        if vectors[i]@vs
+            {return 0;}
+        vs = vs + L(vectors[i]);
+    }
+
+    return 1;
+}
+
+function main()
+{
+    vector v = [1,2,3];
+    vector u = [2, 2.0, 4.2];
+    vector x[2] = { v, u};
+
+    if linearIndep(x, 2)
+    {
+        print(1);
+    }
+}

@@ -1,0 +1,14 @@
+function main()
+{
+    vector v1 = [1,2,3];
+    vector v2 = [2,3,4];
+    vector v3 = [3,4,5];
+
+    vecspace vs = L(v1, v2, v3);
+    
+    matrix mat = [1,2;3,4;];
+    vector vecs[3] = {v1, v2, v3};
+    inspace ins = inspace(vecs, mat);    
+
+
+}
