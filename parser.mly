@@ -17,9 +17,11 @@
 %nonassoc NOELSE
 %nonassoc ELSE
 %right ASSIGN
+%left LBRACK RBRACK
 %left LT LEQ GT GEQ EQ NEQ
 %left PLUS MINUS PLUS_DOT MINUS_DOT
 %left TIMES DIVIDE TIMES_DOT DIVIDE_DOT
+%left AND OR
 %left TRANSPOSE BELONGS
 
 %start program
@@ -48,7 +50,7 @@ parameter_list_opt :
 
 parameter_list :
     primitive_type ID                                           { [Vardecl({vname = $2; value = Notknown; data_type = $1})] }
-    | primitive_type ID LBRACK RBRACK                           { [ Arraydecl({ aname = $2; elements = []; data_type = $1; length = 0})] } 
+    | primitive_type LBRACK RBRACK ID                           { [ Arraydecl({ aname = $4; elements = []; data_type = $1; length = 0})] } 
     | parameter_list COMMA primitive_type ID                    { Vardecl({vname = $4; value = Notknown; data_type = $3})::$1 }
     | parameter_list COMMA primitive_type ID LBRACK RBRACK      { Arraydecl({aname = $4; elements = []; data_type = $3; length = 0})::$1 }
 
@@ -165,7 +167,7 @@ statement :
                                     { If($2, $4, []) }
     | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
                                     { If($2, $4, $8) }
-    | FOR VAR ID ASSIGN LITERAL COLON LITERAL LBRACE statement_list RBRACE 
+    | FOR VAR ID ASSIGN expression COLON expression LBRACE statement_list RBRACE 
                                     { For($3, $5, $7,$9) } /* TODO: if var is needed here */
     | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
 statement_list :
@@ -192,13 +194,14 @@ expression:
     | expression MINUS_DOT  expression  { Binop($1, Sub_Dot, $3) }
     | expression TIMES_DOT  expression  { Binop($1, Mult_Dot, $3) }
     | expression DIVIDE_DOT expression  { Binop($1, Div_Dot, $3) }
-    | expression BELONGS    expression  { Binop($1, Belongs, $3) }
-    | LIN       expression  COMMA   expression  RIN     { Binop($2, LieBracket, $4) }
-    | LLBRACK   expression  COMMA   expression  RRBRACK { Binop($2, InnerProduct, $4) }   
+    | expression BELONGS    expression  { Belongs($1, $3) }
+    | LIN       expression  COMMA   expression  RIN     { LieBracket($2, $4) }
+    | LLBRACK   expression  COMMA   expression  RRBRACK { Inpro($2, $4) }   
     | ID    ASSIGN  expression          { Assign($1, $3) }
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
     | ID    LBRACK  LITERAL RBRACK      { ArrayEle($1, $3) }
+    | ID    LBRACK  ID      RBRACK      { ArrayEle($1, $3) }
 
 arguments_opt:
     /* nothing */   { [] }

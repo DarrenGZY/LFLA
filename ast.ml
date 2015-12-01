@@ -1,6 +1,6 @@
 type op = Add | Sub | Mult | Div | Add_Dot | Sub_Dot | Mult_Dot 
         | Div_Dot | Equal | Neq | Less | Leq | Greater | Geq
-        | And | Or | LieBracket | Belongs | InnerProduct 
+        | And | Or  
 
 (* store var type value *)
 type var_value = 
@@ -40,6 +40,9 @@ type expr =
     Literal of string
   | Id of string
   | Binop of expr * op * expr
+  | Belongs of expr * expr
+  | LieBracket of expr * expr
+  | Inpro of expr * expr
   | Transpose of expr
   | Assign of string * expr
   | Call of string * expr list
@@ -51,7 +54,7 @@ type stmt =
   | Expr of expr
   | Return of expr
   | If of expr * stmt list * stmt list
-  | For of string * string * string * stmt list
+  | For of string * expr * expr * stmt list
   | While of expr * stmt list
   | Continue
   | Break

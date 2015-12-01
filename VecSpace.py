@@ -36,9 +36,9 @@ class VecSpace:
 			print "Belongs to this vectors spaces"
 			return 1
 
-
-	def plus(self, vecspace):
-		temp = self.vectors + vecspace.vectors
+        # override + operator
+	def __add__(self, other):
+		temp = self.vectors + other.vectors
 		index = linearIndependent(temp)
 		self.vectors = []
 		# ??? not sure if this is mathmatically valid

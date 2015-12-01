@@ -8,6 +8,7 @@
 *.mli
 *.cmo
 *.mll
+*.pyc
 parser.ml
 scanner.ml
 LFLA
