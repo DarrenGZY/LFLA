@@ -4,7 +4,7 @@ open Parser
 module StringMap = Map.Make(String)
 
 let string_of_elem = function
-    Nid(s) -> s
+    | Nid(s) -> s
     | Arrayid(s1, s2) -> s1 ^ "[" ^ s2 ^ "]"
 
 let rec string_of_expr = function

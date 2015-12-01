@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token VSCONST
+%token VSCONST PRINT BUILTIN
 %token LBRACE RBRACE LBRACK RBRACK LLBRACK RRBRACK LIN RIN LPAREN RPAREN COLON SEMI COMMA
 %token AND OR  
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
@@ -203,10 +203,11 @@ expression:
     | LPAREN    expression  RPAREN      { $2 }
     | BUILTIN   LPAREN  element  RPAREN      { Builtin($3, $1) }
     | VSCONST   LPAREN  element  RPAREN      { Builtin($3, "vecspace") }  /* some problem here, should be multiple elements */
+    | PRINT     LPAREN  LITERAL  RPAREN      { Call("print", [Literal($3)]) }
 
 /* normal identifier and array identifier */
 element:
-    ID                          { Nid($1) }
+    | ID                          { Nid($1) }
     | ID LBRACK LITERAL RBRACK    { Arrayid($1, $3) }
     | ID LBRACK ID      RBRACK  { Arrayid($1, $3) }
 

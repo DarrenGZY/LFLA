@@ -37,7 +37,7 @@ type prim_value =
   | Notknown
 
 type elem = 
-    Nid of string  (* normal identifier *)
+  | Nid of string  (* normal identifier *)
   | Arrayid of string * string (* array identifier *)
 
 type expr =

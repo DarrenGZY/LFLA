@@ -5,8 +5,9 @@ let Exp = 'e'('+'|'-')?['0'-'9']+
 rule token = parse 
     [' ' '\t' '\r' '\n' ] { token lexbuf }
 (* constructor key words and built-in functions*)
-| 'L'   { VSCONST }
-| "dim" | "size" | "print" as fname { BUILTIN(fname) }
+| 'L'       { VSCONST }
+| "dim" | "size"  as fname { BUILTIN(fname) }
+| "print"   { PRINT }
 (* several kinds of delimiters *)
 | '{'   { LBRACE }
 | '}'   { RBRACE }
