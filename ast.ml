@@ -50,7 +50,7 @@ type expr =
   | Id of elem
   | Binop of expr * op * expr
   | Belongs of expr * expr
-  | LieBracket of expr * expr
+  | LieBracket of string * expr * expr
   | Inpro of expr * expr
   | Transpose of expr
   | Assign of string * expr

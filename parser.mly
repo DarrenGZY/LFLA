@@ -195,7 +195,7 @@ expression:
     | expression TIMES_DOT  expression  { Binop($1, Mult_Dot, $3) }
     | expression DIVIDE_DOT expression  { Binop($1, Div_Dot, $3) }
     | expression BELONGS    expression  { Belongs($1, $3) }
-    | LIN       expression  COMMA   expression  RIN     { LieBracket($2, $4) }
+    | ID    LIN expression  COMMA   expression  RIN     { LieBracket($1, $3, $5) }
     | LLBRACK   expression  COMMA   expression  RRBRACK { Inpro($2, $4) }   
     | ID    ASSIGN  expression          { Assign($1, $3) }
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 

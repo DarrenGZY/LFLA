@@ -21,7 +21,7 @@ let rec string_of_expr = function
         | And -> "&&" | Or -> "||"   ) ^ " " ^
         string_of_expr e2   
     | Belongs(e1, e2) -> string_of_expr e2 ^ ".belongs(" ^ string_of_expr e1 ^ ")"
-    | LieBracket(e1, e2) -> string_of_expr e1 ^ ".liebracket(" ^ string_of_expr e2 ^ ")"
+    | LieBracket(id, e1, e2) -> string_of_expr e1 ^ ".liebracket(" ^ string_of_expr e2 ^ ")"
     | Inpro(e1, e2) -> string_of_expr e1 ^ ".innerproduct(" ^ string_of_expr e2 ^ ")" 
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
     | Call(f, el) ->
