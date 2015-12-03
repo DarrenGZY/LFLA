@@ -30,7 +30,6 @@ type builtin_func =
     Dim
   | Size
   | Vsconst
-  | Print
 
 type expr =
     Literal of string
@@ -43,6 +42,7 @@ type expr =
   | Assign of string * expr
   | Call of string * expr list
   | Builtin of elem * builtin_func
+  | Print of expr
   | Noexpr
 
 type stmt =

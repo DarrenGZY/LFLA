@@ -31,8 +31,8 @@ let rec string_of_expr = function
             Dim -> string_of_elem el ^ ".size"
             | Size -> string_of_elem el ^ ".shape"
             | Vsconst -> "VecSpace([" ^ string_of_elem el ^ "])"
-            | Print -> "print(" ^ string_of_elem el ^ ")"
         )
+    | Print(e) -> "print(" ^ string_of_expr e ^ ")"
     | Noexpr -> ""
     
 (* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)

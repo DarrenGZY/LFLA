@@ -206,12 +206,12 @@ expression:
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
     | builtin   LPAREN  element  RPAREN      { Builtin($3, $1) }
+    | PRINT     LPAREN  expression RPAREN    { Print($3) } 
 
 builtin:
     DIM         { Dim }
     | SIZE      { Size }
     | VSCONST   { Vsconst }    /* some problem here, should be multiple elements */
-    | PRINT     { Print }
 
 /* normal identifier and array identifier */
 element:
