@@ -21,8 +21,8 @@ let rec string_of_expr = function
         | And -> "&&" | Or -> "||"   ) ^ " " ^
         string_of_expr e2   
     | Belongs(e1, e2) -> string_of_expr e2 ^ ".belongs(" ^ string_of_expr e1 ^ ")"
-    | LieBracket(id, e1, e2) -> string_of_expr e1 ^ ".liebracket(" ^ string_of_expr e2 ^ ")"
-    | Inpro(e1, e2) -> string_of_expr e1 ^ ".innerproduct(" ^ string_of_expr e2 ^ ")" 
+    | LieBracket(e1, e2) -> string_of_expr e1 ^ ".liebracket(" ^ string_of_expr e2 ^ ")"
+    | Inpro(id, e1, e2) -> string_of_expr e1 ^ ".innerproduct(" ^ string_of_expr e2 ^ ")" 
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
     | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
@@ -31,27 +31,30 @@ let rec string_of_expr = function
             Dim -> string_of_elem el ^ ".size"
             | Size -> string_of_elem el ^ ".shape"
             | Vsconst -> "VecSpace([" ^ string_of_elem el ^ "])"
+            | Print -> "print(" ^ string_of_elem el ^ ")"
         )
     | Noexpr -> ""
     
 (* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
-let rec string_of_stmt num_ident = function
+let rec string_of_stmt num_ident stmt = 
+    let spaces = 4 in 
+    match stmt with 
     Block(stmts) ->
-        "\n" ^ (String.make (num_ident*3) ' ') ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) stmts) ^ "\n"
-    | Expr(expr) -> (String.make (num_ident*3) ' ') ^ string_of_expr expr ^ "\n";
-    | Return(expr) -> (String.make (num_ident*3) ' ') ^ "return " ^ string_of_expr expr ^ "\n";
-    | If(e, s, []) -> (String.make (num_ident*3) ' ') ^ "if " ^ string_of_expr e ^ ":\n" 
+        "\n" ^ (String.make (num_ident*spaces) ' ') ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) stmts) ^ "\n"
+    | Expr(expr) -> (String.make (num_ident*spaces) ' ') ^ string_of_expr expr ^ "\n";
+    | Return(expr) -> (String.make (num_ident*spaces) ' ') ^ "return " ^ string_of_expr expr ^ "\n";
+    | If(e, s, []) -> (String.make (num_ident*spaces) ' ') ^ "if " ^ string_of_expr e ^ ":\n" 
         ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s)
-    | If(e, s1, s2) -> (String.make (num_ident*3) ' ') ^ "if " ^ string_of_expr e ^ ":\n"
+    | If(e, s1, s2) -> (String.make (num_ident*spaces) ' ') ^ "if " ^ string_of_expr e ^ ":\n"
         ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s1) ^ "\n" 
-        ^ (String.make (num_ident*3) ' ') ^ "else:\n" ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s2) ^ "\n"
+        ^ (String.make (num_ident*spaces) ' ') ^ "else:\n" ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s2) ^ "\n"
     | For(l, a1, a2, s) ->
-        (String.make (num_ident*3) ' ') ^ "for " ^ l ^ " in range(" ^ string_of_expr a1 ^ ", " ^  string_of_expr a2  ^ ") :\n" 
+        (String.make (num_ident*spaces) ' ') ^ "for " ^ l ^ " in range(" ^ string_of_expr a1 ^ ", " ^  string_of_expr a2  ^ ") :\n" 
         ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
-    | While(e, s) -> (String.make (num_ident*3) ' ') ^ "while " ^ string_of_expr e ^ ": \n" 
+    | While(e, s) -> (String.make (num_ident*spaces) ' ') ^ "while " ^ string_of_expr e ^ ": \n" 
         ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
-    | Continue -> (String.make (num_ident*3) ' ') ^ "continue "
-    | Break -> (String.make (num_ident*3) ' ') ^ "break "
+    | Continue -> (String.make (num_ident*spaces) ' ') ^ "continue "
+    | Break -> (String.make (num_ident*spaces) ' ') ^ "break "
 
 let string_of_prim_value = function
     VValue(s) -> s
@@ -60,6 +63,7 @@ let string_of_prim_value = function
     | VecSpValue(s) -> "VecSpace([" ^ String.concat "," s ^ "])"    
     | InSpValue(s1, s2) -> "InSpace(" ^ s1 ^ "," ^ s2 ^ ")"            
     | AffSpValue(s1, s2) -> "AffSpace(" ^ s1 ^ "," ^ s2 ^ ")"      
+    | Expression(e) -> string_of_expr e
     | Notknown -> ""
 
 
@@ -85,7 +89,7 @@ let string_of_params = function
 
 let string_of_func_decl fdecl =
     "def " ^ fdecl.fname ^ "(" ^ String.concat "," (List.map string_of_params fdecl.params) ^  
-    ") :\n" ^ "   " ^ String.concat "   " (List.map string_of_normal_decl fdecl.locals) ^ 
+    ") :\n" ^ "    " ^ String.concat "    " (List.map string_of_normal_decl fdecl.locals) ^ 
     "\n" ^ String.concat "" (List.map (string_of_stmt 1) fdecl.body) ^ "\n"
 
 (* input is ast tree(normal_decl list * func_decl list), output is a python file *)

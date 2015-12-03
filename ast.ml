@@ -19,22 +19,8 @@ type mat_value =
 type vecspace_value =
     vec_value list
 
-type prim_type = 
-    Var
-  | Vector
-  | Matrix
-  | VecSpace
-  | InSpace
-  | AffSpace
 
-type prim_value = 
-    VValue of string
-  | VecValue of string list
-  | MatValue of string list list
-  | VecSpValue of string list
-  | InSpValue of string * string
-  | AffSpValue of string * string
-  | Notknown
+
 
 type elem = 
   | Nid of string  (* normal identifier *)
@@ -44,14 +30,15 @@ type builtin_func =
     Dim
   | Size
   | Vsconst
+  | Print
 
 type expr =
     Literal of string
   | Id of elem
   | Binop of expr * op * expr
   | Belongs of expr * expr
-  | LieBracket of string * expr * expr
-  | Inpro of expr * expr
+  | LieBracket of expr * expr
+  | Inpro of string * expr * expr
   | Transpose of expr
   | Assign of string * expr
   | Call of string * expr list
@@ -67,6 +54,24 @@ type stmt =
   | While of expr * stmt list
   | Continue
   | Break
+
+type prim_type = 
+    Var
+  | Vector
+  | Matrix
+  | VecSpace
+  | InSpace
+  | AffSpace
+
+type prim_value = 
+    VValue of string
+  | VecValue of string list
+  | MatValue of string list list
+  | VecSpValue of string list
+  | InSpValue of string * string
+  | AffSpValue of string * string
+  | Expression of expr
+  | Notknown
 
 type var_decl = {
     vname : string;

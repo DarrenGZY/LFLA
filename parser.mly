@@ -77,12 +77,15 @@ variable_declaration_expression :
 
 var_declaration_expression :
     VAR ID                      { Vardecl({vname = $2; value = Notknown; data_type = Var }) }
-    | VAR ID ASSIGN LITERAL     { Vardecl({vname = $2; value = VValue($4); data_type = Var }) }
+   /* | VAR ID ASSIGN LITERAL     { Vardecl({vname = $2; value = VValue($4); data_type = Var }) }  expression contains LITERAL   */ 
+    | VAR ID ASSIGN expression  { Vardecl({vname = $2; value = Expression($4); data_type = Var }) }
 
 vector_declaration_expression :
     VECTOR ID   { Vardecl({vname = $2; value = Notknown; data_type = Vector }) }
     | VECTOR ID ASSIGN LBRACK vector_elements_list_opt RBRACK 
                 { Vardecl({vname = $2; value = VecValue($5); data_type = Vector }) }
+    | VECTOR ID ASSIGN expression
+                { Vardecl({vname = $2; value = Expression($4); data_type = Vector }) }
 
 vector_elements_list_opt :
     /* nothing */           { [] }
@@ -96,6 +99,8 @@ matrix_declaration_expression :
     MATRIX ID   { Vardecl({vname = $2; value = Notknown; data_type = Matrix }) }
     | MATRIX ID ASSIGN LBRACK matrix_elements_list RBRACK 
                 { Vardecl({vname = $2; value = MatValue($5); data_type = Matrix }) }
+    | MATRIX ID ASSIGN expression
+                { Vardecl({vname = $2; value = Expression($4); data_type = Matrix }) }
 
 matrix_elements_list :
     /* nothing */  { [] }
@@ -195,18 +200,18 @@ expression:
     | expression TIMES_DOT  expression  { Binop($1, Mult_Dot, $3) }
     | expression DIVIDE_DOT expression  { Binop($1, Div_Dot, $3) }
     | expression BELONGS    expression  { Belongs($1, $3) }
-    | ID    LIN expression  COMMA   expression  RIN     { LieBracket($1, $3, $5) }
-    | LLBRACK   expression  COMMA   expression  RRBRACK { Inpro($2, $4) }   
+    | ID    LIN expression  COMMA   expression  RIN     { Inpro($1, $3, $5) }
+    | LLBRACK   expression  COMMA   expression  RRBRACK { LieBracket($2, $4) }   
     | ID    ASSIGN  expression          { Assign($1, $3) }
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
     | builtin   LPAREN  element  RPAREN      { Builtin($3, $1) }
-    | PRINT     LPAREN  LITERAL  RPAREN      { Call("print", [Literal($3)]) }
 
 builtin:
     DIM         { Dim }
     | SIZE      { Size }
     | VSCONST   { Vsconst }    /* some problem here, should be multiple elements */
+    | PRINT     { Print }
 
 /* normal identifier and array identifier */
 element:
