@@ -26,7 +26,12 @@ let rec string_of_expr = function
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
     | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-    | Builtin(el, s) -> string_of_elem el ^ s
+    | Builtin(el, s) ->
+        ( match s with
+            Dim -> string_of_elem el ^ ".size"
+            | Size -> string_of_elem el ^ ".shape"
+            | Vsconst -> "VecSpace([" ^ string_of_elem el ^ "])"
+        )
     | Noexpr -> ""
     
 (* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
@@ -58,8 +63,20 @@ let string_of_prim_value = function
     | Notknown -> ""
 
 
+let string_of_prim_type = function
+    Var -> "0"
+    | Vector -> "np.array([])"
+    | Matrix -> "np.matrix(([[]]))"
+    | VecSpace -> "VecSpace()"
+    | InSpace -> "InSpace()"
+    | AffSpace -> "AffSpace()"
+
 let string_of_normal_decl = function
-    Vardecl(v) -> v.vname ^ "=" ^ string_of_prim_value v.value ^ "\n"
+    Vardecl(v) -> v.vname ^ "=" ^ 
+        ( match v.value with
+            Notknown -> string_of_prim_type v.data_type
+            | _ -> string_of_prim_value v.value
+        ) ^ "\n"
     | Arraydecl(a) -> a.aname ^ "=[" ^ String.concat "," (List.map string_of_expr a.elements) ^ "]\n"
 
 let string_of_params = function
@@ -85,19 +102,3 @@ let compile (normals, functions) =
         raise (Failure("no main function"))
     
      
-    (*
-    let pyFile = Out_channel.create "test.py" in
-    fprintf pyFile "%s\n" "import numpy as np";
-    
-    let rec print_func funcs = 
-        match funcs with
-        | [] -> fprintf pyFile "%s\n" "#end"
-        | hd::tl -> fprintf pyFile "%s\n" hd.fname; print_func tl
-    in
-
-    print_func functions;
-    Out_channel.close pyFile
-    *)
-
-
-

@@ -40,6 +40,11 @@ type elem =
   | Nid of string  (* normal identifier *)
   | Arrayid of string * string (* array identifier *)
 
+type builtin_func = 
+    Dim
+  | Size
+  | Vsconst
+
 type expr =
     Literal of string
   | Id of elem
@@ -50,7 +55,7 @@ type expr =
   | Transpose of expr
   | Assign of string * expr
   | Call of string * expr list
-  | Builtin of elem * string
+  | Builtin of elem * builtin_func
   | Noexpr
 
 type stmt =

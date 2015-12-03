@@ -6,7 +6,8 @@ rule token = parse
     [' ' '\t' '\r' '\n' ] { token lexbuf }
 (* constructor key words and built-in functions*)
 | 'L'       { VSCONST }
-| "dim" | "size"  as fname { BUILTIN(fname) }
+| "dim"     { DIM }
+| "size"    { SIZE }
 | "print"   { PRINT }
 (* several kinds of delimiters *)
 | '{'   { LBRACE }

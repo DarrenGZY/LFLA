@@ -1,6 +1,6 @@
 %{ open Ast %}
 
-%token VSCONST PRINT BUILTIN
+%token VSCONST PRINT DIM SIZE 
 %token LBRACE RBRACE LBRACK RBRACK LLBRACK RRBRACK LIN RIN LPAREN RPAREN COLON SEMI COMMA
 %token AND OR  
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
@@ -12,7 +12,6 @@
 %token WHILE FOR IF ELSE BREAK CONTINUE RETURN FUNCTION
 %token <string> LITERAL
 %token <string> ID
-%token <string> BUILTIN
 %token EOF
 
 %nonassoc NOELSE
@@ -169,7 +168,7 @@ statement :
     | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
                                     { If($2, $4, $8) }
     | FOR VAR ID ASSIGN expression COLON expression LBRACE statement_list RBRACE 
-                                    { For($3, $5, $7,$9) } /* TODO: if var is needed here */
+                                    { For($3, $5, $7,List.rev($9)) } /* TODO: if var is needed here */
     | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
 statement_list :
     /* nothing */ { [] }
@@ -201,9 +200,13 @@ expression:
     | ID    ASSIGN  expression          { Assign($1, $3) }
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
-    | BUILTIN   LPAREN  element  RPAREN      { Builtin($3, $1) }
-    | VSCONST   LPAREN  element  RPAREN      { Builtin($3, "vecspace") }  /* some problem here, should be multiple elements */
+    | builtin   LPAREN  element  RPAREN      { Builtin($3, $1) }
     | PRINT     LPAREN  LITERAL  RPAREN      { Call("print", [Literal($3)]) }
+
+builtin:
+    DIM         { Dim }
+    | SIZE      { Size }
+    | VSCONST   { Vsconst }    /* some problem here, should be multiple elements */
 
 /* normal identifier and array identifier */
 element:
