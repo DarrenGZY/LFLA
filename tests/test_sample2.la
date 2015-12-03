@@ -1,0 +1,25 @@
+function othonomalising (vector bases[], inspace ips, var n)
+{
+    vector vec;
+    for var i = 1:n
+    {
+        vec = basis[i];
+        for var j=1:i
+        {
+            vec = vec - <<bases[i], bases[j]>>*.bases[j];
+        }
+        bases[i] = vec/.sqrt(ips<<vec, vec>>);
+    }
+}
+
+function main()
+{
+    var n = 3;
+    vector v1 = [1,2,3];
+    vector v2 = [2.3, 2, 3];
+    vector v3 = [2.3, 2, 3];
+
+    vector bases[n] = {v1,v2, v3};
+    
+    vector result[n] = othonomalising(bases, n);
+}
