@@ -1,0 +1,15 @@
+function main()
+{
+    var a = 3.5;
+    vector b = [1,2,3];
+    vector c1 = b *. a;
+    vector c2 = b /. a;
+    print(c1);
+    print(c2);
+
+    matrix d = [1,2,3;6,7,8;];
+    matrix e1 = d *. a;
+    matrix e2 = d /. a;
+    print(e1);
+    print(e2);
+}
