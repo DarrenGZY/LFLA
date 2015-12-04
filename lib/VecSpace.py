@@ -4,8 +4,10 @@ TOLERANCE = 1e-5
 def linearIndependent(vecs):
 	# singular value decomposition
 	U, s, V = np.linalg.svd(np.asarray(vecs))
-	return s.tolist()
-
+	if (np.sum(s > TOLERANCE) == len(vecs)):
+		return 1
+	else:
+		return 0
 
 class VecSpace:
 	"""A class of vector space
@@ -16,25 +18,26 @@ class VecSpace:
 
 	def __init__(self, vecs):
 		self.vectors = []
-		index = linearIndependent(vecs)
-
-		# if the singular value > 0 (tolerance)
-		# then it is linear independent
-		for i in range(len(index)):
-			if index[i] > TOLERANCE:
+		
+		tempVecs = []
+		# test for all vectors in the vecs list
+		for i in range(len(vecs)):
+			tempVecs = tempVecs.append(vecs[i])
+			# if # of counts > # of vecs,
+			# the new vector is linear independent with base vectors
+			if linearIndependent(vecs):
 				self.vectors.append(vecs[i])
 
 
 	def belongs(self, vec):
 		self.vectors.append(vec)
-		index = linearIndependent(self.vectors)
-		if index[-1] <= TOLERANCE:
-			del self.vectors[-1]
-			print "Not belongs to this vectors spaces"
-			return 0
-		else:
+		if linearIndependent(self.vectors):
 			print "Belongs to this vectors spaces"
 			return 1
+		else:
+			print "Not belongs to this vectors spaces"
+			del self.vectors[-1]
+			return 0
 
 
 	def plus(self, vecspace):
