@@ -19,14 +19,13 @@ class VecSpace:
 	def __init__(self, vecs):
 		self.vectors = []
 		
-		tempVecs = []
 		# test for all vectors in the vecs list
 		for i in range(len(vecs)):
-			tempVecs = tempVecs.append(vecs[i])
+			self.vectors.append(vecs[i])
 			# if # of counts > # of vecs,
 			# the new vector is linear independent with base vectors
-			if linearIndependent(vecs):
-				self.vectors.append(vecs[i])
+			if not linearIndependent(self.vectors):
+				del self.vectors[-1]
 
 
 	def belongs(self, vec):
