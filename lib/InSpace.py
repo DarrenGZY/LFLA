@@ -1,5 +1,4 @@
-import sys
-import numpy as np
+from Core import *
 
 class InSpace:
 	"""A class of inner product space
