@@ -1,3 +1,4 @@
+from Core import *
 from VecSpace import *
 
 class AffSpace:
@@ -23,13 +24,20 @@ class AffSpace:
 			print "Belongs to this affine spaces"
 			return 1
 
-
-	def solve(self, mat, vec):
-		v = np.linalg.solve(np.array(mat), np.array(vec))
-		return v
-		# ??? what is Gauss elimination methods??
-
+	@staticmethod
+	def solve(mat, vec):
+		# return solution of mat x = vec
+		x = np.linalg.solve(np.array(mat), np.array(vec))
+		
+		# return null space of mat x = 0
+		U, s, V = np.linalg.svd(mat)
+		null_space = np.compress(s <= TOLERANCE, V, axis=0)
+		
+		vecs = []
+		if null_space.shape[0] != 0:
+			for i in range(null_space.shape[1]):
+				vecs.append(null_space[:,i])
+		return AffSpace(x, VecSpace(vecs))
 
 	def dim(self):
-		# ??? what is dim of a vecspace #
-		return len(self.vecspace.vectors)
+		return self.vecspace.dim()
