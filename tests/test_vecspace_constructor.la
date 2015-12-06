@@ -1,0 +1,15 @@
+function main()
+{   
+    vector v1 = [1,2,3];
+    vector v2 = [2,3,4];
+	vector v4 = [3,5,7];
+	vecspace vs1 = L(v1, v2);
+	vecspace vs2 = L(v1, v2, v3);
+	vecspace vs3 = L();
+	vector[] vecs = {v1,v2};
+	vecspace vs4 = L(vecs);
+    print(basis(vs1));
+    print(basis(vs2));
+	print(basis(vs3));
+	print(basis(vs4));
+}

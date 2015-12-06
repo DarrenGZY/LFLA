@@ -1,0 +1,13 @@
+function main()
+{   
+    vector v1 = [1,2,3];
+    vector v2 = [2,3,4];
+	vector v3 = [3,5,7];	
+	vecspace vs1 = L(v1);
+	vecspace vs2 = L(v2);
+	vecspace vs3 = vs1 + vs2;	
+	vecspace vs4 = vs1 + vs2 + vs3;
+    print(basis(vs3));
+	 print(basis(vs4));
+    
+}
