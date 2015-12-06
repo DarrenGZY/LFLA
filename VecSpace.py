@@ -2,65 +2,60 @@ import numpy as np
 
 TOLERANCE = 1e-5
 def linearIndependent(vecs):
-    # singular value decomposition
-    U, s, V = np.linalg.svd(np.asarray(vecs))
-    return s.tolist()
-
+	# singular value decomposition
+	U, s, V = np.linalg.svd(np.asarray(vecs))
+	if (np.sum(s > TOLERANCE) == len(vecs)):
+		return 1
+	else:
+		return 0
 
 class VecSpace:
-    """A class of vector space
+	"""A class of vector space
 
-    Attributes:
-            vectors: A list of vectors
-    """
+	Attributes:
+		vectors: A list of vectors
+	"""
 
-    def __init__(self, vecs=[[]]):
-        vectors = []
-
-        if (vecs != [[]]):
-            index = linearIndependent(vecs)
-            print "Debug: in VecSpace __init__"
-            # if the singular value > 0 (tolerance)
-            # then it is linear independent
-            for i in range(len(index)):
-                if index[i] > TOLERANCE:
-                    vectors.append(vecs[i])
-        self.vectors = vectors
-
-    def belongs(self, vec):
-        if self.vectors == []:
-            return 0
-        
-        self.vectors.append(vec)
-        index = linearIndependent(self.vectors)
-        if index[-1] <= TOLERANCE:
-            del self.vectors[-1]
-            print "Debug: Not belongs to this vectors spaces"
-            return 0
-        else:
-            print "Debug: Belongs to this vectors spaces"
-            return 1
-
-    # override + operator
-    def __add__(self, other):
-        temp = self.vectors + other.vectors
-        return VecSpace(temp)
-        """
-        index = linearIndependent(temp)
-        self.vectors = []
-        # ??? not sure if this is mathmatically valid
-        for i in range(len(index)):
-            if index[i] > TOLERANCE:
-                self.vectors.append(temp[i])
-        """ 
-        # ??? return L(x), what does this mean?
+	def __init__(self, vecs):
+		self.vectors = []
+		
+		tempVecs = []
+		# test for all vectors in the vecs list
+		for i in range(len(vecs)):
+			tempVecs = tempVecs.append(vecs[i])
+			# if # of counts > # of vecs,
+			# the new vector is linear independent with base vectors
+			if linearIndependent(vecs):
+				self.vectors.append(vecs[i])
 
 
-    def dim(self):
-        return len(self.vectors)
+	def belongs(self, vec):
+		self.vectors.append(vec)
+		if linearIndependent(self.vectors):
+			print "Belongs to this vectors spaces"
+			return 1
+		else:
+			print "Not belongs to this vectors spaces"
+			del self.vectors[-1]
+			return 0
 
 
-    def basis(self):
-        # ??? a vector inside the vectors or whole list of vectors
-        return self.vectors
+	def plus(self, vecspace):
+		temp = self.vectors + vecspace.vectors
+		index = linearIndependent(temp)
+		self.vectors = []
+		# ??? not sure if this is mathmatically valid
+		for i in range(len(index)):
+			if index[i] > TOLERANCE:
+				self.vectors.append(temp[i])
+		# ??? return L(x), what does this mean?
+
+
+	def dim(self):
+		return len(self.vectors)
+
+
+	def basis(self):
+		# ??? a vector inside the vectors or whole list of vectors
+		return self.vectors
 
