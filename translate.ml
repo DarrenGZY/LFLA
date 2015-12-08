@@ -92,18 +92,20 @@ let translate_normal_decl = function
           p_length = a.length; 
           p_pos = a.pos})
 
-let string_of_params = function
-    Vardecl(v) -> v.vname
-    | Arraydecl(a) -> a.aname
+let translate_func_stmt = function
+   Local(s) -> P_Local(translate_normal_decl s)
+   | Body(s) -> P_Body(translate_stmt s)  
 
 let translate_func_decl fdecl =
     { p_fname = fdecl.fname;
       p_params = List.map translate_normal_decl fdecl.params;
-      p_locals = List.map translate_normal_decl fdecl.locals;
-      p_body = List.map translate_stmt fdecl.body
+      p_body = List.map translate_func_stmt fdecl.body
     }
 
-(* input is ast tree(normal_decl list * func_decl list), output is a python file *)
-let translate (normals, functions) = 
-    (List.map translate_normal_decl normals, List.map translate_func_decl functions) 
+let translate_program_stmt = function
+   Variable(v) -> P_Variable(translate_normal_decl v)
+   | Function(f) -> P_Function(translate_func_decl f)
+
+let translate program = 
+    List.map translate_program_stmt program
  

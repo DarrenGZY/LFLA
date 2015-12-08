@@ -94,11 +94,18 @@ type pNormal_decl =
     P_Vardecl of pVar_decl
   | P_Arraydecl of pArray_decl
 
+type pFunction_stmt =
+    P_Local of pNormal_decl
+  | P_Body of pStmt
+
 type pFunc_decl = {
     p_fname : string;
     p_params : pNormal_decl list;
-    p_locals : pNormal_decl list;
-    p_body : pStmt list;
+    p_body : pFunction_stmt list;
 }
 
-type pProgram = pNormal_decl list * pFunc_decl list
+type pProgram_stmt =
+    P_Variable of pNormal_decl
+  | P_Function of pFunc_decl
+
+type pProgram = pProgram_stmt list

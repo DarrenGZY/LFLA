@@ -93,13 +93,28 @@ type array_decl = {
 type normal_decl = 
     Vardecl of var_decl
   | Arraydecl of array_decl
-
+(*
 type func_decl = {
     fname : string;
     params : normal_decl list;
     locals : normal_decl list;
     body : stmt list;
+}*)
+type function_stmt =
+    Local of normal_decl
+  | Body of stmt
+
+type func_decl = {
+    fname : string;
+    params : normal_decl list;
+    body : function_stmt list;
 }
 
-type program = normal_decl list * func_decl list
+type program_stmt =
+    Variable of normal_decl
+  | Function of func_decl
+
+(*type program = normal_decl list * func_decl list*)
+
+type program = program_stmt list
 

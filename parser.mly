@@ -37,16 +37,15 @@ program:
     programs EOF { $1 }
 
 programs :
-    /* nothing */                   { [], [] }
-    | programs funtion_declaration  { fst $1, ($2::snd $1) }
-    | programs normal_declaration   { ($2::fst $1), snd $1 } 
+    /* nothing */                   { [] }
+    | programs funtion_declaration  { Function($2)::$1 }
+    | programs normal_declaration   { Variable($2)::$1 } 
 
 funtion_declaration :
     FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE function_statements RBRACE { 
         {   fname=$2; 
             params=$4; 
-            locals = List.rev (fst $7); 
-            body= List.rev (snd $7) } }
+            body= List.rev $7 } }
 
 parameter_list_opt :
     /* nothing */       { [] }
@@ -63,9 +62,9 @@ parameter_list :
         { Arraydecl({aname = $4; elements = []; data_type = $3; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
 
 function_statements : 
-    /* nothing */                               { [], [] }
-    | function_statements normal_declaration    { ($2::fst $1), snd $1 }
-    | function_statements statement             { fst $1, ($2::snd $1) }
+    /* nothing */                               { [] }
+    | function_statements normal_declaration    { Local($2)::$1 }
+    | function_statements statement             { Body($2)::$1 }
 
 normal_declaration :
     normal_declaration_expression SEMI { $1 }

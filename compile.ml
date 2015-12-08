@@ -77,32 +77,49 @@ let string_of_prim_type = function
     | P_inSpace -> "InSpace()"
     | P_affSpace -> "AffSpace()"
 
-let string_of_normal_decl = function
-    P_Vardecl(v) -> v.p_vname ^ "=" ^ 
+let string_of_normal_decl num_ident decl = 
+    let spaces = 4 in
+    match decl with
+    P_Vardecl(v) -> (String.make (num_ident*spaces) ' ') ^ v.p_vname ^ "=" ^ 
         ( match v.p_value with
             P_Notknown -> string_of_prim_type v.p_data_type
             | _ -> string_of_prim_value v.p_value
         ) ^ "\n"
-    | P_Arraydecl(a) -> a.p_aname ^ "=[" ^ String.concat "," (List.map string_of_expr a.p_elements) ^ "]\n"
+    | P_Arraydecl(a) -> 
+            (String.make (num_ident*spaces) ' ') ^ a.p_aname ^ "=[" ^ String.concat "," (List.map string_of_expr a.p_elements) ^ "]\n"
 
 let string_of_params = function
     P_Vardecl(v) -> v.p_vname
     | P_Arraydecl(a) -> a.p_aname
 
+
+let string_of_func_stmt = function
+    P_Local(l) -> string_of_normal_decl 1 l
+    | P_Body(s) -> string_of_stmt 1 s
+
 let string_of_func_decl fdecl =
     "def " ^ fdecl.p_fname ^ "(" ^ String.concat "," (List.map string_of_params fdecl.p_params) ^  
-    ") :\n" ^ "    " ^ String.concat "    " (List.map string_of_normal_decl fdecl.p_locals) ^ 
-    "\n" ^ String.concat "" (List.map (string_of_stmt 1) fdecl.p_body) ^ "\n"
+    ") :\n" ^ String.concat "" (List.map string_of_func_stmt fdecl.p_body) ^ "\n"
+
+let string_of_program_stmt = function
+    P_Variable(v) -> string_of_normal_decl 0 v
+    | P_Function(f) -> string_of_func_decl f
 
 (* input is ast tree(normal_decl list * func_decl list), output is a python file *)
-let compile (normals, functions) = 
-    
-    let func_table = 
-        List.fold_left (fun m func -> StringMap.add func.p_fname 0 m) StringMap.empty functions
+let compile program = 
+    let getName = function
+        P_Variable(v) -> 
+            (match v with
+                P_Vardecl(pV) -> pV.p_vname
+                | P_Arraydecl(pA) -> pA.p_aname
+            )
+        | P_Function(f) -> f.p_fname
     in
-    if StringMap.mem "main" func_table then
-        String.concat "" (List.map string_of_normal_decl normals) ^
-        String.concat "" (List.map string_of_func_decl functions) ^
+    let global_table = 
+        List.fold_left (fun m decl -> StringMap.add (getName decl) 0 m) StringMap.empty program
+    in
+    if StringMap.mem "main" global_table then
+        String.concat "" (List.map string_of_program_stmt program) ^
         "main()" 
     else
         raise (Failure("no main function"))
