@@ -175,6 +175,7 @@ statement :
     | FOR VAR ID ASSIGN expression COLON expression LBRACE statement_list RBRACE 
                                     { For($3, $5, $7,List.rev($9)) } /* TODO: if var is needed here */
     | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
+
 statement_list :
     /* nothing */ { [] }
     | statement_list statement { $2::$1 }
@@ -203,6 +204,7 @@ expression:
     | ID    LIN expression  COMMA   expression  RIN     { Inpro($1, $3, $5) }
     | LLBRACK   expression  COMMA   expression  RRBRACK { LieBracket($2, $4) }   
     | ID    ASSIGN  expression          { Assign($1, $3) }
+    | ID    ASSIGN  LBRACE array_elements_list RBRACE   { AssignArr($1, $4) } 
     | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
     | LPAREN    expression  RPAREN      { $2 }
     | builtin   LPAREN  element  RPAREN      { Builtin($3, $1) }

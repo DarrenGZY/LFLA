@@ -40,6 +40,7 @@ type expr =
   | Inpro of string * expr * expr
   | Transpose of expr
   | Assign of string * expr
+  | AssignArr of string * expr list
   | Call of string * expr list
   | Builtin of elem * builtin_func
   | Print of expr

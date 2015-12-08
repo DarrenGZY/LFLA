@@ -7,7 +7,7 @@ let string_of_elem = function
     | Nid(s) -> s
     | Arrayid(s1, s2) -> s1 ^ "[" ^ s2 ^ "]"
 
-let rec string_of_expr = function
+let rec string_of_expr = function (*TODO: Add symbol table as argument*)
     Literal(l) -> l
     | Id(el) -> string_of_elem el
     | Transpose(e) -> "np.transpose(" ^ string_of_expr e ^ ")"
@@ -24,6 +24,7 @@ let rec string_of_expr = function
     | LieBracket(e1, e2) -> string_of_expr e1 ^ ".liebracket(" ^ string_of_expr e2 ^ ")"
     | Inpro(id, e1, e2) -> string_of_expr e1 ^ ".innerproduct(" ^ string_of_expr e2 ^ ")" 
     | Assign(v, e) -> v ^ " = " ^ string_of_expr e
+    | AssignArr(v, e) -> v ^ " = [" ^ String.concat "," (List.map string_of_expr e) ^ "]"
     | Call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
     | Builtin(el, s) ->
@@ -97,6 +98,8 @@ let compile (normals, functions) =
     
     let func_table = 
         List.fold_left (fun m func -> StringMap.add func.fname 0 m) StringMap.empty functions
+    in
+    let decl_table = StringMap.empty  (* TODO:variable declaration symbol table*)
     in
     if StringMap.mem "main" func_table then
         String.concat "" (List.map string_of_normal_decl normals) ^
