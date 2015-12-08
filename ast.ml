@@ -78,6 +78,7 @@ type var_decl = {
     vname : string;
     value : prim_value;
     data_type : prim_type;
+    pos : int;
 }
 
 type array_decl = {
@@ -85,6 +86,7 @@ type array_decl = {
     elements : expr list;
     data_type : prim_type;
     length : int;
+    pos : int;
 }
 
 (* combine variable declarations and array declarations *)

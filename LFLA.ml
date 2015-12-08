@@ -9,13 +9,14 @@ let _ =
     (* let in_file_bytes = Bytes.of_string in_file in *)
     (* let out_file = (Bytes.sub_string in_file_bytes 0 (length-2)) ^ "py" in *)
     let program = Parser.program Scanner.token lexbuf in
+        let python_program = Translate.translate program in 
         let pyFile = open_out "a.out" in
              fprintf pyFile "%s\n" "#!/usr/local/bin/python";
              fprintf pyFile "%s\n" "import numpy as np";
              fprintf pyFile "%s\n" "from VecSpace import *";
              fprintf pyFile "%s\n" "from InSpace import *";
              fprintf pyFile "%s\n" "from AffSpace import *";
-             fprintf pyFile "%s\n"  (Compile.compile program);
+             fprintf pyFile "%s\n"  (Compile.compile python_program);
              close_out pyFile;
              Sys.command ("chmod +x a.out") ;
     
