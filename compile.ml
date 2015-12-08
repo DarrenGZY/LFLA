@@ -107,21 +107,7 @@ let string_of_program_stmt = function
 
 (* input is ast tree(normal_decl list * func_decl list), output is a python file *)
 let compile program = 
-    let getName = function
-        P_Variable(v) -> 
-            (match v with
-                P_Vardecl(pV) -> pV.p_vname
-                | P_Arraydecl(pA) -> pA.p_aname
-            )
-        | P_Function(f) -> f.p_fname
-    in
-    let global_table = 
-        List.fold_left (fun m decl -> StringMap.add (getName decl) 0 m) StringMap.empty program
-    in
-    if StringMap.mem "main" global_table then
-        String.concat "" (List.map string_of_program_stmt program) ^
-        "main()" 
-    else
-        raise (Failure("no main function"))
+    String.concat "" (List.map string_of_program_stmt program) ^
+    "main()" 
     
      

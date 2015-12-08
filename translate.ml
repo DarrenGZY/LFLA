@@ -106,6 +106,20 @@ let translate_program_stmt = function
    Variable(v) -> P_Variable(translate_normal_decl v)
    | Function(f) -> P_Function(translate_func_decl f)
 
-let translate program = 
-    List.map translate_program_stmt program
+let translate program =
+    let getName = function
+        Variable(v) -> 
+            (match v with
+                Vardecl(var) -> var.vname
+                | Arraydecl(arr) -> arr.aname
+            )
+        | Function(f) -> f.fname
+    in
+    let global_table = 
+        List.fold_left (fun m decl -> StringMap.add (getName decl) 0 m) StringMap.empty program
+    in
+    if StringMap.mem "main" global_table then
+        List.map translate_program_stmt program
+    else
+        raise (Failure("no main function")) 
  
