@@ -1,0 +1,26 @@
+function main()
+{
+    vector a = [1,2,3];
+	vector b = [2,3,4];
+	vector c;
+    c = a + b ;
+	print(c);
+	
+    vector d  = a - b;
+    print(d);
+	
+	vector e = 2 *. a;
+	print (e);
+	
+	vector f = 2 /. a;
+	print (f);
+	
+	vector g = 2 +. a;
+	print(g);
+	
+	vector h = 2 -. a;
+	print(h);
+	
+	print(dim(a));
+	
+}

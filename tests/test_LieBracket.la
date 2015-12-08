@@ -1,0 +1,11 @@
+function main()
+{
+    matrix a = [ 1,0;0,1];
+	matrix b = [1,2;3,4];
+	matrix c;
+	c = [[a,b]];	
+    print(c);
+	matrix d = [2,0;0,3];
+	matrix e = [[d,b]];
+	print(e);
+}

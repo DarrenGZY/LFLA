@@ -1,0 +1,7 @@
+function main()
+{
+    vector a = [1,2,3];
+	matrix m = [1,1,1;2,3,4];
+	vector c = m & a;
+	print(c);	
+}

@@ -1,0 +1,13 @@
+function main()
+{
+    var a = 1;
+	# this is a comment
+	print(a);
+	###
+	this is a block comment;
+	hope it works ;
+	a = 2;
+    ###
+    print(a);
+		
+}
