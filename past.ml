@@ -27,6 +27,7 @@ type pBuiltin_func =
     P_dim
   | P_size
   | P_vsconst
+  | P_basis
 
 type pExpr =
     P_literal of string

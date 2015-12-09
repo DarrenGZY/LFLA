@@ -8,6 +8,7 @@ rule token = parse
 | 'L'       { VSCONST }
 | "dim"     { DIM }
 | "size"    { SIZE }
+| "basis"   { BASIS }
 | "print"   { PRINT }
 (* several kinds of delimiters *)
 | '{'   { LBRACE }

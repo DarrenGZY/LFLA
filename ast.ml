@@ -30,6 +30,7 @@ type builtin_func =
     Dim
   | Size
   | Vsconst
+  | Basis
 
 type expr =
     Literal of string

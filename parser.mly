@@ -4,7 +4,7 @@
     open Parsing 
 %}
 
-%token VSCONST PRINT DIM SIZE 
+%token VSCONST PRINT DIM SIZE BASIS 
 %token LBRACE RBRACE LBRACK RBRACK LLBRACK RRBRACK LIN RIN LPAREN RPAREN COLON SEMI COMMA
 %token AND OR  
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
@@ -313,6 +313,7 @@ builtin:
     DIM         { Dim }
     | SIZE      { Size }
     | VSCONST   { Vsconst }    /* some problem here, should be multiple elements */
+    | BASIS     { Basis }
 
 /* normal identifier and array identifier */
 element:

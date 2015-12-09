@@ -33,7 +33,9 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
             P_dim -> string_of_elem el ^ ".size"
             | P_size -> string_of_elem el ^ ".shape"
             | P_vsconst -> "VecSpace([" ^ string_of_elem el ^ "])"
+            | P_basis -> string_of_elem el ^ ".basis"
         )
+
     | P_print(e) -> "print(" ^ string_of_expr e ^ ")"
     | P_noexpr -> ""
     

@@ -45,7 +45,7 @@ let translate_builtin = function
     Dim -> P_dim
     | Size -> P_size
     | Vsconst -> P_vsconst
-
+    | Basis -> P_basis
 (* env = (global_var, global_funcs, local_vars) *)
 (* traverse_exprs works to translate a list of expression *)
 let rec traverse_exprs env = function
