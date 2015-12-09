@@ -40,6 +40,7 @@ type expr =
   | Inpro of string * expr * expr
   | Transpose of expr
   | Assign of string * expr
+  | AssignArr of string * expr list
   | Call of string * expr list
   | Builtin of elem * builtin_func
   | Print of expr
@@ -77,6 +78,7 @@ type var_decl = {
     vname : string;
     value : prim_value;
     data_type : prim_type;
+    pos : int;
 }
 
 type array_decl = {
@@ -84,19 +86,35 @@ type array_decl = {
     elements : expr list;
     data_type : prim_type;
     length : int;
+    pos : int;
 }
 
 (* combine variable declarations and array declarations *)
 type normal_decl = 
     Vardecl of var_decl
   | Arraydecl of array_decl
-
+(*
 type func_decl = {
     fname : string;
     params : normal_decl list;
     locals : normal_decl list;
     body : stmt list;
+}*)
+type function_stmt =
+    Local of normal_decl
+  | Body of stmt
+
+type func_decl = {
+    fname : string;
+    params : normal_decl list;
+    body : function_stmt list;
 }
 
-type program = normal_decl list * func_decl list
+type program_stmt =
+    Variable of normal_decl
+  | Function of func_decl
+
+(*type program = normal_decl list * func_decl list*)
+
+type program = program_stmt list
 

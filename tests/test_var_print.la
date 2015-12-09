@@ -2,9 +2,9 @@ var c = 2;
 
 function main()
 {
-    var a = 1;
+    var a;
     var b = 5.33;
-    a = [1,2,3];
+    a = 1;
     print(a);
     print(b);
     print(c);

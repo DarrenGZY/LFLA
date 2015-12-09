@@ -1,6 +1,7 @@
 function main()
 {
-    vector a = [1,2,3];
+    vector a;
+    a = [1,2,3];
     var b = 1;
     print(a);
     print(b);
