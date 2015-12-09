@@ -3,7 +3,9 @@
 let Exp = 'e'('+'|'-')?['0'-'9']+
 
 rule token = parse 
-    [' ' '\t' '\r' '\n' ] { token lexbuf }
+[' ' '\t' '\r' '\n' ] { token lexbuf }
+| "###"     { comment lexbuf }
+| '#'       { line_comment lexbuf }
 (* constructor key words and built-in functions*)
 | 'L'       { VSCONST }
 | "dim"     { DIM }
@@ -70,3 +72,11 @@ rule token = parse
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as id { ID(id) }
 | eof       { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
+
+and comment = parse
+ "###"      { token lexbuf }
+| _         { comment lexbuf }
+
+and line_comment = parse
+ ['\n' '\r']   { token lexbuf }
+| _             { line_comment lexbuf }
