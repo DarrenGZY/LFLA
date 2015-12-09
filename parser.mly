@@ -304,7 +304,7 @@ expression:
     | ID    LPAREN  arguments_opt RPAREN                { Call($1, $3) } 
     | LPAREN    expression  RPAREN                      { $2 }
     | builtin   LPAREN  element  RPAREN                 { Builtin($3, $1) }
-    | VSCONST   LPAREN  arguments_list  RPAREN          { Vsconst($3) }
+    | VSCONST   LPAREN  arguments_opt  RPAREN          { Vsconst($3) }
     | PRINT     LPAREN  expression RPAREN               { Print($3) } 
 
 builtin:
