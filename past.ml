@@ -19,9 +19,6 @@ type pMat_value =
 type pVecspace_value =
     pVec_value list
 
-
-
-
 type pElem = 
   | P_nid of string  (* normal identifier *)
   | P_arrayid of string * string (* array identifier *)

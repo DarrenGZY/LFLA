@@ -39,7 +39,7 @@ program:
 programs :
     /* nothing */                   { [] }
     | programs funtion_declaration  { Function($2)::$1 }
-    | programs normal_declaration   { Variable($2)::$1 } 
+    | programs global_normal_declaration   { Variable($2)::$1 } 
 
 funtion_declaration :
     FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE function_statements RBRACE { 
@@ -53,25 +53,32 @@ parameter_list_opt :
 
 parameter_list :
     primitive_type ID                                           
-        { [Vardecl({vname = $2; value = Notknown; data_type = $1; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum })] }
+        { [ Lvardecl({vname = $2; value = Notknown; data_type = $1; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum })] }
     | primitive_type LBRACK RBRACK ID                           
-        { [ Arraydecl({ aname = $4; elements = []; data_type = $1; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})] } 
+        { [ Larraydecl({ aname = $4; elements = []; data_type = $1; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})] } 
     | parameter_list COMMA primitive_type ID                    
-        { Vardecl({vname = $4; value = Notknown; data_type = $3; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
+        { Lvardecl({vname = $4; value = Notknown; data_type = $3; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
     | parameter_list COMMA primitive_type ID LBRACK RBRACK      
-        { Arraydecl({aname = $4; elements = []; data_type = $3; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
+        { Larraydecl({aname = $4; elements = []; data_type = $3; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
 
 function_statements : 
-    /* nothing */                               { [] }
-    | function_statements normal_declaration    { Local($2)::$1 }
-    | function_statements statement             { Body($2)::$1 }
+    /* nothing */                                       { [] }
+    | function_statements local_normal_declaration      { Local($2)::$1 }
+    | function_statements statement                     { Body($2)::$1 }
 
-normal_declaration :
-    normal_declaration_expression SEMI { $1 }
+local_normal_declaration :
+    local_normal_declaration_expression SEMI { $1 }
 
-normal_declaration_expression :
-    variable_declaration_expression { $1 }
-    | array_declaration_expression  { $1 }
+local_normal_declaration_expression :
+    variable_declaration_expression { Lvardecl($1) }
+    | array_declaration_expression  { Larraydecl($1) }
+
+global_normal_declaration :
+    global_normal_declaration_expression SEMI { $1 }
+
+global_normal_declaration_expression :
+    variable_declaration_expression { Gvardecl($1) }
+    | array_declaration_expression  { Garraydecl($1) }
 
 variable_declaration_expression :
     var_declaration_expression          { $1 }
@@ -85,31 +92,31 @@ variable_declaration_expression :
 var_declaration_expression :
     VAR ID                      
         { 
-            Vardecl({vname = $2; value = Notknown; data_type = Var; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Notknown; data_type = Var; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
    /* | VAR ID ASSIGN LITERAL     { Vardecl({vname = $2; value = VValue($4); data_type = Var }) }  expression contains LITERAL   */ 
     | VAR ID ASSIGN expression  
         { 
-            Vardecl({vname = $2; value = Expression($4); data_type = Var; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Expression($4); data_type = Var; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
 
 vector_declaration_expression :
     VECTOR ID   
         { 
-            Vardecl({vname = $2; value = Notknown; data_type = Vector; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Notknown; data_type = Vector; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
     | VECTOR ID ASSIGN LBRACK vector_elements_list_opt RBRACK 
         { 
-            Vardecl({vname = $2; value = VecValue($5); data_type = Vector; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = VecValue($5); data_type = Vector; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
     | VECTOR ID ASSIGN expression
         { 
-            Vardecl({vname = $2; value = Expression($4); data_type = Vector; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Expression($4); data_type = Vector; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
 
 vector_elements_list_opt :
@@ -123,18 +130,18 @@ vector_elements_list :
 matrix_declaration_expression :
     MATRIX ID   
         { 
-            Vardecl({vname = $2; value = Notknown; data_type = Matrix; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Notknown; data_type = Matrix; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
     | MATRIX ID ASSIGN LBRACK matrix_elements_list RBRACK 
         { 
-            Vardecl({vname = $2; value = MatValue($5); data_type = Matrix; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = MatValue($5); data_type = Matrix; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
     | MATRIX ID ASSIGN expression
         { 
-            Vardecl({vname = $2; value = Expression($4); data_type = Matrix; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Expression($4); data_type = Matrix; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
 
 matrix_elements_list :
@@ -148,13 +155,13 @@ row_elements_list :
 vecspace_declaration_expression :
     VECSPACE ID 
         { 
-            Vardecl({vname = $2; value = Notknown; data_type = VecSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Notknown; data_type = VecSpace; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }
         }
     | VECSPACE ID ASSIGN VSCONST LPAREN vecspace_elements_list RPAREN 
         { 
-            Vardecl({vname = $2; value = VecSpValue(List.rev $6); data_type = VecSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = VecSpValue(List.rev $6); data_type = VecSpace; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
 
 vecspace_elements_list :
@@ -164,87 +171,87 @@ vecspace_elements_list :
 inspace_declaration_expression :
     INSPACE ID  
         { 
-            Vardecl({vname = $2; value = Notknown; data_type = InSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Notknown; data_type = InSpace; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
     | INSPACE ID ASSIGN INSPACE LPAREN ID COMMA ID RPAREN 
         { 
-            Vardecl({vname = $2; value = InSpValue($6,$8); data_type = InSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = InSpValue($6,$8); data_type = InSpace; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
 
 affspace_declaration_expression :
     AFFSPACE ID 
         { 
-            Vardecl({vname = $2; value = Notknown; data_type = AffSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = Notknown; data_type = AffSpace; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
     | AFFSPACE ID ASSIGN AFFSPACE LPAREN ID COMMA ID RPAREN 
         { 
-            Vardecl({vname = $2; value = AffSpValue($6, $8); data_type = AffSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }) 
+            {vname = $2; value = AffSpValue($6, $8); data_type = AffSpace; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
 
 array_declaration_expression :
     VAR ID LBRACK LITERAL RBRACK 
         { 
-            Arraydecl({ aname = $2; elements = []; data_type = Var; length = 0; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}) 
+            { aname = $2; elements = []; data_type = Var; length = 0; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum} 
         }
     | VAR ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            Arraydecl({ aname = $2; elements = (List.rev $8); data_type = Var; length = List.length $8; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = (List.rev $8); data_type = Var; length = List.length $8; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | VECTOR ID LBRACK LITERAL RBRACK 
         { 
-            Arraydecl({ aname = $2; elements = []; data_type = Vector; length = 0; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = []; data_type = Vector; length = 0; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | VECTOR ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            Arraydecl({ aname = $2; elements = (List.rev $8); data_type = Vector; length = List.length $8; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = (List.rev $8); data_type = Vector; length = List.length $8; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | MATRIX ID LBRACK LITERAL RBRACK 
         { 
-            Arraydecl({ aname = $2; elements = []; data_type = Matrix; length = 0; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = []; data_type = Matrix; length = 0; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | MATRIX ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            Arraydecl({ aname = $2; elements = (List.rev $8); data_type = Matrix; length = List.length $8; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = (List.rev $8); data_type = Matrix; length = List.length $8; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | INSPACE ID LBRACK LITERAL RBRACK 
         { 
-            Arraydecl({ aname = $2; elements = []; data_type = InSpace; length = 0; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = []; data_type = InSpace; length = 0; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | INSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            Arraydecl({ aname = $2; elements = (List.rev $8); data_type = InSpace; length = List.length $8; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = (List.rev $8); data_type = InSpace; length = List.length $8; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | AFFSPACE ID LBRACK LITERAL RBRACK 
         { 
-            Arraydecl({ aname = $2; elements = []; data_type = AffSpace; length = 0; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = []; data_type = AffSpace; length = 0; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | AFFSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            Arraydecl({ aname = $2; elements = (List.rev $8); data_type = AffSpace; length = List.length $8; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = (List.rev $8); data_type = AffSpace; length = List.length $8; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | VECSPACE ID LBRACK LITERAL RBRACK 
         { 
-            Arraydecl({ aname = $2; elements = []; data_type = VecSpace; length = 0; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = []; data_type = VecSpace; length = 0; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
     | VECSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            Arraydecl({ aname = $2; elements = (List.rev $8); data_type = VecSpace; length = List.length $8; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})
+            { aname = $2; elements = (List.rev $8); data_type = VecSpace; length = List.length $8; 
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
         }
 
 array_elements_list :

@@ -90,9 +90,13 @@ type array_decl = {
 }
 
 (* combine variable declarations and array declarations *)
-type normal_decl = 
-    Vardecl of var_decl
-  | Arraydecl of array_decl
+type gNormal_decl = 
+    Gvardecl of var_decl
+  | Garraydecl of array_decl
+
+type lNormal_decl = 
+    Lvardecl of var_decl
+  | Larraydecl of array_decl  
 (*
 type func_decl = {
     fname : string;
@@ -101,17 +105,17 @@ type func_decl = {
     body : stmt list;
 }*)
 type function_stmt =
-    Local of normal_decl
+    Local of lNormal_decl
   | Body of stmt
 
 type func_decl = {
     fname : string;
-    params : normal_decl list;
+    params : lNormal_decl list;
     body : function_stmt list;
 }
 
 type program_stmt =
-    Variable of normal_decl
+    Variable of gNormal_decl
   | Function of func_decl
 
 (*type program = normal_decl list * func_decl list*)
