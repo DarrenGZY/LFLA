@@ -26,7 +26,7 @@ type pElem =
 type pBuiltin_func = 
     P_dim
   | P_size
-  | P_vsconst
+ (* | P_vsconst *)
   | P_basis
 
 type pExpr =
@@ -42,6 +42,7 @@ type pExpr =
   | P_call of string * pExpr list
   | P_builtin of pElem * pBuiltin_func
   | P_print of pExpr
+  | P_vsconst of pExpr list
   | P_noexpr
 
 type pStmt =

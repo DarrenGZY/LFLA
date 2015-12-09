@@ -29,7 +29,7 @@ type elem =
 type builtin_func = 
     Dim
   | Size
-  | Vsconst
+ (* | Vsconst *)
   | Basis
 
 type expr =
@@ -45,6 +45,7 @@ type expr =
   | Call of string * expr list
   | Builtin of elem * builtin_func
   | Print of expr
+  | Vsconst of expr list
   | Noexpr
 
 type stmt =

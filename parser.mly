@@ -158,15 +158,12 @@ vecspace_declaration_expression :
             {vname = $2; value = Notknown; data_type = VecSpace; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }
         }
-    | VECSPACE ID ASSIGN VSCONST LPAREN vecspace_elements_list RPAREN 
-        { 
-            {vname = $2; value = VecSpValue(List.rev $6); data_type = VecSpace; 
-            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
+    | VECSPACE ID ASSIGN expression
+        {
+            {vname = $2; value = Expression($4); data_type = VecSpace;
+            pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum }
         }
 
-vecspace_elements_list :
-    ID {[$1]}
-    | vecspace_elements_list COMMA ID { $3::$1 }
 
 inspace_declaration_expression :
     INSPACE ID  
@@ -302,24 +299,25 @@ expression:
     | expression BELONGS    expression  { Belongs($1, $3) }
     | ID    LIN expression  COMMA   expression  RIN     { Inpro($1, $3, $5) }
     | LLBRACK   expression  COMMA   expression  RRBRACK { LieBracket($2, $4) }   
-    | ID    ASSIGN  expression          { Assign($1, $3) }
+    | ID    ASSIGN  expression                          { Assign($1, $3) }
     | ID    ASSIGN  LBRACE array_elements_list RBRACE   { AssignArr($1, $4) } 
-    | ID    LPAREN  arguments_opt RPAREN{ Call($1, $3) } 
-    | LPAREN    expression  RPAREN      { $2 }
-    | builtin   LPAREN  element  RPAREN      { Builtin($3, $1) }
-    | PRINT     LPAREN  expression RPAREN    { Print($3) } 
+    | ID    LPAREN  arguments_opt RPAREN                { Call($1, $3) } 
+    | LPAREN    expression  RPAREN                      { $2 }
+    | builtin   LPAREN  element  RPAREN                 { Builtin($3, $1) }
+    | VSCONST   LPAREN  arguments_list  RPAREN          { Vsconst($3) }
+    | PRINT     LPAREN  expression RPAREN               { Print($3) } 
 
 builtin:
     DIM         { Dim }
     | SIZE      { Size }
-    | VSCONST   { Vsconst }    /* some problem here, should be multiple elements */
+    /*| VSCONST   { Vsconst } */   /* some problem here, should be multiple elements */
     | BASIS     { Basis }
 
 /* normal identifier and array identifier */
 element:
     | ID                          { Nid($1) }
-    | ID LBRACK LITERAL RBRACK    { Arrayid($1, $3) }
-    | ID LBRACK ID      RBRACK  { Arrayid($1, $3) }
+    | ID LBRACK LITERAL RBRACK      { Arrayid($1, $3) }
+    | ID LBRACK ID      RBRACK      { Arrayid($1, $3) }
 
 arguments_opt:
     /* nothing */   { [] }

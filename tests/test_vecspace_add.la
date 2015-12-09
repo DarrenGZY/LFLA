@@ -8,6 +8,6 @@ function main()
 	vecspace vs3 = vs1 + vs2;	
 	vecspace vs4 = vs1 + vs2 + vs3;
     print(basis(vs3));
-	 print(basis(vs4));
+	print(basis(vs4));
     
 }

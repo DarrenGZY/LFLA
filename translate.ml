@@ -44,7 +44,6 @@ let translate_elem env = function
 let translate_builtin = function
     Dim -> P_dim
     | Size -> P_size
-    | Vsconst -> P_vsconst
     | Basis -> P_basis
 (* env = (global_var, global_funcs, local_vars) *)
 (* traverse_exprs works to translate a list of expression *)
@@ -108,6 +107,8 @@ and translate_expr env = function
         (P_builtin(translate_elem env el, translate_builtin s), env)
     | Print(e) -> let pE, env = translate_expr env e in
                     P_print(pE), env
+    | Vsconst(e) -> let pE, env = traverse_exprs env e in 
+        P_vsconst(pE), env
     | Noexpr -> P_noexpr, env
 
 (* traverse_stmts works to translate a list of statements *)
