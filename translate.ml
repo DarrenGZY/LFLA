@@ -4,7 +4,7 @@ open Parser
 
 module StringMap = Map.Make(String)
 
-
+(* translate ast operator to python ast operator *)
 let translate_op = function
     Add -> Padd
     | Sub -> Psub
@@ -23,6 +23,7 @@ let translate_op = function
     | And -> Pand
     | Or -> Por
 
+(* translate ast element to python ast element, and need to check symbol tables *)
 let translate_elem env = function
     | Nid(s) -> 
         let global_vars, global_funcs, local_vars = env in
@@ -39,20 +40,22 @@ let translate_elem env = function
             P_arrayid(s1, s2)
         else raise(Failure ("undeclared identifier " ^ s1))
 
+(* translate ast builtin functions to python ast builtin functions *)
 let translate_builtin = function
     Dim -> P_dim
     | Size -> P_size
     | Vsconst -> P_vsconst
 
 (* env = (global_var, global_funcs, local_vars) *)
-
+(* traverse_exprs works to translate a list of expression *)
 let rec traverse_exprs env = function
     [] -> [], env
     | hd::tl -> 
         let pE, env = translate_expr env hd in
         let pTl, env = traverse_exprs env tl in
         pE::pTl, env
-and translate_expr env = function (*TODO: Add symbol table as argument*)
+(* translate ast expr to python ast expr and update symbol tables *)
+and translate_expr env = function 
     Literal(l) -> (P_literal(l), env)
     | Id(el) -> 
         (P_id(translate_elem env el), env)
@@ -106,13 +109,15 @@ and translate_expr env = function (*TODO: Add symbol table as argument*)
     | Print(e) -> let pE, env = translate_expr env e in
                     P_print(pE), env
     | Noexpr -> P_noexpr, env
-    
+
+(* traverse_stmts works to translate a list of statements *)
 let rec traverse_stmts env = function
     [] -> [], env
     | hd::tl -> 
         let pStmt, env = translate_stmt env hd in
         let pTl, env = traverse_stmts env tl in
             pStmt::pTl, env
+(* translate ast stmt to python ast statement *)
 and translate_stmt env= function
     Block(stmts) -> 
         let pStmts, env = traverse_stmts env stmts in
@@ -153,7 +158,7 @@ let translate_prim_value env = function
             P_Expression(pExpr), env
     | Notknown -> P_Notknown, env
 
-
+(* translate ast prim type to python ast prim type *)
 let translate_prim_type = function
     Var -> P_var
     | Vector -> P_vector
@@ -162,7 +167,7 @@ let translate_prim_type = function
     | InSpace -> P_inSpace
     | AffSpace -> P_affSpace
 
-
+(* translate local variables to python ast variables *)
 let translate_local_normal_decl env local_var = 
     match local_var with
     Lvardecl(v) ->
@@ -198,6 +203,7 @@ let translate_local_normal_decl env local_var =
             in
             P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
 
+(* translate global variables to python ast variables *)
 let translate_global_normal_decl env global_var = 
     match global_var with
     Gvardecl(v) ->
@@ -233,7 +239,7 @@ let translate_global_normal_decl env global_var =
             in
             P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
 
-
+(* translate a list of local variables *)
 let rec traverse_local_vars env = function
     [] -> [], env
     | hd::tl ->
@@ -241,6 +247,7 @@ let rec traverse_local_vars env = function
         let p_tl, env = traverse_local_vars env tl in
         p_local::p_tl, env
 
+(* translate function statements *)
 let translate_func_stmt env = function
    Local(s) -> 
         let pVar, env = translate_local_normal_decl env s in
@@ -249,6 +256,7 @@ let translate_func_stmt env = function
         let pStmt, env = translate_stmt env s in
             P_Body(pStmt), env  
 
+(* translate a list of funciton statements *)
 let rec traverse_func_stmts env = function
     [] -> [], env
    | hd::tl ->
@@ -256,6 +264,7 @@ let rec traverse_func_stmts env = function
         let p_tl, env = traverse_func_stmts env tl in
         (p_func_stmt::p_tl), env
 
+(* translate function declaration and update symbol tables *)
 let translate_func_decl env fdecl =
     let global_vars, global_funcs, local_vars = env in
         if (not (StringMap.mem fdecl.fname global_funcs)) then
@@ -272,6 +281,7 @@ let translate_func_decl env fdecl =
         else
             raise(Failure("Already defined function " ^ fdecl.fname))
 
+(* translate program statements *)
 let translate_program_stmt env = function
    Variable(v) -> let variable, env = translate_global_normal_decl env v
                     in P_Variable(variable), env
@@ -279,26 +289,17 @@ let translate_program_stmt env = function
                     in P_Function(func), env
 
 let translate program =
-    (*let getName = function
-        Variable(v) -> 
-            (match v with
-                Vardecl(var) -> var.vname
-                | Arraydecl(arr) -> arr.aname
-            )
-        | Function(f) -> f.fname
+    let rec traverse_program env = function
+        [] -> [], env
+        | hd::tl -> 
+            let p_program, env = translate_program_stmt env hd in
+            let p_tl, env = traverse_program env tl in
+                p_program::p_tl, env
     in
-    let whole_table = 
-        List.fold_left (fun m decl -> StringMap.add (getName decl) 0 m) StringMap.empty program
-    in
-    if StringMap.mem "main" whole_table then*)
-        let rec traverse_program env = function
-            [] -> [], env
-            | hd::tl -> 
-                    let p_program, env = translate_program_stmt env hd in
-                    let p_tl, env = traverse_program env tl in
-                        p_program::p_tl, env
-        in
-        traverse_program (StringMap.empty, StringMap.empty, StringMap.empty) program
-    (*else
-        raise (Failure("no main function")) *)
- 
+    let p_program, (global_vars, global_funcs, local_vars) 
+        = traverse_program (StringMap.empty, StringMap.empty, StringMap.empty) program
+    in 
+        if (not (StringMap.mem "main" global_funcs)) then 
+            raise (Failure("no main function")) 
+        else
+            p_program, (global_vars, global_funcs, local_vars)

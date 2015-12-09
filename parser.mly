@@ -34,7 +34,7 @@
 %%
 
 program:
-    programs EOF { $1 }
+    programs EOF { List.rev $1 }
 
 programs :
     /* nothing */                   { [] }
