@@ -3,9 +3,7 @@ function main()
     vector v1 = [1,0,0];
     vector v2 = [0,1,0];
     vector v3 = [0,0,1];
-
-    vector[] vects = {v1,v2,v3};
-    
+   
     matrix mat = [1,0,0;0,1,0;0,0,1];
     vector vecs[3] = {v1, v2, v3};
     inspace ins = inspace(vecs, mat);   
@@ -14,7 +12,7 @@ function main()
     print( ins<<v4,v5>>);
 	vector u1 = [1,2];
 	vector u2 = [2,3];
-	vector[] us = [u1,u2];
+	vector us[2] = [u1,u2];
 	matrix m = [1,2;2,8];
 	inspace newIns = inspace(us,m);
 	vector u3 = [1,0];
