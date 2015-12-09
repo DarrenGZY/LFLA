@@ -1,11 +1,11 @@
 function main()
 {
-    matrix a = [ 1,2;3,4];
-	matrix b = [1,1,1;1,1,1];
+    matrix a = [ 1,2;3,4;];
+	matrix b = [1,1,1;1,1,1;];
 	matrix c = a *b; 
     print(c);
  
-    matrix d = [2,1;4,3];
+    matrix d = [2,1;4,3;];
 	matrix e =  a + d;
 	print(e);
 	
@@ -16,7 +16,7 @@ function main()
 	print(g);
 	
 	matrix h =  2 -. a;
-	print(g);
+	print(h);
 	
 	matrix i = 2 *. a;
 	print(i);
@@ -31,7 +31,7 @@ function main()
 	print (l);
 	
 	matrix m = a';
-	print(a);
+	print(m);
 	
 	
 	
