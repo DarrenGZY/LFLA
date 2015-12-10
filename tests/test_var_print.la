@@ -1,10 +1,8 @@
 var c = 2;
-
-function main()
+var a = 1;
+function f()
 {
-    var a;
     var b = 5.33;
-    a = 1;
     print(a);
     print(b);
     print(c);

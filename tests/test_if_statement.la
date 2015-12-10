@@ -1,6 +1,7 @@
 function main()
 {
     var a = 7;
+    vector b = [1,2,3];
     if a > 2
     {
         if a < 6
