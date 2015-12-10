@@ -66,8 +66,8 @@ let string_of_prim_value = function
     | P_VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
     | P_MatValue(s) -> "np.matrix((" ^ String.concat "," (List.map (fun s -> "(" ^ s ^ ")") (List.map (String.concat ",") s)) ^ "))"
     | P_VecSpValue(s) -> "VecSpace([" ^ String.concat "," s ^ "])"    
-    | P_InSpValue(s1, s2) -> "InSpace(" ^ s1 ^ "," ^ s2 ^ ")"            
-    | P_AffSpValue(s1, s2) -> "AffSpace(" ^ s1 ^ "," ^ s2 ^ ")"      
+    | P_InSpValue(e1, e2) -> "InSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"            
+    | P_AffSpValue(e1, e2) -> "AffSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"      
     | P_Expression(e) -> string_of_expr e
     | P_Notknown -> ""
 
@@ -79,6 +79,13 @@ let string_of_prim_type = function
     | P_vecSpace -> "VecSpace()"
     | P_inSpace -> "InSpace()"
     | P_affSpace -> "AffSpace()"
+    | P_varArr -> "[]"
+    | P_vectorArr -> "[]"
+    | P_matrixArr -> "[]"
+    | P_vecSpaceArr -> "[]"
+    | P_inSpaceArr -> "[]"
+    | P_affSpaceArr -> "[]"
+    | P_unit -> ""
 
 let string_of_normal_decl num_ident decl = 
     let spaces = 4 in

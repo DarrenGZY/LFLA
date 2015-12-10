@@ -62,14 +62,21 @@ type pPrim_type =
   | P_vecSpace
   | P_inSpace
   | P_affSpace
+  | P_varArr
+  | P_vectorArr
+  | P_matrixArr
+  | P_vecSpaceArr
+  | P_inSpaceArr
+  | P_affSpaceArr
+  | P_unit
 
 type pPrim_value = 
     P_Value of string
   | P_VecValue of string list
   | P_MatValue of string list list
   | P_VecSpValue of string list
-  | P_InSpValue of string * string
-  | P_AffSpValue of string * string
+  | P_InSpValue of pExpr * pExpr
+  | P_AffSpValue of pExpr * pExpr
   | P_Expression of pExpr
   | P_Notknown
 
