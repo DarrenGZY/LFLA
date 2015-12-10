@@ -1,0 +1,9 @@
+function a()
+{
+    print(1);
+}
+
+function main()
+{
+    a(1);
+}
