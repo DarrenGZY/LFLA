@@ -2,7 +2,7 @@ function main()
 {   
     vector v1 = [1,2,3];
     vector v2 = [2,3,4];
-	vector v3 = [3,4,5];
+	vector v3 = [3,4,4];
 	vector v4 = [3,5,7];
 	vecspace vs = L(v1, v2 );
     print(v3@vs);
