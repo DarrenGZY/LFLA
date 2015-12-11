@@ -1,6 +1,19 @@
 from InSpace import *
 from AffSpace import *
 
+### test for Core ###
+def testCore():
+	v1 = np.array([1,2,3])
+	v2 = np.array([1,2,3])
+	print linearIndependent([v1,v2])
+	v3 = np.array([2,3,4])
+	print linearIndependent([v1,v3])
+
+	matA = np.array([[3.3,3,1],[5.3,-2,-2.2]])
+	matB = np.array([[-3.3,0,1],[5.3,-20,-21.2],[1.2,-3.3,-2]])
+	print liebraket(matA, matB)
+
+
 ### test for vector ###
 def testVector():
 	vecs = np.array([[1,-2,3],[0.2,23,0],[0,-4,-5.2]])
@@ -89,7 +102,6 @@ def testAffSpace():
 	print affspace.vector
 
 
-
 def testIssue():
 	v1 = np.array([1,1,1])
 	v2 = np.array([1,2,3])
@@ -101,9 +113,10 @@ def testIssue():
 
 
 def main():
+	testCore()
 	# testVector()
 	# testMatrix()
-	testVecSpace()
+	# testVecSpace()
 	# testInSpace()
 	# testAffSpace()
 	
