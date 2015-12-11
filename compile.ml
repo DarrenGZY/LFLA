@@ -1,6 +1,4 @@
-open Ast
 open Past
-open Parser
 
 module StringMap = Map.Make(String)
 

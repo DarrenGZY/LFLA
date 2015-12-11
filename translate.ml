@@ -1,6 +1,5 @@
 open Ast
 open Past
-open Parser
 open Check
 
 module StringMap = Map.Make(String)
@@ -126,11 +125,11 @@ and translate_stmt env= function
         P_block(pStmts), env
     | Expr(expr) -> 
         let pExpr, env = translate_expr env expr in
-        let typ = type_of env expr in
+        let _ = type_of env expr in
             P_expr(pExpr), env
     | Return(expr) -> 
         let pExpr, env = translate_expr env expr in
-        let typ = type_of env expr in
+        let _ = type_of env expr in
             P_return(pExpr), env 
     | If(e, s1, s2) -> 
         let pExpr, env = translate_expr env e in
