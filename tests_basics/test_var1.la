@@ -1,0 +1,6 @@
+function main()
+{
+	var a;
+	a = 9;
+	print(a);	
+}
