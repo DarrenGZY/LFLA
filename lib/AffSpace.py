@@ -1,4 +1,3 @@
-from Core import *
 from VecSpace import *
 
 class AffSpace:
@@ -9,9 +8,15 @@ class AffSpace:
 		vecspace: A vector space
 	"""
 
-	def __init__(self, vec, vs):
-		self.vector = vec
-		self.vecspace = vs
+	def __init__(self, vec=None, vs=None):
+		if vec is None:
+			self.vector = []
+		else:
+			self.vector = vec
+		if vs is None:
+			self.vecspace = []
+		else:
+			self.vecspace = vs
 
 
 	def belongs(self, vec):
@@ -23,6 +28,7 @@ class AffSpace:
 		else:
 			print "Belongs to this affine spaces"
 			return 1
+
 
 	@staticmethod
 	def solve(mat, vec):
@@ -38,6 +44,7 @@ class AffSpace:
 			for i in range(null_space.shape[1]):
 				vecs.append(null_space[:,i])
 		return AffSpace(x, VecSpace(vecs))
+
 
 	def dim(self):
 		return self.vecspace.dim()
