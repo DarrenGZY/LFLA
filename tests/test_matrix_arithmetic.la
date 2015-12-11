@@ -12,11 +12,11 @@ function main()
 	matrix f = a - d;
 	print(f);
 	
-	matrix g =  2 +. a;
-	print(g);
+#	matrix g =  2 +. a;
+#	print(g);
 	
-	matrix h =  2 -. a;
-	print(h);
+#	matrix h =  2 -. a;
+#	print(h);
 	
 	matrix i = 2 *. a;
 	print(i);
