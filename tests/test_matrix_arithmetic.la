@@ -15,20 +15,19 @@ function main()
 	matrix g =  2 +. a;
 	print(g);
 	
-	matrix h =  2 -. a;
-	print(h);
+ 	matrix h =  2 -. a;
+ 	print(h);
 	
 	matrix i = 2 *. a;
-	print(i);
-	
-	matrix j =  2 /. a;
+	print(i); 	
+	matrix j =  2.0  /. a;
 	print(j);
+#     
+#      *. between matrices is  not yet implemented 	
+#	matrix k = a *. d ; 
+#	print(k);
 	
-	matrix k = a *. d ;
-	print(k);
-	
-	matrix l = a /. d ;
-	print (l);
+
 	
 	matrix m = a';
 	print(m);

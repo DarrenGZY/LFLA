@@ -36,10 +36,17 @@ and type_of env  = function
             | Arrayid(s1, s2) -> type_of_id env s1)
     | Binop(e1, op, e2) -> 
         (match op with
-        Add | Sub -> (match (type_of env e1, type_of env e2) with
+        | Add ->  (match (type_of env e1, type_of env e2) with
                         ( Var, Var ) -> Var
                         | ( Vector, Vector) -> Vector
-                        | ( Matrix, Matrix) -> Matrix
+                        | ( Matrix, Matrix) -> Matrix 
+                        | ( VecSpace, VecSpace) -> VecSpace
+                        | _ -> raise(Failure("in add(sub) two operands don't have same type")))
+        
+        | Sub  -> (match (type_of env e1, type_of env e2) with
+                        ( Var, Var ) -> Var
+                        | ( Vector, Vector) -> Vector
+                        | ( Matrix, Matrix) -> Matrix 
                         | _ -> raise(Failure("in add(sub) two operands don't have same type")))
         | Mult | Div -> (match (type_of env e1, type_of env e2) with
                         ( Var, Var ) -> Var
