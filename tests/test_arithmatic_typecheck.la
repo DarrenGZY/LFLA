@@ -1,0 +1,7 @@
+function main()
+{
+    var a = 2;
+    var b = 3;
+    var c = a + b;  # allow
+    vector d = a + b; # not allow
+}

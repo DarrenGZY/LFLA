@@ -1,6 +1,7 @@
 open Ast
 open Past
 open Parser
+open Check
 
 module StringMap = Map.Make(String)
 
@@ -82,7 +83,7 @@ and translate_expr env = function
                 let pE1, env = translate_expr env e1 in 
                 let pE2, env = translate_expr env e2 in
                     P_inpro(id, pE1, pE2), env 
-    | Assign(id, e) -> 
+    | Assign(id, e) -> (* TODO: update the id in symbol table *) 
         let global_vars, global_funcs, local_vars = env in
             if (not (StringMap.mem id global_vars)) && (not (StringMap.mem id local_vars)) then
                raise(Failure("undefined identifier"))
@@ -125,24 +126,40 @@ and translate_stmt env= function
         P_block(pStmts), env
     | Expr(expr) -> 
         let pExpr, env = translate_expr env expr in
+        let typ = type_of env expr in
             P_expr(pExpr), env
     | Return(expr) -> 
         let pExpr, env = translate_expr env expr in
+        let typ = type_of env expr in
             P_return(pExpr), env 
     | If(e, s1, s2) -> 
         let pExpr, env = translate_expr env e in
-        let pStmts1, env = traverse_stmts env s1 in
-        let pStmts2, env = traverse_stmts env s2 in
-            P_if(pExpr, pStmts1, pStmts2), env 
+            let typ = type_of env e in
+                if typ <> Var then
+                    raise(Failure(" condition in if should be var type"))
+                else
+
+                    let pStmts1, env = traverse_stmts env s1 in
+                    let pStmts2, env = traverse_stmts env s2 in
+                        P_if(pExpr, pStmts1, pStmts2), env 
     | For(l, a1, a2, s) ->
         let pExpr1, env = translate_expr env a1 in
         let pExpr2, env = translate_expr env a2 in
-        let pStmts, env = traverse_stmts env s in
-            P_for(l, pExpr1, pExpr2, pStmts), env 
+            let typ1 = type_of env a1 in
+            let typ2 = type_of env a2 in
+                if typ1 <> Var || typ2 <> Var then
+                    raise(Failure(" condition in for should be var type"))
+                else
+                    let pStmts, env = traverse_stmts env s in
+                        P_for(l, pExpr1, pExpr2, pStmts), env 
     | While(e, s) -> 
         let pExpr, env = translate_expr env e in
-        let pStmts, env = traverse_stmts env s in
-            P_while(pExpr, pStmts), env
+            let typ = type_of env e in
+                if typ <> Var then
+                    raise(Failure(" condition in while should be var type"))
+                else
+                    let pStmts, env = traverse_stmts env s in
+                        P_while(pExpr, pStmts), env
     | Continue -> P_continue, env
     | Break -> P_break, env
 
@@ -152,11 +169,31 @@ let translate_prim_value env = function
     | VecValue(s) -> P_VecValue(s), env 
     | MatValue(s) -> P_MatValue(s), env
     | VecSpValue(s) -> P_VecSpValue(s), env   
-    | InSpValue(s1, s2) -> P_InSpValue(s1, s2), env            
-    | AffSpValue(s1, s2) -> P_AffSpValue(s1, s2), env 
-    | Expression(e) -> 
+    | InSpValue(e1, e2) -> 
+            let pE1, env = translate_expr env e1 in
+            let pE2, env = translate_expr env e2 in
+                let typ1 = type_of env e1 in
+                let typ2 = type_of env e2 in
+                    if typ1 <> VectorArr || typ2 <> Matrix then
+                        raise(Failure("in InSpace construct fail in type checking"))
+                    else    
+                        P_InSpValue(pE1, pE2), env            
+    | AffSpValue(e1, e2) -> 
+            let pE1, env = translate_expr env e1 in
+            let pE2, env = translate_expr env e2 in
+                let typ1 = type_of env e1 in
+                let typ2 = type_of env e2 in
+                    if typ1 <> Vector || typ2 <> VecSpace then
+                        raise(Failure("in AffSpace construct fail in type checking"))
+                    else
+                        P_AffSpValue(pE1, pE2), env 
+    | Expression(typ, e) -> 
         let pExpr, env = translate_expr env e in
-            P_Expression(pExpr), env
+            let typ' = type_of env e in
+                if typ' <> typ then
+                    raise(Failure("in construct fail in type checking"))
+                else
+                    P_Expression(pExpr), env
     | Notknown -> P_Notknown, env
 
 (* translate ast prim type to python ast prim type *)
@@ -167,7 +204,13 @@ let translate_prim_type = function
     | VecSpace -> P_vecSpace
     | InSpace -> P_inSpace
     | AffSpace -> P_affSpace
-
+    | VarArr -> P_varArr
+    | VectorArr -> P_vectorArr
+    | MatrixArr -> P_matrixArr
+    | VecSpaceArr -> P_vecSpaceArr
+    | InSpaceArr -> P_inSpaceArr
+    | AffSpaceArr -> P_affSpaceArr
+    | Unit -> P_unit
 (* translate local variables to python ast variables *)
 let translate_local_normal_decl env local_var = 
     match local_var with

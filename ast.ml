@@ -65,15 +65,22 @@ type prim_type =
   | VecSpace
   | InSpace
   | AffSpace
+  | VarArr
+  | VectorArr
+  | MatrixArr
+  | VecSpaceArr
+  | InSpaceArr
+  | AffSpaceArr
+  | Unit
 
 type prim_value = 
     VValue of string
   | VecValue of string list
   | MatValue of string list list
   | VecSpValue of string list
-  | InSpValue of string * string
-  | AffSpValue of string * string
-  | Expression of expr
+  | InSpValue of expr * expr
+  | AffSpValue of expr * expr
+  | Expression of prim_type * expr
   | Notknown
 
 type var_decl = {

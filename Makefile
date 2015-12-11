@@ -1,4 +1,4 @@
-OBJS = ast.cmo past.cmo parser.cmo scanner.cmo translate.cmo compile.cmo LFLA.cmo
+OBJS = ast.cmo past.cmo parser.cmo scanner.cmo check.cmo translate.cmo compile.cmo LFLA.cmo
 
 
 # Choose one

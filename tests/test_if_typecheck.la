@@ -1,0 +1,8 @@
+function main()
+{
+    vector b = [1,2,3];
+    if b
+    {
+        print(1);
+    }
+}
