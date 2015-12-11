@@ -141,6 +141,11 @@ and type_of env  = function
     | Vsconst(eList) ->
             if check_list env Vector eList then
                VecSpace
+            else if (List.length eList == 1) then
+                if check_list env VectorArr eList then
+                    VecSpace
+                else
+                    raise(Failure("in vsconst fail in type checking"))
             else
                raise(Failure("in vsconst fail in type checking"))
     | Noexpr -> Unit 
