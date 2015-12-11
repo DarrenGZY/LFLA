@@ -1,13 +1,13 @@
 function main()
 {
     var a = 1;
-	# this is a comment
+	# this is a comment a  = 2
 	print(a);
 	###
 	this is a block comment;
 	hope it works ;
-	a = 2;
-    ###
+	a = 32;
+         ###
     print(a);
 		
 }
