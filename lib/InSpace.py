@@ -9,8 +9,15 @@ class InSpace:
     """
     
 	def __init__(self, vecs=None, mat=None):
+		if vecs is None:
+			self.vectors = []
+		else:
 			self.vectors = vecs
+		if mat is None:
+			self.matrix = []
+		else:
 			self.matrix = mat
+
 
 	def product(self, u, v):
 		### Runtime check

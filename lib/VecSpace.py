@@ -7,16 +7,18 @@ class VecSpace:
 		vectors: A list of vectors
 	"""
 
-	def __init__(self, vecs):
-		self.vectors = []
-		
-		# test for all vectors in the vecs list
-		for i in range(len(vecs)):
-			self.vectors.append(vecs[i])
-			# if # of counts > # of vecs,
-			# the new vector is linear independent with base vectors
-			if not linearIndependent(self.vectors):
-				del self.vectors[-1]
+	def __init__(self, vecs=None):
+		if vecs is None:
+			self.vectors = [] 
+		else:
+			# test for all vectors in the vecs list
+			self.vectors = [] 
+			for i in range(len(vecs)):
+				self.vectors.append(vecs[i])
+				# if # of counts > # of vecs,
+				# the new vector is linear independent with base vectors
+				if not linearIndependent(self.vectors):
+					del self.vectors[-1]
 
 
 	def belongs(self, vec):
