@@ -6,5 +6,4 @@ function main()
 	vecspace  vs = L(v2);
 	affspace aff = affspace(v1,vs);
 	print(v3@aff);
-	print(dim(aff));
 }

@@ -1,0 +1,6 @@
+function main()
+{
+    matrix a = [ 1,2;3,4;];
+    matrix j =  2.0  /. a;
+  	print(j);
+}

@@ -145,7 +145,7 @@ and type_of env  = function
                             Var
             )
     | Print(e) -> Unit
-    | Vsconst(eList) ->
+   (* | Vsconst(eList) ->
             if check_list env Vector eList then
                VecSpace
             else if (List.length eList == 1) then
@@ -155,4 +155,18 @@ and type_of env  = function
                     raise(Failure("in vsconst fail in type checking"))
             else
                raise(Failure("in vsconst fail in type checking"))
-    | Noexpr -> Unit 
+    *)
+    | ExprValue(v) -> 
+            let typ = type_of_value env v in
+                typ
+    | Noexpr -> Unit
+
+and type_of_value env = function
+    VValue(s) -> Var
+    | VecValue(s) -> Vector
+    | MatValue(s) -> Matrix
+    | VecSpValue(s) -> VecSpace
+    | InSpValue(e1, e2) -> InSpace
+    | AffSpValue(e1, e2) -> AffSpace
+    | Expression(typ, e) -> typ
+    | Notknown -> Unit      

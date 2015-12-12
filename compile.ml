@@ -35,9 +35,21 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
         )
 
     | P_print(e) -> "print(" ^ string_of_expr e ^ ")"
-    | P_vsconst(e) -> "VecSpace([" ^ String.concat ", " (List.map string_of_expr e) ^ "])"
+   (* | P_vsconst(e) -> "VecSpace([" ^ String.concat ", " (List.map string_of_expr e) ^ "])" *)
+    | P_exprValue(v) -> string_of_prim_value v
     | P_noexpr -> ""
-    
+
+and string_of_prim_value = function
+    P_Value(s) -> s
+    | P_VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
+    | P_MatValue(s) -> "np.matrix((" ^ String.concat "," (List.map (fun s -> "(" ^ s ^ ")") (List.map (String.concat ",") s)) ^ "))"
+    | P_VecSpValue(eList) -> "VecSpace([" ^ String.concat "," (List.map string_of_expr eList) ^ "])"    
+    | P_VecSpValueArr(eList) -> "VecSpace(" ^ String.concat "," (List.map string_of_expr eList) ^ ")" 
+    | P_InSpValue(e1, e2) -> "InSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"            
+    | P_AffSpValue(e1, e2) -> "AffSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"      
+    | P_Expression(e) -> string_of_expr e
+    | P_Notknown -> ""   
+
 (* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
 let rec string_of_stmt num_ident stmt = 
     let spaces = 4 in 
@@ -59,15 +71,7 @@ let rec string_of_stmt num_ident stmt =
     | P_continue -> (String.make (num_ident*spaces) ' ') ^ "continue "
     | P_break -> (String.make (num_ident*spaces) ' ') ^ "break "
 
-let string_of_prim_value = function
-    P_Value(s) -> s
-    | P_VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
-    | P_MatValue(s) -> "np.matrix((" ^ String.concat "," (List.map (fun s -> "(" ^ s ^ ")") (List.map (String.concat ",") s)) ^ "))"
-    | P_VecSpValue(s) -> "VecSpace([" ^ String.concat "," s ^ "])"    
-    | P_InSpValue(e1, e2) -> "InSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"            
-    | P_AffSpValue(e1, e2) -> "AffSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"      
-    | P_Expression(e) -> string_of_expr e
-    | P_Notknown -> ""
+
 
 
 let string_of_prim_type = function
