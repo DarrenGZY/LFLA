@@ -108,11 +108,11 @@ vector_declaration_expression :
             {vname = $2; value = Notknown; data_type = Vector; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
-    | VECTOR ID ASSIGN LBRACK vector_elements_list_opt RBRACK 
+   /* | VECTOR ID ASSIGN LBRACK vector_elements_list_opt RBRACK 
         { 
             {vname = $2; value = VecValue($5); data_type = Vector; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
-        }
+        }*/
     | VECTOR ID ASSIGN expression
         { 
             {vname = $2; value = Expression(Vector, $4); data_type = Vector; 
@@ -133,11 +133,11 @@ matrix_declaration_expression :
             {vname = $2; value = Notknown; data_type = Matrix; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
-    | MATRIX ID ASSIGN LBRACK matrix_elements_list RBRACK 
+   /* | MATRIX ID ASSIGN LBRACK matrix_elements_list RBRACK 
         { 
             {vname = $2; value = MatValue($5); data_type = Matrix; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
-        }
+        } */
     | MATRIX ID ASSIGN expression
         { 
             {vname = $2; value = Expression(Matrix, $4); data_type = Matrix; 
@@ -145,12 +145,9 @@ matrix_declaration_expression :
         }
 
 matrix_elements_list :
-    /* nothing */  { [] }
-    | row_elements_list SEMI matrix_elements_list { (List.rev $1)::$3 }
+    vector_elements_list SEMI       { [List.rev $1] }
+    | vector_elements_list SEMI matrix_elements_list { (List.rev $1)::$3 }
 
-row_elements_list :
-    LITERAL {[$1]}
-    | row_elements_list COMMA LITERAL { $3::$1 }
 
 vecspace_declaration_expression :
     VECSPACE ID 
@@ -301,10 +298,14 @@ expression:
     | LLBRACK   expression  COMMA   expression  RRBRACK { LieBracket($2, $4) }   
     | ID    ASSIGN  expression                          { Assign($1, $3) }
     | ID    ASSIGN  LBRACE array_elements_list RBRACE   { AssignArr($1, $4) } 
+    | LBRACK vector_elements_list_opt RBRACK            { ExprValue(VecValue($2)) }
+    | LBRACK matrix_elements_list RBRACK                { ExprValue(MatValue($2)) }
+    | INSPACE LPAREN expression COMMA expression RPAREN { ExprValue(InSpValue($3, $5)) }
+    | AFFSPACE LPAREN expression COMMA expression RPAREN{ ExprValue(AffSpValue($3, $5)) }  
     | ID    LPAREN  arguments_opt RPAREN                { Call($1, $3) } 
     | LPAREN    expression  RPAREN                      { $2 }
     | builtin   LPAREN  element  RPAREN                 { Builtin($3, $1) }
-    | VSCONST   LPAREN  arguments_opt  RPAREN          { Vsconst($3) }
+    | VSCONST   LPAREN  arguments_opt  RPAREN           { Vsconst($3) }
     | PRINT     LPAREN  expression RPAREN               { Print($3) } 
 
 builtin:

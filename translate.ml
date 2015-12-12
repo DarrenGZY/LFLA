@@ -109,8 +109,43 @@ and translate_expr env = function
                     P_print(pE), env
     | Vsconst(e) -> let pE, env = traverse_exprs env e in 
         P_vsconst(pE), env
+    | ExprValue(v) -> 
+        let pV, env = translate_prim_value env v in
+            P_exprValue(pV), env
     | Noexpr -> P_noexpr, env
 
+(*TODO: if prim value is needed *)
+and translate_prim_value env = function
+    VValue(s) -> P_Value(s), env
+    | VecValue(s) -> P_VecValue(s), env 
+    | MatValue(s) -> P_MatValue(s), env
+    | VecSpValue(s) -> P_VecSpValue(s), env   
+    | InSpValue(e1, e2) -> 
+            let pE1, env = translate_expr env e1 in
+            let pE2, env = translate_expr env e2 in
+                let typ1 = type_of env e1 in
+                let typ2 = type_of env e2 in
+                    if typ1 <> VectorArr || typ2 <> Matrix then
+                        raise(Failure("in InSpace construct fail in type checking"))
+                    else    
+                        P_InSpValue(pE1, pE2), env            
+    | AffSpValue(e1, e2) -> 
+            let pE1, env = translate_expr env e1 in
+            let pE2, env = translate_expr env e2 in
+                let typ1 = type_of env e1 in
+                let typ2 = type_of env e2 in
+                    if typ1 <> Vector || typ2 <> VecSpace then
+                        raise(Failure("in AffSpace construct fail in type checking"))
+                    else
+                        P_AffSpValue(pE1, pE2), env 
+    | Expression(typ, e) -> 
+        let pExpr, env = translate_expr env e in
+            let typ' = type_of env e in
+                if typ' <> typ then
+                    raise(Failure("in construct fail in type checking"))
+                else
+                    P_Expression(pExpr), env
+    | Notknown -> P_Notknown, env
 (* traverse_stmts works to translate a list of statements *)
 let rec traverse_stmts env = function
     [] -> [], env
@@ -162,38 +197,6 @@ and translate_stmt env= function
     | Continue -> P_continue, env
     | Break -> P_break, env
 
-(*TODO: if prim value is needed *)
-let translate_prim_value env = function
-    VValue(s) -> P_Value(s), env
-    | VecValue(s) -> P_VecValue(s), env 
-    | MatValue(s) -> P_MatValue(s), env
-    | VecSpValue(s) -> P_VecSpValue(s), env   
-    | InSpValue(e1, e2) -> 
-            let pE1, env = translate_expr env e1 in
-            let pE2, env = translate_expr env e2 in
-                let typ1 = type_of env e1 in
-                let typ2 = type_of env e2 in
-                    if typ1 <> VectorArr || typ2 <> Matrix then
-                        raise(Failure("in InSpace construct fail in type checking"))
-                    else    
-                        P_InSpValue(pE1, pE2), env            
-    | AffSpValue(e1, e2) -> 
-            let pE1, env = translate_expr env e1 in
-            let pE2, env = translate_expr env e2 in
-                let typ1 = type_of env e1 in
-                let typ2 = type_of env e2 in
-                    if typ1 <> Vector || typ2 <> VecSpace then
-                        raise(Failure("in AffSpace construct fail in type checking"))
-                    else
-                        P_AffSpValue(pE1, pE2), env 
-    | Expression(typ, e) -> 
-        let pExpr, env = translate_expr env e in
-            let typ' = type_of env e in
-                if typ' <> typ then
-                    raise(Failure("in construct fail in type checking"))
-                else
-                    P_Expression(pExpr), env
-    | Notknown -> P_Notknown, env
 
 (* translate ast prim type to python ast prim type *)
 let translate_prim_type = function
