@@ -36,9 +36,30 @@ def basis(vecspace):
 	return vecspace.vectors[0]
 
 
-# def rank(mat):
-# def trace(mat):
-# def eigen(mat):
+def liebraket(matA, matB):
+	if (matA.shape == matB.shape):
+		if (all (len(row) == len(matA) for row in matA)) and \
+			(all (len(row) == len(matB) for row in matB)):
+			return matA * matB - matB * matA 
+		else:
+			print "Input Matrix is not square matrix"
+	else:
+			print "Dimensions of two matrices dose not match"
+
+
+def rank(mat):
+	return np.linalg.matrix_rank(mat)
+
+
+def trace(mat):
+	return np.trace(mat)
+
+
+def eigen(mat):
+	return np.linalg.eig(mat)
+
+
 # def image(mat):
+
 # def ortho(inspace):
 

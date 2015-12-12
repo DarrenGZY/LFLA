@@ -32,32 +32,6 @@ type builtin_func =
  (* | Vsconst *)
   | Basis
 
-type expr =
-    Literal of string
-  | Id of elem
-  | Binop of expr * op * expr
-  | Belongs of expr * expr
-  | LieBracket of expr * expr
-  | Inpro of string * expr * expr
-  | Transpose of expr
-  | Assign of string * expr
-  | AssignArr of string * expr list
-  | Call of string * expr list
-  | Builtin of elem * builtin_func
-  | Print of expr
-  | Vsconst of expr list
-  | Noexpr
-
-type stmt =
-    Block of stmt list
-  | Expr of expr
-  | Return of expr
-  | If of expr * stmt list * stmt list
-  | For of string * expr * expr * stmt list
-  | While of expr * stmt list
-  | Continue
-  | Break
-
 type prim_type = 
     Var
   | Vector
@@ -73,7 +47,25 @@ type prim_type =
   | AffSpaceArr
   | Unit
 
-type prim_value = 
+
+type expr =
+    Literal of string
+  | Id of elem
+  | Binop of expr * op * expr
+  | Belongs of expr * expr
+  | LieBracket of expr * expr
+  | Inpro of string * expr * expr
+  | Transpose of expr
+  | Assign of string * expr
+  | AssignArr of string * expr list
+  | Call of string * expr list
+  | Builtin of elem * builtin_func
+  | Print of expr
+  | Vsconst of expr list
+  | ExprValue of prim_value
+  | Noexpr
+
+and prim_value = 
     VValue of string
   | VecValue of string list
   | MatValue of string list list
@@ -82,6 +74,18 @@ type prim_value =
   | AffSpValue of expr * expr
   | Expression of prim_type * expr
   | Notknown
+
+
+type stmt =
+    Block of stmt list
+  | Expr of expr
+  | Return of expr
+  | If of expr * stmt list * stmt list
+  | For of string * expr * expr * stmt list
+  | While of expr * stmt list
+  | Continue
+  | Break
+
 
 type var_decl = {
     vname : string;

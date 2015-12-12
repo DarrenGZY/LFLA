@@ -20,9 +20,7 @@ class AffSpace:
 
 
 	def belongs(self, vec):
-		self.vector
-		if not (self.vecspace.belongs( \
-			(np.asarray(vec) - np.asarray(self.vector)).tolist() ) == 1):
+		if not (self.vecspace.belongs(vec-self.vector)):
 			print "Not belongs to this affine spaces"
 			return 0
 		else:

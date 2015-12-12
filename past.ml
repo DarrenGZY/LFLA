@@ -29,32 +29,6 @@ type pBuiltin_func =
  (* | P_vsconst *)
   | P_basis
 
-type pExpr =
-    P_literal of string
-  | P_id of pElem
-  | P_binop of pExpr * pOp * pExpr
-  | P_belongs of pExpr * pExpr
-  | P_lieBracket of pExpr * pExpr
-  | P_inpro of string * pExpr * pExpr
-  | P_transpose of pExpr
-  | P_assign of string * pExpr
-  | P_assignArr of string * pExpr list
-  | P_call of string * pExpr list
-  | P_builtin of pElem * pBuiltin_func
-  | P_print of pExpr
-  | P_vsconst of pExpr list
-  | P_noexpr
-
-type pStmt =
-    P_block of pStmt list
-  | P_expr of pExpr
-  | P_return of pExpr
-  | P_if of pExpr * pStmt list * pStmt list
-  | P_for of string * pExpr * pExpr * pStmt list
-  | P_while of pExpr * pStmt list
-  | P_continue
-  | P_break
-
 type pPrim_type = 
     P_var
   | P_vector
@@ -70,7 +44,24 @@ type pPrim_type =
   | P_affSpaceArr
   | P_unit
 
-type pPrim_value = 
+type pExpr =
+    P_literal of string
+  | P_id of pElem
+  | P_binop of pExpr * pOp * pExpr
+  | P_belongs of pExpr * pExpr
+  | P_lieBracket of pExpr * pExpr
+  | P_inpro of string * pExpr * pExpr
+  | P_transpose of pExpr
+  | P_assign of string * pExpr
+  | P_assignArr of string * pExpr list
+  | P_call of string * pExpr list
+  | P_builtin of pElem * pBuiltin_func
+  | P_print of pExpr
+  | P_vsconst of pExpr list
+  | P_exprValue of pPrim_value
+  | P_noexpr
+
+and pPrim_value = 
     P_Value of string
   | P_VecValue of string list
   | P_MatValue of string list list
@@ -79,6 +70,17 @@ type pPrim_value =
   | P_AffSpValue of pExpr * pExpr
   | P_Expression of pExpr
   | P_Notknown
+
+type pStmt =
+    P_block of pStmt list
+  | P_expr of pExpr
+  | P_return of pExpr
+  | P_if of pExpr * pStmt list * pStmt list
+  | P_for of string * pExpr * pExpr * pStmt list
+  | P_while of pExpr * pStmt list
+  | P_continue
+  | P_break
+
 
 type pVar_decl = {
     p_vname : string;
