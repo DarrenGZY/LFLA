@@ -1,0 +1,24 @@
+function foo(var a, var b)
+{
+    print(a);
+    print(b);   
+}
+
+function foo1(var c, vector b)
+{
+    # var c = 1; not allowed, already defined c in parameters
+    print(c);
+    print(b);
+}
+
+function main()
+{
+    vector e;
+    var c = 1;
+    var d = 2;
+    #foo(c, d);
+    #foo(c, e);  not allowed
+    #foo(c, d, d); not allowed
+    foo1(c, e);
+
+}
