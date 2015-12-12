@@ -3,5 +3,15 @@ function main()
     var a = 2;
     var b = 3;
     var c = a + b;  # allow
-    vector d = a + b; # not allow
+   # vector d = a + b; # not allow
+
+    vector d;
+     
+    # vector e = a + d # not allow
+    vector e = a +. d;
+
+    vector f = e + d;
+
+    vecspace w = L(d, e, a);
+
 }

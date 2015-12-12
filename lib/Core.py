@@ -36,6 +36,10 @@ def basis(vecspace):
 	return vecspace.vectors[0]
 
 
+def Liebraket(matA, matB):
+	# if 
+	matA * matB - matB * matA 
+
 # def rank(mat):
 # def trace(mat):
 # def eigen(mat):

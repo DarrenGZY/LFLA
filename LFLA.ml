@@ -12,10 +12,10 @@ let _ =
         let python_program, env = Translate.translate program in 
         let pyFile = open_out "a.out" in
              fprintf pyFile "%s\n" "#!/usr/local/bin/python";
-             fprintf pyFile "%s\n" "import numpy as np";
-             fprintf pyFile "%s\n" "from VecSpace import *";
+             fprintf pyFile "%s\n" "import sys";
+             fprintf pyFile "%s\n" "sys.path.append('./lib')";
              fprintf pyFile "%s\n" "from InSpace import *";
-             fprintf pyFile "%s\n" "from AffSpace import *";
+             fprintf pyFile "%s\n" "from AffSpace import *\n";
              fprintf pyFile "%s\n"  (Compile.compile python_program);
              close_out pyFile;
              Sys.command ("chmod +x a.out") ;
