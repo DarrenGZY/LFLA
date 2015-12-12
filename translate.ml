@@ -107,8 +107,8 @@ and translate_expr env = function
         (P_builtin(translate_elem env el, translate_builtin s), env)
     | Print(e) -> let pE, env = translate_expr env e in
                     P_print(pE), env
-    | Vsconst(e) -> let pE, env = traverse_exprs env e in 
-        P_vsconst(pE), env
+   (* | Vsconst(e) -> let pE, env = traverse_exprs env e in 
+        P_vsconst(pE), env *)
     | ExprValue(v) -> 
         let pV, env = translate_prim_value env v in
             P_exprValue(pV), env
@@ -119,7 +119,17 @@ and translate_prim_value env = function
     VValue(s) -> P_Value(s), env
     | VecValue(s) -> P_VecValue(s), env 
     | MatValue(s) -> P_MatValue(s), env
-    | VecSpValue(s) -> P_VecSpValue(s), env   
+    | VecSpValue(eList) -> 
+            let pEList,env = traverse_exprs env eList in
+                if check_list env Vector eList then
+                        P_VecSpValue(pEList), env
+                else if (List.length eList == 1) then
+                    if check_list env VectorArr eList then
+                        P_VecSpValueArr(pEList), env
+                    else
+                        raise(Failure("in vsconst fail in type checking"))
+                else
+                    raise(Failure("in vsconst fail in type checking"))
     | InSpValue(e1, e2) -> 
             let pE1, env = translate_expr env e1 in
             let pE2, env = translate_expr env e2 in

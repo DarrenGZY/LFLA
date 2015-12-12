@@ -57,7 +57,6 @@ type pExpr =
   | P_call of string * pExpr list
   | P_builtin of pElem * pBuiltin_func
   | P_print of pExpr
-  | P_vsconst of pExpr list
   | P_exprValue of pPrim_value
   | P_noexpr
 
@@ -65,7 +64,8 @@ and pPrim_value =
     P_Value of string
   | P_VecValue of string list
   | P_MatValue of string list list
-  | P_VecSpValue of string list
+  | P_VecSpValue of pExpr list
+  | P_VecSpValueArr of pExpr list
   | P_InSpValue of pExpr * pExpr
   | P_AffSpValue of pExpr * pExpr
   | P_Expression of pExpr

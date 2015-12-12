@@ -61,7 +61,6 @@ type expr =
   | Call of string * expr list
   | Builtin of elem * builtin_func
   | Print of expr
-  | Vsconst of expr list
   | ExprValue of prim_value
   | Noexpr
 
@@ -69,7 +68,7 @@ and prim_value =
     VValue of string
   | VecValue of string list
   | MatValue of string list list
-  | VecSpValue of string list
+  | VecSpValue of expr list
   | InSpValue of expr * expr
   | AffSpValue of expr * expr
   | Expression of prim_type * expr

@@ -302,10 +302,10 @@ expression:
     | LBRACK matrix_elements_list RBRACK                { ExprValue(MatValue($2)) }
     | INSPACE LPAREN expression COMMA expression RPAREN { ExprValue(InSpValue($3, $5)) }
     | AFFSPACE LPAREN expression COMMA expression RPAREN{ ExprValue(AffSpValue($3, $5)) }  
+    | VSCONST   LPAREN  arguments_opt  RPAREN           { ExprValue(VecSpValue($3)) }   
     | ID    LPAREN  arguments_opt RPAREN                { Call($1, $3) } 
     | LPAREN    expression  RPAREN                      { $2 }
     | builtin   LPAREN  element  RPAREN                 { Builtin($3, $1) }
-    | VSCONST   LPAREN  arguments_opt  RPAREN           { Vsconst($3) }
     | PRINT     LPAREN  expression RPAREN               { Print($3) } 
 
 builtin:
