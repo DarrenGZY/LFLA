@@ -104,10 +104,15 @@ and type_of env  = function
                 raise(Failure("in call not defined function"))
         in
         let rec check_two_lists env list1 list2 = 
+            (*let length1 = List.length list1 in
+            let length2 = List.length list2 in
+            if length1 <> length2 then
+                raise(Failure("in call fail in type checking(" ^ string_of_int length1 ^"and " ^ string_of_int length2 ^ "not in same length"))
+            else*)
             match list1, list2 with
                 [],[] -> Unit
-                | hd1::tl1, [] -> raise(Failure("in call fail in type checking"))
-                | [], hd2::tl2 -> raise(Failure("in call fail in type checking"))
+                | hd1::tl1, [] -> raise(Failure("in call fail in type checking(not same length)"))
+                | [], hd2::tl2 -> raise(Failure("in call fail in type checking(not same length)")) 
                 | hd1::tl1, hd2::tl2 -> 
                     let typ1 = 
                         (match hd1 with
@@ -117,7 +122,7 @@ and type_of env  = function
                     in 
                     let typ2 = type_of env hd2 in
                     if typ1 <> typ2 then
-                        raise(Failure("in call fail in type checking"))
+                        raise(Failure("in call fail in type checking(not match)"))
                     else
                         check_two_lists env tl1 tl2
         in

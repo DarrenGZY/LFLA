@@ -238,7 +238,7 @@ let translate_local_normal_decl env local_var =
                 if (not (StringMap.mem v.vname local_vars)) then
                     StringMap.add v.vname local_var local_vars
                 else
-                    raise(Failure("Already defined variable" ^ v.vname))
+                    raise(Failure("Already defined variable " ^ v.vname))
             in
             P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
            
@@ -255,15 +255,17 @@ let translate_local_normal_decl env local_var =
                 if (not (StringMap.mem a.aname local_vars)) then
                     StringMap.add a.aname local_var local_vars
                 else
-                    raise(Failure("Already defined variable" ^ a.aname))
+                    raise(Failure("Already defined variable " ^ a.aname))
             in
             P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
 
 (* translate global variables to python ast variables *)
 let translate_global_normal_decl env global_var = 
+    let global_vars, global_funcs = env in
     match global_var with
     Gvardecl(v) ->
-        let pValue, env = translate_prim_value env v.value in
+        let pValue, env = translate_prim_value (global_vars, global_funcs, StringMap.empty) v.value 
+        in                                              (* for global variable, local_vars table is empty *)
         let p_var =  {  p_vname = v.vname; 
                         p_value = pValue; 
                         p_data_type = translate_prim_type v.data_type; 
@@ -274,12 +276,13 @@ let translate_global_normal_decl env global_var =
                 if (not (StringMap.mem v.vname global_vars)) then
                     StringMap.add v.vname global_var global_vars
                 else
-                    raise(Failure("Already defined variable" ^ v.vname))
+                    raise(Failure("Already defined variable " ^ v.vname))
             in
-            P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
+            P_Vardecl(p_var), (global_vars, global_funcs)
            
     | Garraydecl(a) -> 
-        let pExprs, env = traverse_exprs env a.elements in
+        let pExprs, env = traverse_exprs (global_vars, global_funcs, StringMap.empty) a.elements 
+        in                                              (* for global array, local_vars table is empty*)
         let p_array = { p_aname = a.aname; 
                         p_elements = pExprs;
                         p_data_type = translate_prim_type a.data_type; 
@@ -291,9 +294,9 @@ let translate_global_normal_decl env global_var =
                 if (not (StringMap.mem a.aname global_vars)) then
                     StringMap.add a.aname global_var global_vars
                 else
-                    raise(Failure("Already defined variable" ^ a.aname))
+                    raise(Failure("Already defined variable " ^ a.aname))
             in
-            P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
+            P_Arraydecl(p_array), (global_vars, global_funcs)
 
 (* translate a list of local variables *)
 let rec traverse_local_vars env = function
@@ -322,9 +325,9 @@ let rec traverse_func_stmts env = function
 
 (* translate function declaration and update symbol tables *)
 let translate_func_decl env fdecl =
-    let global_vars, global_funcs, local_vars = env in
+    let global_vars, global_funcs = env in
         if (not (StringMap.mem fdecl.fname global_funcs)) then
-            let pParams, env = traverse_local_vars env fdecl.params in
+            let pParams, env = traverse_local_vars (global_vars, global_funcs, StringMap.empty) fdecl.params in
             let pStmts, env = traverse_func_stmts env fdecl.body in
             let global_vars, global_funcs, local_vars = env in
                 let global_funcs = StringMap.add fdecl.fname fdecl global_funcs
@@ -333,7 +336,7 @@ let translate_func_decl env fdecl =
                     p_fname = fdecl.fname;
                     p_params = pParams; 
                     p_body = pStmts 
-                }, (global_vars, global_funcs, local_vars)
+                }, (global_vars, global_funcs)
         else
             raise(Failure("Already defined function " ^ fdecl.fname))
 
@@ -352,10 +355,10 @@ let translate program =
             let p_tl, env = traverse_program env tl in
                 p_program::p_tl, env
     in
-    let p_program, (global_vars, global_funcs, local_vars) 
-        = traverse_program (StringMap.empty, StringMap.empty, StringMap.empty) program
+    let p_program, (global_vars, global_funcs) 
+        = traverse_program (StringMap.empty, StringMap.empty) program  (* give empty global_vars and global_funcs symbol table *)
     in 
         if (not (StringMap.mem "main" global_funcs)) then 
             raise (Failure("no main function")) 
         else
-            p_program, (global_vars, global_funcs, local_vars)
+            p_program, (global_vars, global_funcs)
