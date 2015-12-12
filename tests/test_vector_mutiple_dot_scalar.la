@@ -1,0 +1,6 @@
+function main()
+{
+    vector a = [1,2,3];
+    vector e = 2 *. a;
+    print (e);
+}

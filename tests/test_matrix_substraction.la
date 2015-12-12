@@ -1,0 +1,7 @@
+function main()
+{
+    matrix a = [ 1,2;3,4;];
+    matrix d = [2,1;4,3;];
+  	matrix f = a - d;
+	  print(f);
+  }
