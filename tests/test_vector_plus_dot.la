@@ -1,0 +1,8 @@
+function main()
+{
+    vector a = [1,2,3];
+	vector b = [2,3,4];
+	vector g = 2 +. a;
+	print(g);
+
+}
