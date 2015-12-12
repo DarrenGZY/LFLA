@@ -238,7 +238,7 @@ let translate_local_normal_decl env local_var =
                 if (not (StringMap.mem v.vname local_vars)) then
                     StringMap.add v.vname local_var local_vars
                 else
-                    raise(Failure("Already defined variable " ^ v.vname))
+                    raise(Failure("Already defined variable  " ^ v.vname))
             in
             P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
            
@@ -327,7 +327,7 @@ let rec traverse_func_stmts env = function
 let translate_func_decl env fdecl =
     let global_vars, global_funcs = env in
         if (not (StringMap.mem fdecl.fname global_funcs)) then
-            let pParams, env = traverse_local_vars (global_vars, global_funcs, StringMap.empty) fdecl.params in
+            let pParams, env = traverse_local_vars (global_vars, global_funcs, StringMap.empty) fdecl.params in (* give empty local_vars table *)
             let pStmts, env = traverse_func_stmts env fdecl.body in
             let global_vars, global_funcs, local_vars = env in
                 let global_funcs = StringMap.add fdecl.fname fdecl global_funcs

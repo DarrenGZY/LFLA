@@ -1,0 +1,36 @@
+
+
+function buzz(var a)
+{
+    print(a);
+}
+
+function foo(var a, vector b, matrix c)
+{
+    # could not defined a, b, c again in function
+    
+    var e = a;
+
+    vector f = b + b;
+
+    #  var e = 1;  # not allowed
+    
+    
+
+    print(a);
+    print(e);
+    print(f);
+    print(b);
+
+}
+
+
+function main()
+{
+    var a = 1;
+    vector b = [1,2];
+    matrix c = [1,2;3,4;];
+
+
+    foo(1, [1,2], [1,2;3,4;]); 
+}
