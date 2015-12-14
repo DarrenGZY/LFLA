@@ -2,5 +2,6 @@ function main()
 {
     vector a = [1,2];
     var b[4] = {a,2,4}; #not allowed, type and length
+    var c[3.0] = {1,2,3}; #not allowed
     print(b);
 }
