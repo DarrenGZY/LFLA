@@ -1,0 +1,6 @@
+function main()
+{
+    vector a = [1,2];
+    var b[4] = {a,2,4}; #not allowed, type and length
+    print(b);
+}
