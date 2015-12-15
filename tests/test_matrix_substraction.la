@@ -1,7 +1,6 @@
 function main()
 {
-    matrix a = [ 1,2;3,4;];
-    matrix d = [2,1;4,3;];
-  	matrix f = a - d;
-	  print(f);
-  }
+    matrix a = [ 1,2,3;4,5,6;];
+	  matrix b = [1,1,1;1,1,1;];
+  	print(a-b);
+}
