@@ -134,3 +134,19 @@ type program_stmt =
 
 type program = program_stmt list
 
+
+let real_type = function
+    Var -> Var
+    | Vector -> Vector
+    | Matrix -> Matrix
+    | VecSpace -> VecSpace
+    | InSpace -> InSpace
+    | AffSpace -> AffSpace
+    | VarArr -> Var
+    | VectorArr -> Vector
+    | MatrixArr -> Matrix
+    | VecSpaceArr -> VecSpace
+    | InSpaceArr -> InSpace
+    | AffSpaceArr -> AffSpace
+    | Unit -> Unit 
+

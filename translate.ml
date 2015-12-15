@@ -223,6 +223,7 @@ let translate_prim_type = function
     | InSpaceArr -> P_inSpaceArr
     | AffSpaceArr -> P_affSpaceArr
     | Unit -> P_unit
+
 (* translate local variables to python ast variables *)
 let translate_local_normal_decl env local_var = 
     match local_var with
@@ -243,7 +244,14 @@ let translate_local_normal_decl env local_var =
             P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
            
     | Larraydecl(a) -> 
+        let length = List.length a.elements in
+        if length <> a.length then
+            raise(Failure("array length not match"))
+        else
         let pExprs, env = traverse_exprs env a.elements in
+        if not (check_list env (real_type a.data_type) a.elements) then (* check if array elements have right type *)
+            raise(Failure("array elements have wrong type"))
+        else
         let p_array = { p_aname = a.aname; 
                         p_elements = pExprs;
                         p_data_type = translate_prim_type a.data_type; 
@@ -281,8 +289,15 @@ let translate_global_normal_decl env global_var =
             P_Vardecl(p_var), (global_vars, global_funcs)
            
     | Garraydecl(a) -> 
+        let length = List.length a.elements in
+        if length <> a.length then
+            raise(Failure("array length not match"))
+        else
         let pExprs, env = traverse_exprs (global_vars, global_funcs, StringMap.empty) a.elements 
-        in                                              (* for global array, local_vars table is empty*)
+        in
+        if not (check_list env (real_type a.data_type) a.elements) then  (* check for each element if it has right type *)
+           raise(Failure("array elements have wrong type"))
+        else                                             (* for global array, local_vars table is empty*)
         let p_array = { p_aname = a.aname; 
                         p_elements = pExprs;
                         p_data_type = translate_prim_type a.data_type; 

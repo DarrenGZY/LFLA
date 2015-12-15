@@ -189,63 +189,75 @@ affspace_declaration_expression :
 array_declaration_expression :
     VAR ID LBRACK LITERAL RBRACK 
         { 
-            { aname = $2; elements = []; data_type = VarArr; length = 0; 
+            try { aname = $2; elements = []; data_type = VarArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum} 
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | VAR ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            { aname = $2; elements = (List.rev $8); data_type = VarArr; length = List.length $8; 
+            try { aname = $2; elements = (List.rev $8); data_type = VarArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | VECTOR ID LBRACK LITERAL RBRACK 
         { 
-            { aname = $2; elements = []; data_type = VectorArr; length = 0; 
+            try { aname = $2; elements = []; data_type = VectorArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | VECTOR ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            { aname = $2; elements = (List.rev $8); data_type = VectorArr; length = List.length $8; 
+            try { aname = $2; elements = (List.rev $8); data_type = VectorArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | MATRIX ID LBRACK LITERAL RBRACK 
         { 
-            { aname = $2; elements = []; data_type = MatrixArr; length = 0; 
+            try { aname = $2; elements = []; data_type = MatrixArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | MATRIX ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            { aname = $2; elements = (List.rev $8); data_type = MatrixArr; length = List.length $8; 
+            try { aname = $2; elements = (List.rev $8); data_type = MatrixArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | INSPACE ID LBRACK LITERAL RBRACK 
         { 
-            { aname = $2; elements = []; data_type = InSpaceArr; length = 0; 
+            try { aname = $2; elements = []; data_type = InSpaceArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | INSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            { aname = $2; elements = (List.rev $8); data_type = InSpaceArr; length = List.length $8; 
+            try { aname = $2; elements = (List.rev $8); data_type = InSpaceArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | AFFSPACE ID LBRACK LITERAL RBRACK 
         { 
-            { aname = $2; elements = []; data_type = AffSpaceArr; length = 0; 
+            try { aname = $2; elements = []; data_type = AffSpaceArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | AFFSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            { aname = $2; elements = (List.rev $8); data_type = AffSpaceArr; length = List.length $8; 
+            try { aname = $2; elements = (List.rev $8); data_type = AffSpaceArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | VECSPACE ID LBRACK LITERAL RBRACK 
         { 
-            { aname = $2; elements = []; data_type = VecSpaceArr; length = 0; 
+            try { aname = $2; elements = []; data_type = VecSpaceArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
     | VECSPACE ID LBRACK LITERAL RBRACK ASSIGN LBRACE array_elements_list RBRACE 
         { 
-            { aname = $2; elements = (List.rev $8); data_type = VecSpaceArr; length = List.length $8; 
+            try { aname = $2; elements = (List.rev $8); data_type = VecSpaceArr; length = int_of_string $4; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum}
+            with Failure "int_of_string" -> raise(Failure "not valid array length");
         }
 
 array_elements_list :
