@@ -31,8 +31,8 @@ rule token = parse
 | "&&"  { AND }
 | "||"  { OR }
 (* additive operators *)
-| '+'   { PLUS }
-| '-'   { MINUS }
+| "+"   { PLUS }
+| "-"   { MINUS }
 | "+."  { PLUS_DOT }
 | "-."  { MINUS_DOT }
 (* multiplicative operators *)
@@ -68,7 +68,7 @@ rule token = parse
 (* function declaration *)
 | "function"    { FUNCTION }
 (* Literal and identifers *)
-| ['+' '-']? ['0'-'9']+ | ('.'['0'-'9']+Exp? | ['0'-'9']+ ('.'['0'-'9']*Exp? | Exp))as num  { LITERAL(num) }
+| ['0'-'9']+ | ('.'['0'-'9']+Exp? | ['0'-'9']+ ('.'['0'-'9']*Exp? | Exp))as num  { LITERAL(num) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as id { ID(id) }
 | eof       { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }

@@ -288,6 +288,7 @@ statement_list :
 expression:
     LITERAL                             { Literal($1) }
     | element                           { Id($1) }
+    | MINUS LITERAL                     { Literal(String.concat "" ["-";$2]) }
     | expression TRANSPOSE              { Transpose($1) }
     | expression PLUS       expression  { Binop($1, Add, $3) }
     | expression MINUS      expression  { Binop($1, Sub, $3) }

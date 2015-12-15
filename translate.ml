@@ -297,12 +297,12 @@ let translate_global_normal_decl env global_var =
         in
         if not (check_list env (real_type a.data_type) a.elements) then  (* check for each element if it has right type *)
            raise(Failure("array elements have wrong type"))
-        else                                             (* for global array, local_vars table is empty*)
+        else                                                    (* for global array, local_vars table is empty*)
         let p_array = { p_aname = a.aname; 
                         p_elements = pExprs;
                         p_data_type = translate_prim_type a.data_type; 
                         p_length = a.length;
-                        p_pos = a.pos   } 
+                        p_pos = a.pos} 
         in
         let global_vars, global_funcs, local_vars = env in
             let global_vars = 
