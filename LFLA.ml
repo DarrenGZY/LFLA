@@ -16,6 +16,7 @@ let _ =
              fprintf pyFile "%s\n" "sys.path.append('./lib')";
              fprintf pyFile "%s\n" "from InSpace import *";
              fprintf pyFile "%s\n" "from AffSpace import *\n";
+             fprintf pyFile "%s\n" "from Core import *";
              fprintf pyFile "%s\n"  (Compile.compile python_program);
              close_out pyFile;
              Sys.command ("chmod +x a.out") ;

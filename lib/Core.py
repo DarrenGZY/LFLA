@@ -36,7 +36,7 @@ def basis(vecspace):
 	return vecspace.vectors[0]
 
 
-def liebraket(matA, matB):
+def liebracket(matA, matB):
 	if (matA.shape == matB.shape):
 		if (all (len(row) == len(matA) for row in matA)) and \
 			(all (len(row) == len(matB) for row in matB)):

@@ -20,7 +20,7 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
         | Pand -> "&&" | Por -> "||"   ) ^ " " ^
         string_of_expr e2   
     | P_belongs(e1, e2) -> string_of_expr e2 ^ ".belongs(" ^ string_of_expr e1 ^ ")"
-    | P_lieBracket(e1, e2) -> string_of_expr e1 ^ ".liebracket(" ^ string_of_expr e2 ^ ")"
+    | P_lieBracket(e1, e2) -> "liebracket(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"
     | P_inpro(id, e1, e2) -> id ^ ".product(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")" 
     | P_assign(v, e) -> v ^ " = " ^ string_of_expr e
     | P_assignArr(v, e) -> v ^ " = [" ^ String.concat "," (List.map string_of_expr e) ^ "]"
