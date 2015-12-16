@@ -125,7 +125,9 @@ vector_elements_list_opt :
 
 vector_elements_list :
     LITERAL                                 { [$1] }
+    | MINUS LITERAL                           { [String.concat "" ["-";$2]] }
     | vector_elements_list COMMA LITERAL    { $3::$1 }
+    | vector_elements_list COMMA MINUS LITERAL  { (String.concat "" ["-";$4])::$1 }
 
 matrix_declaration_expression :
     MATRIX ID   
