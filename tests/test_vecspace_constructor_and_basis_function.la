@@ -6,7 +6,7 @@ function main()
 	vecspace vs1 = L(v1, v2);
 	vecspace vs2 = L(v1, v2, v3);
 	vecspace vs3 = L();
-	vector vecs[2] = {v1,v2,v3};
+	vector vecs[3] = {v1,v2,v3};
 	vecspace vs4 = L(vecs);
     print(basis(vs1));
     print(basis(vs2));
