@@ -65,7 +65,9 @@ and translate_expr env = function
         let (pE1, env) = translate_expr env e1 in
         let pO = translate_op o in
         let (pE2, env) = translate_expr env e2 in
-            (P_binop(pE1, pO, pE2), env)
+        (match (type_of env e1, o, type_of env e2) with
+            Matrix, Mult_Dot, Matrix -> (P_matrixMul(pE1, pE2), env)
+            |_,_,_ -> (P_binop(pE1, pO, pE2), env))
     | Belongs(e1, e2) -> 
         let (pE1, env) = translate_expr env e1 in
         let (pE2, env) = translate_expr env e2 in

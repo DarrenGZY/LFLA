@@ -58,6 +58,7 @@ type pExpr =
   | P_builtin of pElem * pBuiltin_func
   | P_print of pExpr
   | P_exprValue of pPrim_value
+  | P_matrixMul of pExpr * pExpr
   | P_noexpr
 
 and pPrim_value = 

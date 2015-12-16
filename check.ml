@@ -59,6 +59,7 @@ and type_of env  = function
                         | ( Vector, Var ) -> Vector
                         | ( Var, Matrix ) -> Matrix
                         | ( Matrix, Var ) -> Matrix
+                        | ( Matrix, Matrix) -> Matrix
                         | _ -> raise(Failure("in +., -. fail in type checking")))
         | Equal | Neq | Less | Leq
         | Greater | Geq | And | Or -> 

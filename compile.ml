@@ -38,6 +38,7 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
    (* | P_vsconst(e) -> "VecSpace([" ^ String.concat ", " (List.map string_of_expr e) ^ "])" *)
     | P_exprValue(v) -> string_of_prim_value v
     | P_noexpr -> ""
+    | P_matrixMul(e1, e2) -> "np.multiply(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"
 
 and string_of_prim_value = function
     P_Value(s) -> s
