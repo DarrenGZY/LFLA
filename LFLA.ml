@@ -11,7 +11,7 @@ let _ =
     let program = Parser.program Scanner.token lexbuf in
         let python_program, env = Translate.translate program in 
         let pyFile = open_out "a.out" in
-             fprintf pyFile "%s\n" "#!/usr/local/bin/python";
+             fprintf pyFile "%s\n" "#!/usr/bin/python";
              fprintf pyFile "%s\n" "import sys";
              fprintf pyFile "%s\n" "sys.path.append('./lib')";
              fprintf pyFile "%s\n" "from InSpace import *";
