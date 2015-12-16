@@ -2,5 +2,5 @@ function main()
 {
     matrix a = [ 1,2;3,4;];
   	matrix i = 2 *. a;
-	  print(i);
+	print(i);
 } 	
