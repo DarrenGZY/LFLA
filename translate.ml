@@ -294,6 +294,10 @@ and translate_stmt env= function
                     let pStmts2, env = traverse_stmts env s2 in
                         P_if(pExpr, pStmts1, pStmts2), env 
     | For(l, a1, a2, s) ->
+        let typ = type_of_id env l in
+        if typ <> Var then
+            raise(Failure("variable in for should be var type"))
+        else
         let pExpr1, env = translate_expr env a1 in
         let pExpr2, env = translate_expr env a2 in
             let typ1 = type_of env a1 in

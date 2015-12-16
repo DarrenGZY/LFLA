@@ -277,8 +277,8 @@ statement :
                                     { If($2, List.rev $4, []) }
     | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
                                     { If($2, List.rev $4, List.rev $8) }
-    | FOR VAR ID ASSIGN expression COLON expression LBRACE statement_list RBRACE 
-                                    { For($3, $5, $7,List.rev($9)) } /* TODO: if var is needed here */
+    | FOR ID ASSIGN expression COLON expression LBRACE statement_list RBRACE 
+                                    { For($2, $4, $6,List.rev($8)) } /* TODO: if var is needed here */
     | WHILE expression LBRACE statement_list RBRACE { While($2, List.rev $4) }
     | local_normal_declaration      { Decl($1) }
 
