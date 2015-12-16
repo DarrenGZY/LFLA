@@ -1,7 +1,7 @@
-unction main()
+function main()
 {
     matrix a = [ 1,2;3,4;];
-	  matrix d = [2,1;4,3;];
-	  matrix e =  a + d;
+	matrix d = [2,1;4,3;];
+	matrix e =  a + d;
 	 print(e);
 }
