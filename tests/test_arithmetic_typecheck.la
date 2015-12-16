@@ -12,6 +12,6 @@ function main()
 
     vector f = e + d;
 
-    vecspace w = L(d, e, a);
+    # vecspace w = L(d, e, a); # not allowed
 
 }
