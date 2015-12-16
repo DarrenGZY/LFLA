@@ -42,7 +42,7 @@ programs :
     | programs global_normal_declaration   { Variable($2)::$1 } 
 
 funtion_declaration :
-    FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE function_statements RBRACE { 
+    FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE statement_list  RBRACE { 
         {   fname=$2; 
             params=$4; 
             body= List.rev $7 } }
@@ -274,12 +274,13 @@ statement :
     | CONTINUE  expression SEMI     { Continue }
     | LBRACE statement_list RBRACE  { Block(List.rev $2) }
     | IF expression LBRACE statement_list RBRACE %prec NOELSE 
-                                    { If($2, $4, []) }
+                                    { If($2, List.rev $4, []) }
     | IF expression LBRACE statement_list RBRACE ELSE LBRACE statement_list RBRACE 
-                                    { If($2, $4, $8) }
+                                    { If($2, List.rev $4, List.rev $8) }
     | FOR VAR ID ASSIGN expression COLON expression LBRACE statement_list RBRACE 
                                     { For($3, $5, $7,List.rev($9)) } /* TODO: if var is needed here */
-    | WHILE expression LBRACE statement_list RBRACE { While($2, $4) }
+    | WHILE expression LBRACE statement_list RBRACE { While($2, List.rev $4) }
+    | local_normal_declaration      { Decl($1) }
 
 statement_list :
     /* nothing */ { [] }

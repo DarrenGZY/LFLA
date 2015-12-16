@@ -50,30 +50,6 @@ and string_of_prim_value = function
     | P_Expression(e) -> string_of_expr e
     | P_Notknown -> ""   
 
-(* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
-let rec string_of_stmt num_ident stmt = 
-    let spaces = 4 in 
-    match stmt with 
-    P_block(stmts) ->
-        "\n" ^ (String.make (num_ident*spaces) ' ') ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) stmts) ^ "\n"
-    | P_expr(expr) -> (String.make (num_ident*spaces) ' ') ^ string_of_expr expr ^ "\n";
-    | P_return(expr) -> (String.make (num_ident*spaces) ' ') ^ "return " ^ string_of_expr expr ^ "\n";
-    | P_if(e, s, []) -> (String.make (num_ident*spaces) ' ') ^ "if " ^ string_of_expr e ^ ":\n" 
-        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s)
-    | P_if(e, s1, s2) -> (String.make (num_ident*spaces) ' ') ^ "if " ^ string_of_expr e ^ ":\n"
-        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s1) ^ "\n" 
-        ^ (String.make (num_ident*spaces) ' ') ^ "else:\n" ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s2) ^ "\n"
-    | P_for(l, a1, a2, s) ->
-        (String.make (num_ident*spaces) ' ') ^ "for " ^ l ^ " in range(" ^ string_of_expr a1 ^ ", " ^  string_of_expr a2  ^ ") :\n" 
-        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
-    | P_while(e, s) -> (String.make (num_ident*spaces) ' ') ^ "while " ^ string_of_expr e ^ ": \n" 
-        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
-    | P_continue -> (String.make (num_ident*spaces) ' ') ^ "continue "
-    | P_break -> (String.make (num_ident*spaces) ' ') ^ "break "
-
-
-
-
 let string_of_prim_type = function
     P_var -> "0"
     | P_vector -> "np.array([])"
@@ -100,6 +76,30 @@ let string_of_normal_decl num_ident decl =
     | P_Arraydecl(a) -> 
             (String.make (num_ident*spaces) ' ') ^ a.p_aname ^ "=[" ^ String.concat "," (List.map string_of_expr a.p_elements) ^ "]\n"
 
+(* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
+let rec string_of_stmt num_ident stmt = 
+    let spaces = 4 in 
+    match stmt with 
+    P_block(stmts) ->
+        "\n" ^ (String.make (num_ident*spaces) ' ') ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) stmts) ^ "\n"
+    | P_expr(expr) -> (String.make (num_ident*spaces) ' ') ^ string_of_expr expr ^ "\n";
+    | P_return(expr) -> (String.make (num_ident*spaces) ' ') ^ "return " ^ string_of_expr expr ^ "\n";
+    | P_if(e, s, []) -> (String.make (num_ident*spaces) ' ') ^ "if " ^ string_of_expr e ^ ":\n" 
+        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s)
+    | P_if(e, s1, s2) -> (String.make (num_ident*spaces) ' ') ^ "if " ^ string_of_expr e ^ ":\n"
+        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s1) ^ "\n" 
+        ^ (String.make (num_ident*spaces) ' ') ^ "else:\n" ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s2) ^ "\n"
+    | P_for(l, a1, a2, s) ->
+        (String.make (num_ident*spaces) ' ') ^ "for " ^ l ^ " in range(" ^ string_of_expr a1 ^ ", " ^  string_of_expr a2  ^ ") :\n" 
+        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
+    | P_while(e, s) -> (String.make (num_ident*spaces) ' ') ^ "while " ^ string_of_expr e ^ ": \n" 
+        ^ String.concat "" (List.map (string_of_stmt (num_ident+1)) s) ^ "\n"
+    | P_continue -> (String.make (num_ident*spaces) ' ') ^ "continue "
+    | P_break -> (String.make (num_ident*spaces) ' ') ^ "break "
+    | P_decl(d) -> string_of_normal_decl num_ident d
+
+
+
 let string_of_params = function
     P_Vardecl(v) -> v.p_vname
     | P_Arraydecl(a) -> a.p_aname
@@ -111,7 +111,7 @@ let string_of_func_stmt = function
 
 let string_of_func_decl fdecl =
     "def " ^ fdecl.p_fname ^ "(" ^ String.concat "," (List.map string_of_params fdecl.p_params) ^  
-    ") :\n" ^ String.concat "" (List.map string_of_func_stmt fdecl.p_body) ^ "\n"
+    ") :\n" ^ String.concat "" (List.map (string_of_stmt 1) fdecl.p_body) ^ "\n"
 
 let string_of_program_stmt = function
     P_Variable(v) -> string_of_normal_decl 0 v

@@ -71,17 +71,6 @@ and pPrim_value =
   | P_Expression of pExpr
   | P_Notknown
 
-type pStmt =
-    P_block of pStmt list
-  | P_expr of pExpr
-  | P_return of pExpr
-  | P_if of pExpr * pStmt list * pStmt list
-  | P_for of string * pExpr * pExpr * pStmt list
-  | P_while of pExpr * pStmt list
-  | P_continue
-  | P_break
-
-
 type pVar_decl = {
     p_vname : string;
     p_value : pPrim_value;
@@ -102,6 +91,17 @@ type pNormal_decl =
     P_Vardecl of pVar_decl
   | P_Arraydecl of pArray_decl
 
+type pStmt =
+    P_block of pStmt list
+  | P_expr of pExpr
+  | P_return of pExpr
+  | P_if of pExpr * pStmt list * pStmt list
+  | P_for of string * pExpr * pExpr * pStmt list
+  | P_while of pExpr * pStmt list
+  | P_continue
+  | P_break
+  | P_decl of pNormal_decl
+
 type pFunction_stmt =
     P_Local of pNormal_decl
   | P_Body of pStmt
@@ -109,7 +109,7 @@ type pFunction_stmt =
 type pFunc_decl = {
     p_fname : string;
     p_params : pNormal_decl list;
-    p_body : pFunction_stmt list;
+    p_body : pStmt list;
 }
 
 type pProgram_stmt =

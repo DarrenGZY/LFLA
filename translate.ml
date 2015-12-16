@@ -156,6 +156,113 @@ and translate_prim_value env = function
                 else
                     P_Expression(pExpr), env
     | Notknown -> P_Notknown, env
+
+(* translate ast prim type to python ast prim type *)
+let translate_prim_type = function
+    Var -> P_var
+    | Vector -> P_vector
+    | Matrix -> P_matrix
+    | VecSpace -> P_vecSpace
+    | InSpace -> P_inSpace
+    | AffSpace -> P_affSpace
+    | VarArr -> P_varArr
+    | VectorArr -> P_vectorArr
+    | MatrixArr -> P_matrixArr
+    | VecSpaceArr -> P_vecSpaceArr
+    | InSpaceArr -> P_inSpaceArr
+    | AffSpaceArr -> P_affSpaceArr
+    | Unit -> P_unit
+   
+(* translate local variables to python ast variables *)
+let translate_local_normal_decl env local_var = 
+    match local_var with
+    Lvardecl(v) ->
+        let pValue, env = translate_prim_value env v.value in
+        let p_var =  {  p_vname = v.vname; 
+                        p_value = pValue; 
+                        p_data_type = translate_prim_type v.data_type; 
+                        p_pos = v.pos   } 
+        in
+        let global_vars, global_funcs, local_vars = env in
+            let local_vars = 
+                if (not (StringMap.mem v.vname local_vars)) then
+                    StringMap.add v.vname local_var local_vars
+                else
+                    raise(Failure("Already defined variable  " ^ v.vname))
+            in
+            P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
+           
+    | Larraydecl(a) -> 
+        let length = List.length a.elements in
+        if length <> a.length then
+            raise(Failure("array length not match"))
+        else
+        let pExprs, env = traverse_exprs env a.elements in
+        if not (check_list env (real_type a.data_type) a.elements) then (* check if array elements have right type *)
+            raise(Failure("array elements have wrong type"))
+        else
+        let p_array = { p_aname = a.aname; 
+                        p_elements = pExprs;
+                        p_data_type = translate_prim_type a.data_type; 
+                        p_length = a.length;
+                        p_pos = a.pos   } 
+        in
+        let global_vars, global_funcs, local_vars = env in
+            let local_vars = 
+                if (not (StringMap.mem a.aname local_vars)) then
+                    StringMap.add a.aname local_var local_vars
+                else
+                    raise(Failure("Already defined variable " ^ a.aname))
+            in
+            P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
+
+
+(* translate global variables to python ast variables *)
+let translate_global_normal_decl env global_var = 
+    let global_vars, global_funcs = env in
+    match global_var with
+    Gvardecl(v) ->
+        let pValue, env = translate_prim_value (global_vars, global_funcs, StringMap.empty) v.value 
+        in                                              (* for global variable, local_vars table is empty *)
+        let p_var =  {  p_vname = v.vname; 
+                        p_value = pValue; 
+                        p_data_type = translate_prim_type v.data_type; 
+                        p_pos = v.pos   } 
+        in
+        let global_vars, global_funcs, local_vars = env in
+            let global_vars = 
+                if (not (StringMap.mem v.vname global_vars)) then
+                    StringMap.add v.vname global_var global_vars
+                else
+                    raise(Failure("Already defined variable " ^ v.vname))
+            in
+            P_Vardecl(p_var), (global_vars, global_funcs)
+           
+    | Garraydecl(a) -> 
+        let length = List.length a.elements in
+        if length <> a.length then
+            raise(Failure("array length not match"))
+        else
+        let pExprs, env = traverse_exprs (global_vars, global_funcs, StringMap.empty) a.elements 
+        in
+        if not (check_list env (real_type a.data_type) a.elements) then  (* check for each element if it has right type *)
+           raise(Failure("array elements have wrong type"))
+        else                                                    (* for global array, local_vars table is empty*)
+        let p_array = { p_aname = a.aname; 
+                        p_elements = pExprs;
+                        p_data_type = translate_prim_type a.data_type; 
+                        p_length = a.length;
+                        p_pos = a.pos} 
+        in
+        let global_vars, global_funcs, local_vars = env in
+            let global_vars = 
+                if (not (StringMap.mem a.aname global_vars)) then
+                    StringMap.add a.aname global_var global_vars
+                else
+                    raise(Failure("Already defined variable " ^ a.aname))
+            in
+            P_Arraydecl(p_array), (global_vars, global_funcs)
+
 (* traverse_stmts works to translate a list of statements *)
 let rec traverse_stmts env = function
     [] -> [], env
@@ -206,112 +313,9 @@ and translate_stmt env= function
                         P_while(pExpr, pStmts), env
     | Continue -> P_continue, env
     | Break -> P_break, env
-
-
-(* translate ast prim type to python ast prim type *)
-let translate_prim_type = function
-    Var -> P_var
-    | Vector -> P_vector
-    | Matrix -> P_matrix
-    | VecSpace -> P_vecSpace
-    | InSpace -> P_inSpace
-    | AffSpace -> P_affSpace
-    | VarArr -> P_varArr
-    | VectorArr -> P_vectorArr
-    | MatrixArr -> P_matrixArr
-    | VecSpaceArr -> P_vecSpaceArr
-    | InSpaceArr -> P_inSpaceArr
-    | AffSpaceArr -> P_affSpaceArr
-    | Unit -> P_unit
-
-(* translate local variables to python ast variables *)
-let translate_local_normal_decl env local_var = 
-    match local_var with
-    Lvardecl(v) ->
-        let pValue, env = translate_prim_value env v.value in
-        let p_var =  {  p_vname = v.vname; 
-                        p_value = pValue; 
-                        p_data_type = translate_prim_type v.data_type; 
-                        p_pos = v.pos   } 
-        in
-        let global_vars, global_funcs, local_vars = env in
-            let local_vars = 
-                if (not (StringMap.mem v.vname local_vars)) then
-                    StringMap.add v.vname local_var local_vars
-                else
-                    raise(Failure("Already defined variable  " ^ v.vname))
-            in
-            P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
-           
-    | Larraydecl(a) -> 
-        let length = List.length a.elements in
-        if length <> a.length then
-            raise(Failure("array length not match"))
-        else
-        let pExprs, env = traverse_exprs env a.elements in
-        if not (check_list env (real_type a.data_type) a.elements) then (* check if array elements have right type *)
-            raise(Failure("array elements have wrong type"))
-        else
-        let p_array = { p_aname = a.aname; 
-                        p_elements = pExprs;
-                        p_data_type = translate_prim_type a.data_type; 
-                        p_length = a.length;
-                        p_pos = a.pos   } 
-        in
-        let global_vars, global_funcs, local_vars = env in
-            let local_vars = 
-                if (not (StringMap.mem a.aname local_vars)) then
-                    StringMap.add a.aname local_var local_vars
-                else
-                    raise(Failure("Already defined variable " ^ a.aname))
-            in
-            P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
-
-(* translate global variables to python ast variables *)
-let translate_global_normal_decl env global_var = 
-    let global_vars, global_funcs = env in
-    match global_var with
-    Gvardecl(v) ->
-        let pValue, env = translate_prim_value (global_vars, global_funcs, StringMap.empty) v.value 
-        in                                              (* for global variable, local_vars table is empty *)
-        let p_var =  {  p_vname = v.vname; 
-                        p_value = pValue; 
-                        p_data_type = translate_prim_type v.data_type; 
-                        p_pos = v.pos   } 
-        in
-        let global_vars, global_funcs, local_vars = env in
-            let global_vars = 
-                if (not (StringMap.mem v.vname global_vars)) then
-                    StringMap.add v.vname global_var global_vars
-                else
-                    raise(Failure("Already defined variable " ^ v.vname))
-            in
-            P_Vardecl(p_var), (global_vars, global_funcs)
-           
-    | Garraydecl(a) -> 
-        let length = List.length a.elements in
-        if length <> a.length then
-            raise(Failure("array length not match"))
-        else
-        let pExprs, env = traverse_exprs (global_vars, global_funcs, StringMap.empty) a.elements 
-        in
-        if not (check_list env (real_type a.data_type) a.elements) then  (* check for each element if it has right type *)
-           raise(Failure("array elements have wrong type"))
-        else                                                    (* for global array, local_vars table is empty*)
-        let p_array = { p_aname = a.aname; 
-                        p_elements = pExprs;
-                        p_data_type = translate_prim_type a.data_type; 
-                        p_length = a.length;
-                        p_pos = a.pos} 
-        in
-        let global_vars, global_funcs, local_vars = env in
-            let global_vars = 
-                if (not (StringMap.mem a.aname global_vars)) then
-                    StringMap.add a.aname global_var global_vars
-                else
-                    raise(Failure("Already defined variable " ^ a.aname))
-            in
-            P_Arraydecl(p_array), (global_vars, global_funcs)
+    | Decl(d) -> 
+            let pD, env = translate_local_normal_decl env d in 
+            P_decl(pD), env
 
 (* translate a list of local variables *)
 let rec traverse_local_vars env = function
@@ -343,7 +347,7 @@ let translate_func_decl env fdecl =
     let global_vars, global_funcs = env in
         if (not (StringMap.mem fdecl.fname global_funcs)) then
             let pParams, env = traverse_local_vars (global_vars, global_funcs, StringMap.empty) fdecl.params in (* give empty local_vars table *)
-            let pStmts, env = traverse_func_stmts env fdecl.body in
+            let pStmts, env = traverse_stmts env fdecl.body in
             let global_vars, global_funcs, local_vars = env in
                 let global_funcs = StringMap.add fdecl.fname fdecl global_funcs
                 in

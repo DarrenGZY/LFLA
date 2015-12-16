@@ -74,18 +74,6 @@ and prim_value =
   | Expression of prim_type * expr
   | Notknown
 
-
-type stmt =
-    Block of stmt list
-  | Expr of expr
-  | Return of expr
-  | If of expr * stmt list * stmt list
-  | For of string * expr * expr * stmt list
-  | While of expr * stmt list
-  | Continue
-  | Break
-
-
 type var_decl = {
     vname : string;
     value : prim_value;
@@ -108,14 +96,19 @@ type gNormal_decl =
 
 type lNormal_decl = 
     Lvardecl of var_decl
-  | Larraydecl of array_decl  
-(*
-type func_decl = {
-    fname : string;
-    params : normal_decl list;
-    locals : normal_decl list;
-    body : stmt list;
-}*)
+  | Larraydecl of array_decl 
+
+type stmt =
+    Block of stmt list
+  | Expr of expr
+  | Return of expr
+  | If of expr * stmt list * stmt list
+  | For of string * expr * expr * stmt list
+  | While of expr * stmt list
+  | Continue
+  | Break
+  | Decl of lNormal_decl 
+
 type function_stmt =
     Local of lNormal_decl
   | Body of stmt
@@ -123,7 +116,7 @@ type function_stmt =
 type func_decl = {
     fname : string;
     params : lNormal_decl list;
-    body : function_stmt list;
+    body : stmt list;
 }
 
 type program_stmt =
@@ -133,7 +126,6 @@ type program_stmt =
 (*type program = normal_decl list * func_decl list*)
 
 type program = program_stmt list
-
 
 let real_type = function
     Var -> Var
