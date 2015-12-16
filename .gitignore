@@ -9,6 +9,9 @@
 *.cmo
 *.mll
 *.pyc
+*.la.out
+*.la.diff
+*.log
 parser.ml
 scanner.ml
 .merlin
