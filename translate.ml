@@ -23,6 +23,23 @@ let translate_op = function
     | And -> Pand
     | Or -> Por
 
+
+(* translate ast prim type to python ast prim type *)
+let translate_prim_type = function
+    Var -> P_var
+    | Vector -> P_vector
+    | Matrix -> P_matrix
+    | VecSpace -> P_vecSpace
+    | InSpace -> P_inSpace
+    | AffSpace -> P_affSpace
+    | VarArr -> P_varArr
+    | VectorArr -> P_vectorArr
+    | MatrixArr -> P_matrixArr
+    | VecSpaceArr -> P_vecSpaceArr
+    | InSpaceArr -> P_inSpaceArr
+    | AffSpaceArr -> P_affSpaceArr
+    | Unit -> P_unit
+
 (* translate ast element to python ast element, and need to check symbol tables *)
 let translate_elem env = function
     | Nid(s) -> 
@@ -105,8 +122,10 @@ and translate_expr env = function
             else
                 let pE, env = traverse_exprs env el in
                     (P_call(f, pE), env)
-    | Builtin(el, s) -> 
-        (P_builtin(translate_elem env el, translate_builtin s), env)
+    | Builtin(el, s) -> (*TODO: check the builtin function types *) 
+            let typ = type_of_element env el in
+            let pTyp = translate_prim_type typ in
+            (P_builtin(pTyp, translate_elem env el, translate_builtin s), env)
     | Print(e) -> let pE, env = translate_expr env e in
                     P_print(pE), env
    (* | Vsconst(e) -> let pE, env = traverse_exprs env e in 
@@ -158,22 +177,6 @@ and translate_prim_value env = function
                 else
                     P_Expression(pExpr), env
     | Notknown -> P_Notknown, env
-
-(* translate ast prim type to python ast prim type *)
-let translate_prim_type = function
-    Var -> P_var
-    | Vector -> P_vector
-    | Matrix -> P_matrix
-    | VecSpace -> P_vecSpace
-    | InSpace -> P_inSpace
-    | AffSpace -> P_affSpace
-    | VarArr -> P_varArr
-    | VectorArr -> P_vectorArr
-    | MatrixArr -> P_matrixArr
-    | VecSpaceArr -> P_vecSpaceArr
-    | InSpaceArr -> P_inSpaceArr
-    | AffSpaceArr -> P_affSpaceArr
-    | Unit -> P_unit
    
 (* translate local variables to python ast variables *)
 let translate_local_normal_decl env local_var = 

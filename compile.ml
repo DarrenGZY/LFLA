@@ -26,9 +26,13 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
     | P_assignArr(v, e) -> v ^ " = [" ^ String.concat "," (List.map string_of_expr e) ^ "]"
     | P_call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-    | P_builtin(el, s) ->
+    | P_builtin(typ, el, s) ->
         ( match s with
-            P_dim -> string_of_elem el ^ ".size"
+            P_dim -> 
+                (match typ with
+                P_vector -> string_of_elem el ^ ".size"
+                | P_vecSpace | P_inSpace | P_affSpace -> string_of_elem el ^ ".dim()"
+                | _ -> "wrong type")
             | P_size -> string_of_elem el ^ ".shape"
           (*  | P_vsconst -> "VecSpace([" ^ string_of_elem el ^ "])" *)
             | P_basis -> string_of_elem el ^ ".basis()"

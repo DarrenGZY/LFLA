@@ -17,7 +17,9 @@ let type_of_id env s =
     else
         raise(Failure("not find when type checking"))
 
-
+let type_of_element env = function
+    Nid(s) -> type_of_id env s
+    |Arrayid(s1, s2) -> type_of_id env s1 
 
 let rec check_list env typ = function
     [] -> true

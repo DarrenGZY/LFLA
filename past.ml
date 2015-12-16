@@ -55,7 +55,7 @@ type pExpr =
   | P_assign of string * pExpr
   | P_assignArr of string * pExpr list
   | P_call of string * pExpr list
-  | P_builtin of pElem * pBuiltin_func
+  | P_builtin of pPrim_type * pElem * pBuiltin_func
   | P_print of pExpr
   | P_exprValue of pPrim_value
   | P_matrixMul of pExpr * pExpr
