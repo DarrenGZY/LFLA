@@ -24,12 +24,12 @@ def floor(var):
 	return np.floor(var)
 
 
-def dim(vec):
-	return vec.size
+def dim(npArray):
+	return npArray.size
 
 
-def size(mat):
-	return mat.shape
+def size(npArray):
+	return npArray.shape
 
 
 def basis(vecspace):

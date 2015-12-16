@@ -2,5 +2,7 @@ function main()
 {
     vector a = [1,2,3];
     print(dim(a));
+    vector b;
+    print(dim(b));	
 
 }
