@@ -33,7 +33,7 @@ class VecSpace:
 			return 1
 
 
-	def plus(self, vecspace):
+	def __add__(self, vecspace):
 		temp = self.vectors + vecspace.vectors
 		return VecSpace(temp)
 
