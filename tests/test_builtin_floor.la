@@ -1,0 +1,8 @@
+function main()
+{
+    var a = 1.2;
+    vector b = [1,2];
+    var c = floor(a);
+    # var c = floor(b); not allowed
+    print(c);
+}

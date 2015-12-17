@@ -1,0 +1,8 @@
+function main()
+{
+    var a = 1.2;
+    vector b = [1,2];
+    var c = ceil(a);
+    # var c = ceil(b); not allowed
+    print(c);
+}
