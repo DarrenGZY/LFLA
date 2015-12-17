@@ -5,7 +5,8 @@ function linearIndep(vector[] vectors, var n)
         { return 0; }
     
     vecspace vs;
-    for var i = 0:n
+    var i;
+    for i = 0:n
     {
         if vectors[i]@vs
             {return 0;}
