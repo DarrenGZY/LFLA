@@ -10,7 +10,7 @@
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
 %token TIMES DIVIDE TIMES_DOT DIVIDE_DOT 
 %token ASSIGN
-%token TRANSPOSE BELONGS
+%token TRANSPOSE BELONGS ACTION
 %token LT LEQ GT GEQ EQ NEQ 
 %token VAR VECTOR VECSPACE MATRIX INSPACE AFFSPACE
 %token WHILE FOR IF ELSE BREAK CONTINUE RETURN FUNCTION
@@ -26,7 +26,7 @@
 %left PLUS MINUS PLUS_DOT MINUS_DOT
 %left TIMES DIVIDE TIMES_DOT DIVIDE_DOT
 %left AND OR
-%left TRANSPOSE BELONGS
+%left TRANSPOSE BELONGS ACTION
 
 %start program
 %type<Ast.program> program
@@ -310,6 +310,7 @@ expression:
     | expression TIMES_DOT  expression  { Binop($1, Mult_Dot, $3) }
     | expression DIVIDE_DOT expression  { Binop($1, Div_Dot, $3) }
     | expression BELONGS    expression  { Callbuiltin(Belongs, [$1;$3]) }
+    | expression ACTION     expression  { Callbuiltin(Action, [$1;$3]) }
     | ID     LIN expression  COMMA   expression  RIN     { Callbuiltin(Inpro, [Id(Nid($1));$3;$5]) }
     | LLBRACK   expression  COMMA   expression  RRBRACK { Callbuiltin(LieBracket, [$2;$4]) }   
     | ID    ASSIGN  expression                          { Assign($1, $3) }
@@ -336,7 +337,6 @@ builtin:
     | FLOOR     { Floor }
     | SQRT      { Sqrt }
     | SOLVE     { Solve }
-
 /* normal identifier and array identifier */
 element:
     | ID                          { Nid($1) }

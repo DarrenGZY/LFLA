@@ -73,6 +73,7 @@ type pExpr =
   | P_floor of pExpr
   | P_sqrt of pExpr
   | P_solve of pExpr * pExpr
+  | P_action of pExpr * pExpr
   | P_noexpr
 
 and pPrim_value = 

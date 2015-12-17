@@ -19,9 +19,6 @@ type mat_value =
 type vecspace_value =
     vec_value list
 
-
-
-
 type elem = 
   | Nid of string  (* normal identifier *)
   | Arrayid of string * string (* array identifier *)
@@ -43,6 +40,7 @@ type builtin_func =
   | Inpro
   | Transpose
   | Print
+  | Action
 
 type prim_type = 
     Var
@@ -58,7 +56,6 @@ type prim_type =
   | InSpaceArr
   | AffSpaceArr
   | Unit
-
 
 type expr =
     Literal of string

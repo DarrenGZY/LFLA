@@ -1,9 +1,0 @@
-function main()
-{
-vector u1 = [1,2];
-vector u2 = [2,3];
-vector us[2] = [u1,u2];
-matrix m = [1,2;2,8];
-inspace newIns = inspace(us,m);
-print(othoBasis(newIns));
-}

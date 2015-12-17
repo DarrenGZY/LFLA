@@ -215,6 +215,13 @@ and type_of env  = function
                             ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
                                 (Matrix, Vector) -> AffSpace
                                 | _ -> raise(Failure("in solve fail in type checking")))
+                | Action -> 
+                        if (List.length el) <> 2 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
+                                (Matrix, Vector) -> Vector
+                                | _ -> raise(Failure("in action fail in type checking")))
                 | Print -> Unit)
    (* | Vsconst(eList) ->
             if check_list env Vector eList then
