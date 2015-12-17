@@ -23,7 +23,6 @@ let translate_op = function
     | And -> Pand
     | Or -> Por
 
-
 (* translate ast prim type to python ast prim type *)
 let translate_prim_type = function
     Var -> P_var
@@ -62,6 +61,11 @@ let translate_builtin = function
     Dim -> P_dim
     | Size -> P_size
     | Basis -> P_basis
+    | Trace -> P_trace
+    | Image -> P_image
+    | Rank -> P_rank
+    | Evalue -> P_evalue
+
 (* env = (global_var, global_funcs, local_vars) *)
 (* traverse_exprs works to translate a list of expression *)
 let rec traverse_exprs env = function

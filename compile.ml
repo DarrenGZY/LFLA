@@ -36,6 +36,10 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
             | P_size -> string_of_elem el ^ ".shape"
           (*  | P_vsconst -> "VecSpace([" ^ string_of_elem el ^ "])" *)
             | P_basis -> string_of_elem el ^ ".basis()"
+            | P_trace -> "trace(" ^ string_of_elem el ^ ")"
+            | P_rank -> "rank(" ^ string_of_elem el ^ ")"
+            | P_image -> "image(" ^ string_of_elem el ^ ")"
+            | P_evalue -> "eigen(" ^ string_of_elem el ^ ")"
         )
 
     | P_print(e) -> "print(" ^ string_of_expr e ^ ")"
