@@ -27,14 +27,22 @@ type elem =
   | Arrayid of string * string (* array identifier *)
 
 type builtin_func = 
-    Dim
+    Sqrt
+  | Ceil
+  | Floor
+  | Dim
   | Size
- (* | Vsconst *)
   | Basis
   | Image
   | Rank
   | Trace
   | Evalue
+  | Solve
+  | Belongs
+  | LieBracket
+  | Inpro
+  | Transpose
+  | Print
 
 type prim_type = 
     Var
@@ -56,15 +64,10 @@ type expr =
     Literal of string
   | Id of elem
   | Binop of expr * op * expr
-  | Belongs of expr * expr
-  | LieBracket of expr * expr
-  | Inpro of string * expr * expr
-  | Transpose of expr
   | Assign of string * expr
   | AssignArr of string * expr list
   | Call of string * expr list
-  | Builtin of elem * builtin_func
-  | Print of expr
+  | Callbuiltin of builtin_func * expr list
   | ExprValue of prim_value
   | Noexpr
 

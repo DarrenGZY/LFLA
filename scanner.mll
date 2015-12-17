@@ -16,6 +16,10 @@ rule token = parse
 | "trace"   { TRACE }
 | "image"   { IMAGE }
 | "eigenValue" { EVALUE }
+| "ceil"    { CEIL }
+| "floor"   { FLOOR }
+| "sqrt"    { SQRT }
+| "solve"   { SOLVE }
 
 (* several kinds of delimiters *)
 | '{'   { LBRACE }

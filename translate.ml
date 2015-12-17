@@ -56,16 +56,6 @@ let translate_elem env = function
             P_arrayid(s1, s2)
         else raise(Failure ("undeclared identifier " ^ s1))
 
-(* translate ast builtin functions to python ast builtin functions *)
-let translate_builtin = function
-    Dim -> P_dim
-    | Size -> P_size
-    | Basis -> P_basis
-    | Trace -> P_trace
-    | Image -> P_image
-    | Rank -> P_rank
-    | Evalue -> P_evalue
-
 (* env = (global_var, global_funcs, local_vars) *)
 (* traverse_exprs works to translate a list of expression *)
 let rec traverse_exprs env = function
@@ -79,9 +69,6 @@ and translate_expr env = function
     Literal(l) -> (P_literal(l), env)
     | Id(el) -> 
         (P_id(translate_elem env el), env)
-    | Transpose(e) -> 
-        let (pExpr, env) = translate_expr env e in
-            (P_transpose(pExpr), env)
     | Binop(e1, o, e2) -> 
         let (pE1, env) = translate_expr env e1 in
         let pO = translate_op o in
@@ -89,22 +76,6 @@ and translate_expr env = function
         (match (type_of env e1, o, type_of env e2) with
             Matrix, Mult_Dot, Matrix -> (P_matrixMul(pE1, pE2), env)
             |_,_,_ -> (P_binop(pE1, pO, pE2), env))
-    | Belongs(e1, e2) -> 
-        let (pE1, env) = translate_expr env e1 in
-        let (pE2, env) = translate_expr env e2 in
-            (P_belongs(pE1, pE2), env)
-    | LieBracket(e1, e2) -> 
-        let (pE1, env) = translate_expr env e1 in
-        let (pE2, env) = translate_expr env e2 in
-            (P_lieBracket(pE1, pE2), env)
-    | Inpro(id, e1, e2) -> 
-        let global_vars, global_funcs, local_vars = env in
-            if (not (StringMap.mem id global_vars)) && (not (StringMap.mem id local_vars)) then
-               raise(Failure("undefined innner product identifier"))
-            else
-                let pE1, env = translate_expr env e1 in 
-                let pE2, env = translate_expr env e2 in
-                    P_inpro(id, pE1, pE2), env 
     | Assign(id, e) -> (* TODO: update the id in symbol table *) 
         let global_vars, global_funcs, local_vars = env in
             if (not (StringMap.mem id global_vars)) && (not (StringMap.mem id local_vars)) then
@@ -126,14 +97,44 @@ and translate_expr env = function
             else
                 let pE, env = traverse_exprs env el in
                     (P_call(f, pE), env)
-    | Builtin(el, s) -> (*TODO: check the builtin function types *) 
-            let typ = type_of_element env el in
-            let pTyp = translate_prim_type typ in
-            (P_builtin(pTyp, translate_elem env el, translate_builtin s), env)
-    | Print(e) -> let pE, env = translate_expr env e in
-                    P_print(pE), env
-   (* | Vsconst(e) -> let pE, env = traverse_exprs env e in 
-        P_vsconst(pE), env *)
+    | Callbuiltin(f, el) -> (*TODO: check the builtin function types *) 
+            if (List.length el) == 0 then
+                raise(Failure("wrong arguments in builtin funciton"))
+            else
+            let pElist, env = traverse_exprs env el in
+            (match f with
+            | Sqrt -> P_sqrt(List.hd pElist), env
+            | Ceil -> P_ceil(List.hd pElist), env
+            | Floor -> P_floor(List.hd pElist), env 
+            | Dim -> 
+                    let pE = List.hd pElist in 
+                    let typ = type_of env (List.hd el)in
+                    P_dim( translate_prim_type typ, pE), env
+            | Size -> P_size(List.hd pElist), env
+            | Basis -> P_basis(List.hd pElist), env
+            | Image -> P_image(List.hd pElist), env
+            | Rank -> P_rank(List.hd pElist), env
+            | Trace -> P_trace(List.hd pElist), env
+            | Evalue -> P_evalue(List.hd pElist), env
+            | Solve -> 
+                    if (List.length pElist) <> 2 then
+                        raise(Failure("wrong arguments in builtin function"))
+                    else P_solve(List.hd pElist, List.nth pElist 1), env
+            | Belongs -> 
+                    if (List.length pElist) <> 2 then
+                        raise(Failure("wrong arguments in builtin funciton"))
+                    else P_belongs(List.hd pElist, List.nth pElist 1), env
+            | LieBracket ->
+                    if (List.length pElist) <> 2 then
+                        raise(Failure("wrong arguments in builtin function"))
+                    else P_lieBracket(List.hd pElist, List.nth pElist 1), env
+            | Inpro ->
+                    if (List.length pElist) <> 3 then
+                        raise(Failure("wrong arguments in builtin function"))
+                    else P_inpro(List.hd pElist, List.nth pElist 1, List.nth pElist 2), env
+            | Transpose -> P_transpose(List.hd pElist), env
+            | Print -> P_print(List.hd pElist), env
+            )  
     | ExprValue(v) -> 
         let pV, env = translate_prim_value env v in
             P_exprValue(pV), env

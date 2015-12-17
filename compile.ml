@@ -18,32 +18,31 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
         | Pdiv_Dot -> "/" | Pequal -> "==" | Pneq -> "!="
         | Pless -> "<" | Pleq -> "<=" | Pgreater -> ">" | Pgeq -> ">="
         | Pand -> "&&" | Por -> "||"   ) ^ " " ^
-        string_of_expr e2   
+        string_of_expr e2  
+    (* builtin functions *) 
     | P_belongs(e1, e2) -> string_of_expr e2 ^ ".belongs(" ^ string_of_expr e1 ^ ")"
     | P_lieBracket(e1, e2) -> "liebracket(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"
-    | P_inpro(id, e1, e2) -> id ^ ".product(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")" 
+    | P_inpro(id, e1, e2) -> string_of_expr id ^ ".product(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")" 
     | P_assign(v, e) -> v ^ " = " ^ string_of_expr e
     | P_assignArr(v, e) -> v ^ " = [" ^ String.concat "," (List.map string_of_expr e) ^ "]"
     | P_call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
-    | P_builtin(typ, el, s) ->
-        ( match s with
-            P_dim -> 
-                (match typ with
-                P_vector -> string_of_elem el ^ ".size"
-                | P_vecSpace | P_inSpace | P_affSpace -> string_of_elem el ^ ".dim()"
+    | P_ceil(e) -> "ceil(" ^ string_of_expr e^ ")"
+    | P_floor(e) -> "floor(" ^ string_of_expr e ^ ")"
+    | P_sqrt(e) -> "sqrt(" ^ string_of_expr e ^ ")"
+    | P_solve(e1, e2) -> "solve(" ^ string_of_expr e1 ^ ", " ^ string_of_expr e2 ^ ")"
+    | P_dim(typ, e) -> 
+            (match typ with
+                P_vector -> string_of_expr e ^ ".size"
+                | P_vecSpace | P_inSpace | P_affSpace -> string_of_expr e ^ ".dim()"
                 | _ -> "wrong type")
-            | P_size -> string_of_elem el ^ ".shape"
-          (*  | P_vsconst -> "VecSpace([" ^ string_of_elem el ^ "])" *)
-            | P_basis -> string_of_elem el ^ ".basis()"
-            | P_trace -> "trace(" ^ string_of_elem el ^ ")"
-            | P_rank -> "rank(" ^ string_of_elem el ^ ")"
-            | P_image -> "image(" ^ string_of_elem el ^ ")"
-            | P_evalue -> "eigen(" ^ string_of_elem el ^ ")"
-        )
-
+    | P_size(e) -> string_of_expr e ^ ".shape"
+    | P_basis(e) -> string_of_expr e ^ ".basis()"
+    | P_trace(e) -> "trace(" ^ string_of_expr e ^ ")"
+    | P_rank(e) -> "rank(" ^ string_of_expr e ^ ")"
+    | P_image(e) -> "image(" ^ string_of_expr e ^ ")"
+    | P_evalue(e) -> "eigen(" ^ string_of_expr e ^ ")"
     | P_print(e) -> "print(" ^ string_of_expr e ^ ")"
-   (* | P_vsconst(e) -> "VecSpace([" ^ String.concat ", " (List.map string_of_expr e) ^ "])" *)
     | P_exprValue(v) -> string_of_prim_value v
     | P_noexpr -> ""
     | P_matrixMul(e1, e2) -> "np.multiply(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"

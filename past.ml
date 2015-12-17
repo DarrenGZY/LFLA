@@ -22,7 +22,7 @@ type pVecspace_value =
 type pElem = 
   | P_nid of string  (* normal identifier *)
   | P_arrayid of string * string (* array identifier *)
-
+(*
 type pBuiltin_func = 
     P_dim
   | P_size
@@ -32,7 +32,7 @@ type pBuiltin_func =
   | P_image
   | P_rank
   | P_evalue
-
+*)
 type pPrim_type = 
     P_var
   | P_vector
@@ -54,15 +54,25 @@ type pExpr =
   | P_binop of pExpr * pOp * pExpr
   | P_belongs of pExpr * pExpr
   | P_lieBracket of pExpr * pExpr
-  | P_inpro of string * pExpr * pExpr
+  | P_inpro of pExpr * pExpr * pExpr
   | P_transpose of pExpr
   | P_assign of string * pExpr
   | P_assignArr of string * pExpr list
   | P_call of string * pExpr list
-  | P_builtin of pPrim_type * pElem * pBuiltin_func
   | P_print of pExpr
   | P_exprValue of pPrim_value
   | P_matrixMul of pExpr * pExpr
+  | P_dim of pPrim_type * pExpr
+  | P_size of pExpr
+  | P_basis of pExpr
+  | P_trace of pExpr
+  | P_image of pExpr
+  | P_rank of pExpr
+  | P_evalue of pExpr
+  | P_ceil of pExpr
+  | P_floor of pExpr
+  | P_sqrt of pExpr
+  | P_solve of pExpr * pExpr
   | P_noexpr
 
 and pPrim_value = 

@@ -15,7 +15,7 @@ let type_of_id env s =
                 Gvardecl(var) -> var.data_type
                 | Garraydecl(arr) -> arr.data_type
     else
-        raise(Failure("not find when type checking"))
+        raise(Failure("not defined identifier when type checking"))
 
 let type_of_element env = function
     Nid(s) -> type_of_id env s
@@ -69,22 +69,6 @@ and type_of env  = function
                         ( Var, Var ) -> Var
                         | _ -> raise(Failure("in comparasion fail in type checking")))
         )
-    | Belongs(e1, e2) ->
-        ( match (type_of env e1, type_of env e2) with
-            (Vector, VecSpace) -> Var
-            | _ -> raise(Failure("in belongs fail in type checking")))
-    | LieBracket(e1, e2) ->
-        ( match (type_of env e1, type_of env e2) with
-            ( Matrix, Matrix ) -> Matrix
-            | _ -> raise(Failure("in liebracket fail in type checking")))
-    | Inpro(id, e1, e2) ->
-        ( match (type_of_id env id, type_of env e1, type_of env e2) with
-            (InSpace, Vector, Vector) -> Var
-            | _ -> raise(Failure("in inner product fail in type checking")))
-    | Transpose(e) ->
-        ( match type_of env e with
-            Matrix -> Matrix
-            | _ -> raise(Failure("in transpose fail in type checking")))
     | Assign(id, e) ->
         let id_type = type_of_id env id in
         let expr_type = type_of env e in
@@ -130,49 +114,108 @@ and type_of env  = function
                         check_two_lists env tl1 tl2
         in
         check_two_lists env fdecl.params eList
-    | Builtin(el, f) ->
-            let typ = (match el with
-                Nid(s) -> type_of_id env s
-                | Arrayid(s1, s2) -> type_of_id env s1) 
-            in
+    | Callbuiltin(f, el) ->
             (match f with
+                | Sqrt | Ceil | Floor ->
+                        if (List.length el) <> 1 then
+                           raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            let typ = type_of env (List.hd el) in
+                            if typ <> Var then
+                               raise(Failure("in builtin fail in type checking"))
+                            else
+                               Var 
                 | Dim -> 
-                        if typ <> Var && typ <> VecSpace && typ <> AffSpace then
-                            raise(Failure("in builtin fail in type checking"))
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
-                            Var
+                            let typ = type_of env (List.hd el) in
+                            if typ <> Var && typ <> VecSpace && typ <> AffSpace then
+                                raise(Failure("in builtin fail in type checking"))
+                            else
+                                Var
                 | Size ->
-                        if typ <> Matrix then
-                            raise(Failure("in builtin fail in type checking"))
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
-                            Var
+                            let typ = type_of env (List.hd el) in
+                            if typ <> Matrix then
+                                raise(Failure("in builtin fail in type checking"))
+                            else
+                                VarArr
                 | Basis ->
-                        if typ <> VecSpace then
-                            raise(Failure("in builtin fail in type checking"))
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
-                            Var
+                            let typ = type_of env (List.hd el) in
+                            if typ <> VecSpace then
+                                raise(Failure("in builtin fail in type checking"))
+                            else
+                                Var
                 | Image ->
-                        if typ <> Matrix then
-                            raise(Failure("in builtin fail in type checking"))
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
-                            VecSpace
-                | Rank ->
-                        if typ <> Matrix then
-                            raise(Failure("in builtin fail in type checking"))
+                            let typ = type_of env (List.hd el) in
+                            if typ <> Matrix then
+                                raise(Failure("in builtin fail in type checking"))
+                            else
+                                VecSpace
+                | Rank | Trace ->
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
-                            Var
-                | Trace ->
-                        if typ <> Matrix then
-                            raise(Failure("in builtin fail in type checking"))
-                        else
-                            Var
+                            let typ = type_of env (List.hd el) in
+                            if typ <> Matrix then
+                                raise(Failure("in builtin fail in type checking"))
+                            else
+                                Var
                 | Evalue ->
-                        if typ <> Matrix then
-                            raise(Failure("in builtin fail in type checking"))
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
-                            VarArr
-            )
-    | Print(e) -> Unit
+                            let typ = type_of env (List.hd el) in
+                            if typ <> Matrix then
+                                raise(Failure("in builtin fail in type checking"))
+                            else
+                                VarArr
+                | Belongs ->
+                        if (List.length el) <> 2 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
+                                (Vector, VecSpace) -> Var
+                                | _ -> raise(Failure("in belongs fail in type checking")))
+                | LieBracket ->
+                        if (List.length el) <> 2 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
+                                ( Matrix, Matrix ) -> Matrix
+                                | _ -> raise(Failure("in liebracket fail in type checking")))
+                | Inpro ->
+                        if (List.length el) <> 3 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            ( match (type_of env (List.hd el), type_of env (List.nth el 1), type_of env (List.nth el 2)) with
+                                (InSpace, Vector, Vector) -> Var
+                                | _ -> raise(Failure("in inner product fail in type checking")))
+                | Transpose ->
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            ( match type_of env (List.hd el) with
+                                Matrix -> Matrix
+                                | _ -> raise(Failure("in transpose fail in type checking")))
+                            
+                | Solve ->
+                        if (List.length el) <> 2 then
+                            raise(Failure("wrong arguments in builtin funcitons(type checking)"))
+                        else
+                            ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
+                                (Matrix, Vector) -> AffSpace
+                                | _ -> raise(Failure("in solve fail in type checking")))
+                | Print -> Unit)
    (* | Vsconst(eList) ->
             if check_list env Vector eList then
                VecSpace

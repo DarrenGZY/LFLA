@@ -4,7 +4,7 @@
     open Parsing 
 %}
 
-%token VSCONST PRINT DIM SIZE BASIS RANK TRACE IMAGE EVALUE  
+%token VSCONST PRINT DIM SIZE BASIS RANK TRACE IMAGE EVALUE CEIL FLOOR SQRT SOLVE 
 %token LBRACE RBRACE LBRACK RBRACK LLBRACK RRBRACK LIN RIN LPAREN RPAREN COLON SEMI COMMA
 %token AND OR  
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
@@ -292,7 +292,7 @@ expression:
     LITERAL                             { Literal($1) }
     | element                           { Id($1) }
     | MINUS LITERAL                     { Literal(String.concat "" ["-";$2]) }
-    | expression TRANSPOSE              { Transpose($1) }
+    | expression TRANSPOSE              { Callbuiltin(Transpose, [$1]) }
     | expression PLUS       expression  { Binop($1, Add, $3) }
     | expression MINUS      expression  { Binop($1, Sub, $3) }
     | expression TIMES      expression  { Binop($1, Mult, $3) }
@@ -309,9 +309,9 @@ expression:
     | expression MINUS_DOT  expression  { Binop($1, Sub_Dot, $3) }
     | expression TIMES_DOT  expression  { Binop($1, Mult_Dot, $3) }
     | expression DIVIDE_DOT expression  { Binop($1, Div_Dot, $3) }
-    | expression BELONGS    expression  { Belongs($1, $3) }
-    | ID    LIN expression  COMMA   expression  RIN     { Inpro($1, $3, $5) }
-    | LLBRACK   expression  COMMA   expression  RRBRACK { LieBracket($2, $4) }   
+    | expression BELONGS    expression  { Callbuiltin(Belongs, [$1;$3]) }
+    | ID     LIN expression  COMMA   expression  RIN     { Callbuiltin(Inpro, [Id(Nid($1));$3;$5]) }
+    | LLBRACK   expression  COMMA   expression  RRBRACK { Callbuiltin(LieBracket, [$2;$4]) }   
     | ID    ASSIGN  expression                          { Assign($1, $3) }
     | ID    ASSIGN  LBRACE array_elements_list RBRACE   { AssignArr($1, $4) } 
     | LBRACK vector_elements_list_opt RBRACK            { ExprValue(VecValue($2)) }
@@ -321,18 +321,21 @@ expression:
     | VSCONST   LPAREN  arguments_opt  RPAREN           { ExprValue(VecSpValue($3)) }   
     | ID    LPAREN  arguments_opt RPAREN                { Call($1, $3) } 
     | LPAREN    expression  RPAREN                      { $2 }
-    | builtin   LPAREN  element  RPAREN                 { Builtin($3, $1) }
-    | PRINT     LPAREN  expression RPAREN               { Print($3) } 
+    | builtin   LPAREN  arguments_opt  RPAREN           { Callbuiltin($1, $3) }
+    | PRINT     LPAREN  arguments_opt  RPAREN           { Callbuiltin(Print, $3) } 
 
 builtin:
     DIM         { Dim }
     | SIZE      { Size }
-    /*| VSCONST   { Vsconst } */   /* some problem here, should be multiple elements */
     | BASIS     { Basis }
     | TRACE     { Trace }
     | RANK      { Rank }
     | IMAGE     { Image }
     | EVALUE    { Evalue }
+    | CEIL      { Ceil }
+    | FLOOR     { Floor }
+    | SQRT      { Sqrt }
+    | SOLVE     { Solve }
 
 /* normal identifier and array identifier */
 element:
