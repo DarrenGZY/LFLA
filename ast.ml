@@ -31,6 +31,10 @@ type builtin_func =
   | Size
  (* | Vsconst *)
   | Basis
+  | Image
+  | Rank
+  | Trace
+  | Evalue
 
 type prim_type = 
     Var

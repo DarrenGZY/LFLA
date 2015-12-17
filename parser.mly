@@ -4,7 +4,7 @@
     open Parsing 
 %}
 
-%token VSCONST PRINT DIM SIZE BASIS 
+%token VSCONST PRINT DIM SIZE BASIS RANK TRACE IMAGE EVALUE  
 %token LBRACE RBRACE LBRACK RBRACK LLBRACK RRBRACK LIN RIN LPAREN RPAREN COLON SEMI COMMA
 %token AND OR  
 %token PLUS MINUS PLUS_DOT MINUS_DOT 
@@ -329,6 +329,10 @@ builtin:
     | SIZE      { Size }
     /*| VSCONST   { Vsconst } */   /* some problem here, should be multiple elements */
     | BASIS     { Basis }
+    | TRACE     { Trace }
+    | RANK      { Rank }
+    | IMAGE     { Image }
+    | EVALUE    { Evalue }
 
 /* normal identifier and array identifier */
 element:

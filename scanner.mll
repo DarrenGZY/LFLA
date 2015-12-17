@@ -12,6 +12,11 @@ rule token = parse
 | "size"    { SIZE }
 | "basis"   { BASIS }
 | "print"   { PRINT }
+| "rank"    { RANK }
+| "trace"   { TRACE }
+| "image"   { IMAGE }
+| "eigenValue" { EVALUE }
+
 (* several kinds of delimiters *)
 | '{'   { LBRACE }
 | '}'   { RBRACE }

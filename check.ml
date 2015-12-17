@@ -151,6 +151,26 @@ and type_of env  = function
                             raise(Failure("in builtin fail in type checking"))
                         else
                             Var
+                | Image ->
+                        if typ <> Matrix then
+                            raise(Failure("in builtin fail in type checking"))
+                        else
+                            VecSpace
+                | Rank ->
+                        if typ <> Matrix then
+                            raise(Failure("in builtin fail in type checking"))
+                        else
+                            Var
+                | Trace ->
+                        if typ <> Matrix then
+                            raise(Failure("in builtin fail in type checking"))
+                        else
+                            Var
+                | Evalue ->
+                        if typ <> Matrix then
+                            raise(Failure("in builtin fail in type checking"))
+                        else
+                            VarArr
             )
     | Print(e) -> Unit
    (* | Vsconst(eList) ->

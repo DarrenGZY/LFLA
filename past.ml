@@ -28,6 +28,10 @@ type pBuiltin_func =
   | P_size
  (* | P_vsconst *)
   | P_basis
+  | P_trace
+  | P_image
+  | P_rank
+  | P_evalue
 
 type pPrim_type = 
     P_var
