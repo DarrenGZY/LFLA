@@ -45,3 +45,7 @@ class InSpace:
 		_v = np.linalg.solve(lvecs,v)
 		return np.transpose(_u) * self.matrix * _v
 
+	def dim(self):
+		return len(self.vectors)
+
+
