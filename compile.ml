@@ -44,6 +44,7 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
     | P_evalue(e) -> "eigen(" ^ string_of_expr e ^ ")"
     | P_print(e) -> "print(" ^ string_of_expr e ^ ")"
     | P_exprValue(v) -> string_of_prim_value v
+    | P_action(e1, e2) -> "np.transpose(np.array(" ^ string_of_expr e1 ^ "*" ^ "np.transpose(np.mat(" ^ string_of_expr e2 ^ "))))"
     | P_noexpr -> ""
     | P_matrixMul(e1, e2) -> "np.multiply(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"
 

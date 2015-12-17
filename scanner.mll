@@ -52,6 +52,7 @@ rule token = parse
 (* unary operator *)
 | '\''  { TRANSPOSE }
 | '@'   { BELONGS }
+| '&'   { ACTION }
 (* comparation operators *)
 | '<'   { LT }
 | "<="  { LEQ }

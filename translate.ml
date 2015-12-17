@@ -133,6 +133,10 @@ and translate_expr env = function
                         raise(Failure("wrong arguments in builtin function"))
                     else P_inpro(List.hd pElist, List.nth pElist 1, List.nth pElist 2), env
             | Transpose -> P_transpose(List.hd pElist), env
+            | Action -> 
+                    if (List.length pElist) <> 2 then
+                        raise(Failure("wrong arguments in builtin function"))
+                    else P_action(List.hd pElist, List.nth pElist 1), env
             | Print -> P_print(List.hd pElist), env
             )  
     | ExprValue(v) -> 
