@@ -9,9 +9,12 @@ def testCore():
 	v3 = np.array([2,3,4])
 	print linearIndependent([v1,v3])
 
-	matA = np.array([[3.3,3,1],[5.3,-2,-2.2]])
-	matB = np.array([[-3.3,0,1],[5.3,-20,-21.2],[1.2,-3.3,-2]])
-	print liebraket(matA, matB)
+	matA = np.matrix([[3.3,3,1],[5.3,-2,-2.2]])
+	matB = np.matrix([[-3.3,0,1],[5.3,-20,-21.2],[1.2,-3.3,-2]])
+	matC = np.matrix([[1,0],[0,1]])
+
+	print liebracket(matA, matB)
+	print liebracket(matB, matB)
 
 
 ### test for vector ###
@@ -49,7 +52,7 @@ def testVecSpace():
 	# expected NOT to be belong
 	vecspace.belongs(v3)
 	# need more test case for PLUS function
-	vecspace.plus(vecspace)
+	vecspace+vecspace
 	print vecspace.vectors
 	print vecspace.dim()
 	print vecspace.basis()
@@ -95,7 +98,7 @@ def testAffSpace():
 	affspace = AffSpace(v, vecspace)
 	affspace.belongs(v1)
 	affspace.belongs(v1)
-	mat = np.array([[1,-2,3],[0.2,23,0],[0,-4,-5.2]])
+	mat = np.matrix([[1,-2,3],[0.2,23,0],[0,-4,-5.2]])
 	u = np.array([0.2, 5.2, -4])
 
 	affspace = AffSpace.solve(mat,u)

@@ -38,8 +38,8 @@ def basis(vecspace):
 
 def liebracket(matA, matB):
 	if (matA.shape == matB.shape):
-		if (all (len(row) == len(matA) for row in matA)) and \
-			(all (len(row) == len(matB) for row in matB)):
+		if (matA.shape[0] == matA.shape[1]) and \
+			(matB.shape[0] == matB.shape[1]):
 			return matA * matB - matB * matA 
 		else:
 			print "Input Matrix is not square matrix"
