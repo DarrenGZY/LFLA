@@ -1,0 +1,15 @@
+function main()
+{
+    var a = 2;
+
+    if a > 2
+    {
+        var b = 3;
+        print(b);
+    }
+    else
+    {
+        print(b);   #not allowed
+    }
+    
+}
