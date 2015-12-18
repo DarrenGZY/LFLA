@@ -1,4 +1,4 @@
-OBJS = ast.cmo past.cmo parser.cmo scanner.cmo check.cmo translate.cmo compile.cmo LFLA.cmo
+OBJS = ast.cmo past.cmo parser.cmo scanner.cmo translate_env.cmo check.cmo translate.cmo compile.cmo LFLA.cmo
 
 
 # Choose one
@@ -36,8 +36,10 @@ ast.cmo:
 ast.cmx: 
 past.cmo:
 past.cmx:
+translate_env.cmo: ast.cmo
+translate_env.cmx: ast.cmx
 check.cmo: ast.cmo
-check.cms: ast.cmx
+check.cmx: ast.cmx
 compile.cmo: past.cmo 
 compile.cmx: past.cmx
 translate.cmo: ast.cmo past.cmo check.cmo

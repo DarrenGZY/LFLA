@@ -1,16 +1,14 @@
 open Ast
-
-module StringMap = Map.Make(String)
+open Translate_env
 
 let type_of_id env s = 
-    let global_vars, global_funcs, local_vars = env in
-    if StringMap.mem s local_vars then
-        let decl = StringMap.find s local_vars in
+    if is_local_var s env then
+        let decl = find_local_var s env in
             match decl with
                 Lvardecl(var) -> var.data_type
                 | Larraydecl(arr) -> arr.data_type
-    else if StringMap.mem s global_vars then
-        let decl = StringMap.find s global_vars in
+    else if is_global_var s env then
+        let decl = find_global_var s env in
             match decl with
                 Gvardecl(var) -> var.data_type
                 | Garraydecl(arr) -> arr.data_type
@@ -83,10 +81,9 @@ and type_of env  = function
         else
            raise(Failure("in assign array fail in type checking"))
     | Call(fid, eList) -> 
-        let (_, global_funcs, _) = env in
         let fdecl = 
-            if StringMap.mem fid global_funcs then
-                StringMap.find fid global_funcs
+            if is_func fid env then
+                find_func fid env
             else 
                 raise(Failure("in call not defined function"))
         in

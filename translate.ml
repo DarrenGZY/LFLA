@@ -1,8 +1,9 @@
 open Ast
 open Past
 open Check
+open Translate_env
 
-module StringMap = Map.Make(String)
+(* module StringMap = Map.Make(String) *)
 
 (* translate ast operator to python ast operator *)
 let translate_op = function
@@ -42,17 +43,11 @@ let translate_prim_type = function
 (* translate ast element to python ast element, and need to check symbol tables *)
 let translate_elem env = function
     | Nid(s) -> 
-        let global_vars, global_funcs, local_vars = env in
-        if StringMap.mem s global_vars then
-            P_nid(s)
-        else if StringMap.mem s local_vars then
+        if is_defined_var s env then
             P_nid(s)
         else raise(Failure ("undeclared identifier " ^ s))
     | Arrayid(s1, s2) -> 
-        let global_vars, global_funcs, local_vars = env in 
-        if StringMap.mem s1 global_vars then
-            P_arrayid(s1, s2)
-        else if StringMap.mem s1 local_vars then
+        if is_defined_var s1 env then
             P_arrayid(s1, s2)
         else raise(Failure ("undeclared identifier " ^ s1))
 
@@ -77,22 +72,19 @@ and translate_expr env = function
             Matrix, Mult_Dot, Matrix -> (P_matrixMul(pE1, pE2), env)
             |_,_,_ -> (P_binop(pE1, pO, pE2), env))
     | Assign(id, e) -> (* TODO: update the id in symbol table *) 
-        let global_vars, global_funcs, local_vars = env in
-            if (not (StringMap.mem id global_vars)) && (not (StringMap.mem id local_vars)) then
+            if not (is_defined_var id env) then
                raise(Failure("undefined identifier"))
             else
                 let pE, env = translate_expr env e in
                     P_assign(id, pE), env
     | AssignArr(id, e) -> 
-        let global_vars, global_funcs, local_vars = env in
-            if (not (StringMap.mem id global_vars)) && (not (StringMap.mem id local_vars)) then
+            if not (is_defined_var id env) then
                 raise(Failure("undefined identifier"))
             else
                 let pE, env = traverse_exprs env e in
                     P_assignArr(id, pE), env
     | Call(f, el) -> 
-        let global_vars, global_funcs, local_vars = env in
-            if (not (StringMap.mem f global_funcs))  then
+            if not (is_func f env) then
                 raise(Failure("undefined funciton"))
             else
                 let pE, env = traverse_exprs env el in
@@ -197,14 +189,15 @@ let translate_local_normal_decl env local_var =
                         p_data_type = translate_prim_type v.data_type; 
                         p_pos = v.pos   } 
         in
-        let global_vars, global_funcs, local_vars = env in
-            let local_vars = 
-                if (not (StringMap.mem v.vname local_vars)) then
-                    StringMap.add v.vname local_var local_vars
-                else
-                    raise(Failure("Already defined variable  " ^ v.vname))
-            in
-            P_Vardecl(p_var), (global_vars, global_funcs, local_vars)
+        let vars' = 
+            if (not (is_defined_var v.vname env)) then
+                StringMap.add v.vname local_var env.scope.vars
+            else
+                raise(Failure("Already defined variable  " ^ v.vname))
+        in
+        let scope' = { env.scope with vars = vars' } in
+        let env' = { env with scope = scope' } in
+        P_Vardecl(p_var), env'
            
     | Larraydecl(a) -> 
         let length = List.length a.elements in
@@ -221,43 +214,43 @@ let translate_local_normal_decl env local_var =
                         p_length = a.length;
                         p_pos = a.pos   } 
         in
-        let global_vars, global_funcs, local_vars = env in
-            let local_vars = 
-                if (not (StringMap.mem a.aname local_vars)) then
-                    StringMap.add a.aname local_var local_vars
-                else
-                    raise(Failure("Already defined variable " ^ a.aname))
-            in
-            P_Arraydecl(p_array), (global_vars, global_funcs, local_vars)
+        let vars' = 
+            if (not (is_defined_var a.aname env)) then
+                StringMap.add a.aname local_var env.scope.vars
+            else
+                raise(Failure("Already defined variable  " ^ a.aname))
+        in
+        let scope' = { env.scope with vars = vars' } in
+        let env' = { env with scope = scope' } in
+        P_Arraydecl(p_array), env'
 
 
 (* translate global variables to python ast variables *)
 let translate_global_normal_decl env global_var = 
-    let global_vars, global_funcs = env in
     match global_var with
     Gvardecl(v) ->
-        let pValue, env = translate_prim_value (global_vars, global_funcs, StringMap.empty) v.value 
+        let pValue, env = translate_prim_value env v.value 
         in                                              (* for global variable, local_vars table is empty *)
         let p_var =  {  p_vname = v.vname; 
                         p_value = pValue; 
                         p_data_type = translate_prim_type v.data_type; 
                         p_pos = v.pos   } 
         in
-        let global_vars, global_funcs, local_vars = env in
-            let global_vars = 
-                if (not (StringMap.mem v.vname global_vars)) then
-                    StringMap.add v.vname global_var global_vars
-                else
-                    raise(Failure("Already defined variable " ^ v.vname))
-            in
-            P_Vardecl(p_var), (global_vars, global_funcs)
+        let global_vars' = 
+            if (not (is_global_var v.vname env)) then
+                StringMap.add v.vname global_var env.global_vars
+            else
+                raise(Failure("Already defined variable " ^ v.vname))
+        in
+        let env' = { env with global_vars = global_vars' } in 
+        P_Vardecl(p_var), env'
            
     | Garraydecl(a) -> 
         let length = List.length a.elements in
         if length <> a.length then
             raise(Failure("array length not match"))
         else
-        let pExprs, env = traverse_exprs (global_vars, global_funcs, StringMap.empty) a.elements 
+        let pExprs, env = traverse_exprs env a.elements 
         in
         if not (check_list env (real_type a.data_type) a.elements) then  (* check for each element if it has right type *)
            raise(Failure("array elements have wrong type"))
@@ -268,14 +261,14 @@ let translate_global_normal_decl env global_var =
                         p_length = a.length;
                         p_pos = a.pos} 
         in
-        let global_vars, global_funcs, local_vars = env in
-            let global_vars = 
-                if (not (StringMap.mem a.aname global_vars)) then
-                    StringMap.add a.aname global_var global_vars
+            let global_vars' = 
+                if (not (is_global_var a.aname env)) then
+                    StringMap.add a.aname global_var env.global_vars
                 else
                     raise(Failure("Already defined variable " ^ a.aname))
             in
-            P_Arraydecl(p_array), (global_vars, global_funcs)
+            let env' = { env with global_vars = global_vars' } in
+            P_Arraydecl(p_array), env'
 
 (* traverse_stmts works to translate a list of statements *)
 let rec traverse_stmts env = function
@@ -286,8 +279,10 @@ let rec traverse_stmts env = function
             pStmt::pTl, env
 (* translate ast stmt to python ast statement *)
 and translate_stmt env= function
-    Block(stmts) -> 
-        let pStmts, env = traverse_stmts env stmts in
+    Block(stmts) ->
+        let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
+        let env' = { env with scope = scope' } in
+        let pStmts, env' = traverse_stmts env' stmts in
         P_block(pStmts), env
     | Expr(expr) -> 
         let pExpr, env = translate_expr env expr in
@@ -362,27 +357,29 @@ let rec traverse_func_stmts env = function
 
 (* translate function declaration and update symbol tables *)
 let translate_func_decl env fdecl =
-    let global_vars, global_funcs = env in
-        if (not (StringMap.mem fdecl.fname global_funcs)) then
-            let pParams, env = traverse_local_vars (global_vars, global_funcs, StringMap.empty) fdecl.params in (* give empty local_vars table *)
-            let pStmts, env = traverse_stmts env fdecl.body in
-            let global_vars, global_funcs, local_vars = env in
-                let global_funcs = StringMap.add fdecl.fname fdecl global_funcs
-                in
-                {
-                    p_fname = fdecl.fname;
-                    p_params = pParams; 
-                    p_body = pStmts 
-                }, (global_vars, global_funcs)
-        else
-            raise(Failure("Already defined function " ^ fdecl.fname))
+    if (not (is_func fdecl.fname env)) then
+        let pParams, env = traverse_local_vars env fdecl.params in (* give empty local_vars table *)
+        let pStmts, env = traverse_stmts env fdecl.body in
+        let global_funcs' = StringMap.add fdecl.fname fdecl env.global_funcs in
+        let env' = { env with global_funcs = global_funcs' }    
+        in
+        {
+            p_fname = fdecl.fname;
+            p_params = pParams; 
+            p_body = pStmts 
+        }, env'
+    else
+        raise(Failure("Already defined function " ^ fdecl.fname))
 
 (* translate program statements *)
 let translate_program_stmt env = function
    Variable(v) -> let variable, env = translate_global_normal_decl env v
                     in P_Variable(variable), env
-   | Function(f) -> let func, env = translate_func_decl env f
-                    in P_Function(func), env
+   | Function(f) -> 
+           let scope' = { parent = Some({ parent=None; vars=StringMap.empty}); vars = StringMap.empty } in
+           let env' = { env with scope = scope' } in
+           let func, env' = translate_func_decl env' f
+                    in P_Function(func), env'
 
 let translate program =
     let rec traverse_program env = function
@@ -392,10 +389,20 @@ let translate program =
             let p_tl, env = traverse_program env tl in
                 p_program::p_tl, env
     in
-    let p_program, (global_vars, global_funcs) 
-        = traverse_program (StringMap.empty, StringMap.empty) program  (* give empty global_vars and global_funcs symbol table *)
+    let scope' = { parent = None; vars = StringMap.empty } in
+    let env = { 
+                scope = scope'; 
+                global_vars = StringMap.empty; 
+                global_funcs = StringMap.empty;
+                return_type = Unit;
+                in_while = false;
+                in_for = false;
+             }
     in 
-        if (not (StringMap.mem "main" global_funcs)) then 
+    let p_program, env' 
+        = traverse_program env program  (* give empty global_vars and global_funcs symbol table *)
+    in 
+        if (not (is_func "main" env')) then 
             raise (Failure("no main function")) 
         else
-            p_program, (global_vars, global_funcs)
+            p_program 
