@@ -329,8 +329,16 @@ and translate_stmt env= function
                     let env' = { env with scope = scope'; in_while = true } in
                     let pStmts, _ = traverse_stmts env' s in
                         P_while(pExpr, pStmts), env
-    | Continue -> P_continue, env
-    | Break -> P_break, env
+    | Continue -> 
+            if (not env.in_while) && (not env.in_for) then
+                raise(Failure(" continue doesn't appear in a for loop or while loop"))
+            else
+                P_continue, env
+    | Break -> 
+            if (not env.in_while) && (not env.in_for) then
+                raise(Failure(" continue doesn't appear in a for loop or while loop"))
+            else
+                P_break, env
     | Decl(d) -> 
             let pD, env = translate_local_normal_decl env d in 
             P_decl(pD), env

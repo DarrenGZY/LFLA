@@ -272,8 +272,8 @@ array_elements_list :
 statement :
     expression SEMI                 { Expr($1) }
     | RETURN    expression SEMI     { Return($2) }
-    | BREAK     expression SEMI     { Break }
-    | CONTINUE  expression SEMI     { Continue }
+    | BREAK     SEMI                { Break }
+    | CONTINUE  SEMI                { Continue }
     | LBRACE statement_list RBRACE  { Block(List.rev $2) }
     | IF expression LBRACE statement_list RBRACE %prec NOELSE 
                                     { If($2, List.rev $4, []) }
