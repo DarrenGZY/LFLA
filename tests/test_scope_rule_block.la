@@ -1,0 +1,19 @@
+function main()
+{
+    var a = 2;
+    
+    if a > 2
+    {
+        var b = a+2;
+        print(b);
+    }
+    else
+    {
+        var c = 2;
+        if a == 2
+        {
+            c = c+2;
+        }
+        print(c);
+    }
+}
