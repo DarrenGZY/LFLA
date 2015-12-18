@@ -298,9 +298,10 @@ and translate_stmt env= function
                 if typ <> Var then
                     raise(Failure(" condition in if should be var type"))
                 else
-
-                    let pStmts1, env = traverse_stmts env s1 in
-                    let pStmts2, env = traverse_stmts env s2 in
+                    let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
+                    let env' = { env with scope = scope' } in
+                    let pStmts1, _ = traverse_stmts env' s1 in
+                    let pStmts2, _ = traverse_stmts env' s2 in
                         P_if(pExpr, pStmts1, pStmts2), env 
     | For(l, a1, a2, s) ->
         let typ = type_of_id env l in
@@ -312,9 +313,11 @@ and translate_stmt env= function
             let typ1 = type_of env a1 in
             let typ2 = type_of env a2 in
                 if typ1 <> Var || typ2 <> Var then
-                    raise(Failure(" condition in for should be var type"))
+                    raise(Failure("condition in for should be var type"))
                 else
-                    let pStmts, env = traverse_stmts env s in
+                    let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
+                    let env' = { env with scope = scope'; in_for = true } in
+                    let pStmts, _  = traverse_stmts env' s in
                         P_for(l, pExpr1, pExpr2, pStmts), env 
     | While(e, s) -> 
         let pExpr, env = translate_expr env e in
@@ -322,7 +325,9 @@ and translate_stmt env= function
                 if typ <> Var then
                     raise(Failure(" condition in while should be var type"))
                 else
-                    let pStmts, env = traverse_stmts env s in
+                    let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
+                    let env' = { env with scope = scope'; in_while = true } in
+                    let pStmts, _ = traverse_stmts env' s in
                         P_while(pExpr, pStmts), env
     | Continue -> P_continue, env
     | Break -> P_break, env
