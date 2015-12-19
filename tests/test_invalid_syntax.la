@@ -1,0 +1,5 @@
+function main()
+{
+    vari foo = 1;
+    print(1);
+}
