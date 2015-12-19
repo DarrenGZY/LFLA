@@ -1,0 +1,745 @@
+\documentclass[12pt]{article} % Default font size is 12pt, it can be changed here
+
+\usepackage{sectsty}
+\usepackage{setspace}
+\usepackage{titlesec}
+\sectionfont{\fontsize{14}{15}\selectfont}
+\subsectionfont{\fontsize{13}{15}\selectfont}
+\titlespacing\section{0pt}{12pt plus 6pt minus 3pt}{6pt plus 4pt minus 2pt}
+\titlespacing\subsection{0pt}{10pt plus 4pt minus 2pt}{6pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{8pt plus 4pt minus 2pt}{2pt plus 2pt minus 2pt}
+
+\usepackage{geometry} % Required to change the page size to A4
+\geometry{a4paper} % Set the page size to be A4 as opposed to the default US Letter
+\usepackage{graphicx} % Required for including pictures
+\usepackage{float} % Allows putting an [H] in \begin{figure} to specify the exact location of the figure
+\usepackage{wrapfig} % Allows in-line images such as the example fish picture
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{algorithm, algpseudocode}
+
+\linespread{1.2} % Line spacing
+
+%\setlength\parindent{0pt} % Uncomment to remove all indentation from paragraphs
+\graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titlespacing*{\paragraph}
+{0pt}{8pt plus 3pt minus 2pt}{2pt plus 2pt minus 2pt}
+
+
+\begin{document}
+
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+
+\lstset{backgroundcolor=\color{lbcolor},
+	basicstyle=\ttfamily,
+	tabsize = 4,
+	language=java,
+	columns=fixed,
+	keywordstyle=\color[rgb]{0,0,1},
+	showstringspaces = false,
+	showspaces = false,
+	commentstyle=\color[rgb]{0.133,0.545,0.133},
+	%stringstyle=\color[rgb]{0.627,0.126,0.941}
+}
+
+%---------------
+%	TITLE PAGE
+%---------------
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+
+\textsc{\LARGE Language for Linear Algebra}\\[1.0cm] % Name of your university/college
+
+
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+Chenzhe \textsc{Qian} \\
+Guitian \textsc{Lan} \\
+Jin \textsc{Liang} \\
+Zhiyuan \textsc{Guo}
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{UNI:} \\
+cq2185 \\
+gl2510 \\
+jl4598 \\
+zg2201
+\end{flushright}
+\end{minipage}\\[4cm]
+
+{\large \today}\\[3cm] % Date, change the \today to a set date if you want to be precise
+
+%\includegraphics{Logo}\\[1cm] % Include a department/university logo - this will require the graphicx package
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+
+\tableofcontents
+\newpage
+
+%-------------------
+\section{Language Reference Manual}
+\subsection{Introduction}
+This manual describes LFLA, a imperative programming language.  LFLA is
+designed to  simulate the theory. Features defining the language
+include  various primitive types and operations  corresponding to important concepts and theory  of  linear algebra. This manual
+describes in detail the lexical conventions, types,  operations , built-in functions, and grammar of the LFLA
+language.
+
+
+\subsection{Lexical conventions}
+
+\subsubsection{Identifiers}
+An identifier in LFLA represents a name for functions or variables. The identifier starts with a letter, and is optionally followed by letters, digits or underscores. An identifier name is thus defined
+by the following regular expression:  
+  \newline
+['a' - 'z' 'A' -'Z' ] ['a' - 'z' 'A' - 'Z' '0' - '9' '\_']*
+
+\subsubsection{Keywords}
+LFLA has a set of reserved keywords that can not be used as identifiers.
+\paragraph{Types} Each primitive type, var, vector, vecspace, inspace,affspace and matrix, has a name that the program
+uses for declarations:\\
+ \textbf{var}  \quad  \textbf{vector}  \quad\textbf{vecspace} \quad\textbf{ inspace} \quad \textbf{affspace} \quad \textbf{matrix}
+ \paragraph{Function}The keyword for declaration of  function:\\
+\textbf{function}
+\paragraph{Entry point of the program}  The keyword  for indication of  entry function :\\ 
+\textbf{main}
+\paragraph{Control flow}The following keywords are used for control flow:\\
+ \textbf{if}\quad \textbf{else} \quad\textbf{for}\quad\textbf{while}\quad\textbf{break}\quad\textbf{continue}\quad\textbf{return}
+
+\paragraph{Built-in functions} The following keywords are reserved for built in functions:\\
+\textbf{print}\quad \textbf{dim} \quad \textbf{basis}\quad \textbf{sqrt} \quad \textbf{ceil} \quad \textbf{floor}\quad \textbf{size}\quad \textbf{rank}\quad \textbf{trace}
+\quad\textbf{eigenValue}\quad\textbf{solve}\quad \textbf{image} \quad\textbf{L} 
+
+\subsubsection{Constants}
+LFLA supports integer, double as well as vector, matrix constants.   
+\paragraph{Integer}  In LFLA an integer  is a signed 31-bit  integer without decimal point or exponent. It is given by  the following regular expression:
+\newline
+ [+ - ][ '0' -  '9 ']+
+\paragraph{Double} In LFLA a double is a64-bit floating point number. More precisely it has an integral part, a fraction part and an exponent part. The integral part can begin with an optional '+' or '-', then follows by digits. And if it is not zero, the first digit should not be '0'. The fraction part is just a decimal followed by a finite sequence of digits . The exponent part begins with 'e' or 'E', then followed by an optional '+' or '-', then sequence of digits which has non-'0' first digit. Having the fraction part, the integral part and exponent part can be missing.If both the fraction part and exponent part are missing, then an extra decimal point should be added in the end of the integral part.
+
+
+\subsubsection{Comments}
+Line Comments: \# \\
+\indent Block Comments: \#\#\# ... \#\#\#
+
+\subsubsection{Data Type}
+In LFLA, there are four primitive data types: var, vector, matrix, vecspace, inspace and affspace.
+
+\paragraph{Var}
+The primitive type \textbf{var} is a hybrid of integer and float point number.
+	
+	
+\paragraph{Vector}
+The type \textbf{vector} directly corresponds to the concept of vector in linear algebra. Formally it is a finite sequence of \textbf{var} separated by commas and  included by brackets .Tthe length is its dimension.    
+ 
+\begin{lstlisting}
+vector  a = [1,2,3];
+\end{lstlisting}
+ 
+\paragraph{Matrix} 
+The type \textbf{matrix}  directly corresponds to the concept of  matrix in linear algebra. It is given by  several rows of  \textbf{var} which are seperated by  semicolons and have the same length. Each row is consisted of a finite sequence of  \textbf{var} seperated by commas:
+ 
+\begin{lstlisting}
+vector  a = [1,2,3;4,5,6;7,8,9;];
+\end{lstlisting}
+
+\paragraph{Vector space}
+The type \textbf{vecspace}  directly corresponds to the concept of vector space in linear algebra. Down to earth, it can be represented by  a basis which is a maximal set of linear independent \textbf{vectors} in the vector space. In other word, it is linear spanned by a basis. Its dimension equals to the number of vectors in a basis. The built-in \textbf{L} function is used as the constructor :
+\begin{lstlisting}
+vector  a = [1,2,3];
+vector b = [2,0,0];
+vecspace vs = L(a,b);
+\end{lstlisting}
+\paragraph{Inner product space}
+The type \textbf{inspace} directly corresponds to the concept of inner product space in linear algebra. It is a  pair (v, $<$, $>$), where v is vector space , and $<$, $>$ is an inner product .
+An inner product is a map $V\times V \to \mathbb{R}$ satisfy the following properties:
+\begin{align*}
+	<x, y> &= <y,x> \\
+	<x,x> &\geq 0, \text{it is  iff } x = 0 \\
+	<ax_1 + by_1, cx_2 + dy_2> &= ac<x_1,x_2> + ad<x_1,y_2> \\
+         & + bc<y_1,x_2> +bd<y_1,y_2> \\
+	\text{for } a,b,c,d \in \mathbb{R} \text{ and } x_1,x_2,y_1,y_2 \in V.
+\end{align*}
+But down to earth, it is given a by the Gram matrix with respect to some basis.  So in LFLA, an \textbf{inspce} object is defined by an array of vectors which serves as  a basis  and a positive definite matrix which serves as Gram matrix. The \textbf{inspace} function is used as the constructor:
+ \begin{lstlisting}
+  vector v1 = [1,0,0];
+  vector v2 = [0,1,0];
+  vector v3 = [0,0,1];
+   
+  matrix mat = [1,0,0;0,1,0;0,0,1;];
+  vector vecs[3] = {v1, v2, v3};
+  inspace ins = inspace(vecs, mat); 
+\end{lstlisting}
+
+\paragraph{Affine space}
+The type \textbf{affspace} directly corresponds to the concept of affine space in linear algebra. It is a pair
+(w, V) , where w is a vector, and V is a vector space. The dimension of w should equal to the dimension of any vector in V. The \textbf{affspace} function is used as the constructor:
+ \begin{lstlisting} 
+  vector v1 = [1,1,1];
+  vector v2 = [1,2,3];
+  vector v3 = [2,3,4];
+  vecspace  vs = L(v2);
+  affspace aff = affspace(v1,vs);
+\end{lstlisting}
+\paragraph{Array}
+For any above type, there is a form in which contains multiple instances of the same type, known as array. By an array of type X, we means a sequence of object of type X. Array is length fixed which means that once it is initialized, its length is immutable. In LFLA  array is  given by  comma separated object sequence in braces.  
+ \begin{lstlisting}
+  vector v1 = [1,0,0];
+  vector v2 = [0,1,0];
+  vector v3 = [0,0,1];  
+  vector vecs[3] = {v1, v2, v3}; 
+\end{lstlisting}
+
+To accesss elements of an array,  we use the identifier follows by a bracket included index, for example:
+ \begin{lstlisting}
+    vecs[3] 
+\end{lstlisting}
+The index of array starts with 0 instead of 1,  so the index should be less than the length of the array. 
+\subsection{Operators} % Major section
+LFLA contains all operators in common languages like Java and C++, except for bit manipulation operators. However, there are subtile differences between scalar-scaler, scalar-object and object-object operations and object-object operations. We will introduce these operators one by one. And in the last part of this section, we will conclude the precedence and associativity of these operators.
+\subsubsection{Unary operators}
+\paragraph{Negative operator '-'}
+ \begin{lstlisting}
+   var a = 1;
+   var b = - a;
+\end{lstlisting}
+Return the nagetive of the expression and have the same type. The type of the expression must be \textbf{var}, \textbf{vector}, \textbf{matrix}.
+\paragraph{ Increment operator '++' and decrement operator '- -'}
+The value of the expression is incremented by 1 or decremented by 1, and return the new value. Here the type of expression could only be \textbf{var} type.
+ \begin{lstlisting}
+   var a = 1;
+   a++; 
+   a--;
+\end{lstlisting}
+\paragraph{Matrix transpose operator  '}
+This is the transpose operator. Return the transpose of a matrix denoted by the expression, which could only be \textbf{matrix} type.
+ \begin{lstlisting}
+    matrix a = [1,2,3; 3,4,5;];
+    matrix b = a';
+\end{lstlisting}
+\subsubsection{Logical operators}
+\paragraph{AND operator :  $\&\&$ }
+This is the logical operator AND.  It is a binary  operator. The result has value 1 if and only if both expr1 and expr2 are non zero. Otherwise the result has value 0;  It is used in the following form:
+\begin{lstlisting}
+     expr1 && expr2 
+\end{lstlisting}
+In this structure, expr1 will be executed first. Only if expr1 has nonzero value, expr2 will be executed.
+\paragraph{OR operator : $||$ }
+The is the logical operator OR.  It is a binary operator. The result has value 1 if and only if either expr1 or expr2  is non zero. Otherwise the result has value 0; It is used in the following form:
+\begin{lstlisting}
+     expr1 || expr2 
+\end{lstlisting}
+In this structure, expr1 will be executed first. Only if expr1 has  zero value, expr2 will be executed.
+\subsubsection{Assignment operator: =}
+It is a binary operator. It is used in the following form :
+\begin{lstlisting}
+    id = expr 
+\end{lstlisting}
+In this structure, 'id'  should be an identifier for a variable, and 'expr' should be an expression of exactly the same type as the variable. The 'expr' will be executed first, then its value will be stored into the variable represented by the 'id'.  LFLA does not support implicit type cast.
+\subsubsection{Arithmetic operators}
+\paragraph{Addition: + }
+It is an binary operator applied to expression of type \textbf{var} ,\textbf{vector}, \textbf{matrix} and \textbf{vecspace}.  It is used in the following form:
+\begin{lstlisting}
+     expr1  + expr2
+\end{lstlisting}
+For \textbf{var} type expression, it adds values of two expressions and return the new value. For \textbf{vector}  type,  both operands should have the same dimension.
+  It will add the elements in correspond position from two  operand, and return a \textbf{vector} of the same dimension. For \textbf{matrix} type, both operands should have the same sizes. 
+It will add the elements in correspond position from two  operand, and return a \textbf{vector} of the same  size. For \textbf{vecspace} type, both space should be subspaces of some $\mathbb{R}^n$, i.e. their vectors should have the same dimension. It will return the \textbf{vecspace} corresponding to the sum of the two vector space in linear algebra.
+ 
+\paragraph{ Dot addition: +.  }
+It is an binary operator applied to expression of type  \textbf{var} with \textbf{vector} or \textbf{matrix}. It adds a \textbf{var} value to every elements in \textbf{vector}  or  \textbf{matrix}. And return the new \textbf{vector} or  \textbf{matrix} . It is used in the following form: 
+\begin{lstlisting}
+     expr1  +. epxr2
+\end{lstlisting}
+'expr1' should be an expression of type  \textbf{var} while 'expr2' should be an expresssion of type  \textbf{vector} or  \textbf{matrix}.
+
+\paragraph{Substraction: - }
+It is an binary operator applied to expression of type \textbf{var} ,\textbf{vector} and  \textbf{matrix}. Return the difference of values of two expression. It works analogously to the '+' operator. It is used in the following form:
+\begin{lstlisting}
+     expr1  -  expr2
+\end{lstlisting}
+ For \textbf{vector}  type or \textbf{matrix} type,  both operands should have the same dimension or size.
+  
+\paragraph{Dot substraction: -. }
+It is an binary operator applied to expression of type  \textbf{var} with \textbf{vector} or \textbf{matrix}.  It works analogously to the '+.' operator. It is used in the following form: 
+\begin{lstlisting}
+     expr1  -. epxr2
+\end{lstlisting}
+'expr1' should be an expression of type  \textbf{var} while 'expr2' should be an expresssion of type  \textbf{vector} or  \textbf{matrix}.
+
+\paragraph{multiplication: *}
+It is an binary operator applied to expression of type \textbf{var}  and  \textbf{matrix}.  It is used in the following form:
+\begin{lstlisting}
+     expr1   *  expr2
+\end{lstlisting}
+For \textbf{var} type expression, it  is just the ordinay multiplication. For \textbf{matrix}  type,  it is the matrix multiplication. So it requires that the column number of expr1 should be coincide with the row number of expr2.
+ 
+\paragraph{Dot multiplication: *.}
+It is an binary operator applied to expression of type  \textbf{var} with \textbf{vector} or \textbf{matrix} or type \textbf{matrix} with \textbf{matrix}. If the left operand is a  \textbf{var}, then  it will  mutiply a \textbf{var} value to every elements in \textbf{vector}  or  \textbf{matrix}. If both the oeprands are  \textbf{matrix}, then it  requires that the two operands should have the same size. It will return a new matrix  by multiplying the corresponding elements of the two matrices. It is used in the following form: 
+\begin{lstlisting}
+     expr1 *.  expr2
+\end{lstlisting}
+If 'expr1' is an expression of type  \textbf{var}, then 'expr2' could be an expresssion of type  \textbf{vector} or  \textbf{matrix}. If 'expr1' is of type  \textbf{matrix}, then 'expr2' should be of type  \textbf{matrix}.
+
+\paragraph{Division: $/$ }
+It is an binary operator only  applied to expression of type \textbf{var}. If  the two operands are integers, it will perform integer divison and return an integer value \textbf{var}. If any operand is double numbers, it will perform float point division and return a double  value   \textbf{var}.  It is used in the following form:
+\begin{lstlisting}
+     expr1 /  expr2
+\end{lstlisting}
+In any case  'expr2' should not be zero.
+
+\paragraph{Dot division: $/.$}
+It is an binary operator applied to expression of type  \textbf{var} with \textbf{vector} or \textbf{matrix}. It works analogously to the *.  operator. It is used in the following form: 
+\begin{lstlisting}
+     expr1 /.  expr2
+\end{lstlisting}
+
+\subsubsection{Comparation operators}
+ There are six types of comparation operators:  $<$, $>$, $<=$, $>=$, $!=$ and $==$. 
+All these comparison operators are only applied to expression of type  \textbf{var}.  It  returns 0 if it is not true and otherwise 1. They are used in the following form:
+\begin{lstlisting}
+     expr1 <  expr2
+     expr1 >  expr2
+     expr1 <=  expr2
+     expr1 >=  expr2
+     expr1 != expr2
+     expr1 ==  expr2
+\end{lstlisting}
+
+\subsubsection{Linear algebra domain operators}
+\paragraph{Belongs: @}
+It is an binary operator applied to expression of type  \textbf{vector} with \textbf{vecspace} . It is used in the following form:
+\begin{lstlisting}
+     expr1 @  expr2
+\end{lstlisting}
+'expr1' should be \textbf{vector} type expression while 'expr2'  a \textbf{vecspace} type expression. It return 1 if the  vector (left operand) belongs to the vector space (right operand). Otherwise return 0. 
+ 
+\paragraph{LieBracket: [[ $\cdot$ ,  $\cdot$ ]] }
+It is an binary operator applied to expression of type \textbf{matrix} . It is used in the following form:
+\begin{lstlisting}
+     [[ expr1 ,   expr2 ]]
+\end{lstlisting}
+Both operands should be square matrices and have the same size. It returns the value: expr1 *expr2 - expr2*expr1.
+\paragraph{ Inner product:  $<<  \cdot ,  \cdot >>  $}
+It is used in the following form:
+\begin{lstlisting}
+    id <<expr1 ,   expr2 >>
+\end{lstlisting}
+'id' should be an identifier for an \textbf{inspace} type variable while 'expr1' and 'expr2'  are expression of  \textbf{vector} type. The dimension of the two textbf{vector} should be the same as the dimension of the \textbf{inspace}. It returns a  \textbf{var} type value: the  inner product of the two vectors, where the inner product is defined by the   \textbf{inspace} object.
+
+\paragraph{ Matrix action: $\&$ }
+It is an binary operator applied to expression of type \textbf{matrix}  with  \textbf{vector}. It is used in the following form:
+\begin{lstlisting}
+     expr1 &  expr2
+\end{lstlisting}
+'expr1' is \textbf{matrix} type while 'expr2' \textbf{vector} type.  It corresponds to the concept of matrix action on vector in linear algebra.   The column number of the matrix should be the same as the dimension of the vector. It will return \textbf{vector} type.
+
+\subsubsection{Precedence and Associativity}
+\begin{center}
+	\begin{tabular}{|l|l|l|}
+		\hline
+		Operators & Associativity & Precedence\\ \hline
+        $\&$  & non associativity & Highest 7  \\ \hline
+		[[,]],$<<$,$>>$ & non associativity &    6\\ \hline
+		\'{}, @ & left to right &  5\\ \hline
+         $\&\&$, $||$ & left to right & 4\\ \hline
+		$*$,$/$,$*$.,$/$, $/$. & left to right & 3 \\ \hline
+		$+$,$-$,$+$.,$-$.  & left to right & 2\\ \hline
+		$<$, $>$, $<=$, $>=$, $!=$, $==$ & left to right & 1\\ \hline
+		$=$ & right to left & Lowest 0\\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+\subsection{Sytax}
+\subsubsection{Program structure}
+\subsubsection{Declarations}
+
+\paragraph{Variable Declarations}
+All variables must be declared with its data type before used. The initial value is optional. If there is one, it must be an expression resulting in the same type with variable. The grammar for primary type variable declarator is following:
+\begin{lstlisting}
+primary_date_type identifier
+\end{lstlisting}
+
+Data type can be any primary type : \textbf{var}, \textbf{vector}, \textbf{vecspace}, \textbf{matrix}, \textbf{inspace}, \textbf{affspace}. To declare a variable, the data type cannot be missed, and it must follows by a valid identifier. If declaring a variable with initial value, the type of value must matches the type of variable that assigned to. \\
+
+Variable of \textbf{array} type have a special sytax. The grammar for array type variable declarator is following:
+
+\begin{lstlisting}
+primary_date_type identifier[expr]
+\end{lstlisting}
+
+'expr' should be an nonnegative value integral \textbf{var}.  It is used to designate the length of the array. \\
+The following are some examples of variable declaration and initialization.
+
+\begin{lstlisting}[mathescape=true]
+var v;
+var v1 = 5;  # Integer value
+var v2 = 5.1; # double number value
+
+vector vec;
+vector vec1 = [1, 2, 4.2, 5, 1.0];
+vector vec2 = [v, v1, v2];
+
+matrix mat;
+matrix mat1 = [1,2.0; 3,4;];
+matrix mat2 = [v1, v2; v, v1, v2; v, v1, v2;];
+### Following is NOT allowed,
+ because matrix cannot interchange with vector
+matrix mat3 = [vec1; vec1;];
+###
+
+vecspace vecsp;
+vecspace vecsp0 = L()  # an zero vector space
+vecspace vecsp1 = L(vec1, vec2);
+vector vectors[2] = {vec1,vec2};
+vecspace vecsp2 = L(vectors);
+
+var vars1[5];
+var n = 3;
+var vars2[n];
+vars = {1.0, 2, 3.4};
+var vars3[n] = {1.0, 2, 3.4};
+var vars4[n] = {v1, 0.2, 1, v2};
+
+vector vecs[2] = {[1,2], [1,1]};
+matrix mat = [1,2;2,8;] ;
+inspace insp;
+inspace insp1 = inspace(vecs, mat);
+
+affspace afsp;
+vecspace vecsp3 = L(vec1, vec1, vec1);
+affspace afsp1 = affspace(vec1, vecsp3);
+
+vector vecs1[n];
+matrix mats[n];
+inspace insps[n];
+affspace afsps[n];
+
+\end{lstlisting}
+
+\paragraph{Function Declarations}
+A function has header and body. The function header contains function name, parameter list if any and NO need for return type. However, to declare a function it must start from keyword \textbf{function}. The name of function and names of parameters must be valid identifiers. The function body is enclosed in braces and must follow rules of statements.
+
+The grammar for function declarator is following:
+\begin{lstlisting}
+  function identifier (optional parameter-list) 
+  { function body} 
+\end{lstlisting}
+The opional parameter-list can be empty or the following form:
+\begin{lstlisting}
+  Date_type id, Date_type id,..., Data_type id
+\end{lstlisting}
+A simple example of a complete function definition is
+\begin{lstlisting}[mathescape=true]
+function plus(var v1, var v2)
+{
+	v2 = v1 + v2;
+	return v2;
+}
+\end{lstlisting}
+
+
+\subsubsection{Statements}
+Statements are executed in sequence.
+
+\paragraph{Expression statement}
+The form of expression:
+\begin{lstlisting}
+expression;
+\end{lstlisting}
+
+\noindent Most statements are expression statements. Usually expression statements are assignments, operator with expressions and  function calls.
+\paragraph{Assignment statements}
+An assignment statemtns takes the following form:
+\begin{lstlisting}
+ id = expression;
+\end{lstlisting}
+
+The 'id' should be  an identifier for  a variable which had been declaired before. The expression should has the same type as the variable. This statement first evaluate the 'expression' then store it to the 'id' variable.  
+
+
+\paragraph{Block statements}
+The form of block:
+\begin{lstlisting}
+{statements }
+\end{lstlisting}
+\noindent A block encloses a series of statements by braces.
+
+\paragraph{Conditional statement}
+Three forms of the conditional statement:
+\begin{lstlisting}
+ if expression1 { statements1 }
+
+ if expression1 { statements1 } 
+ else { statements2 }
+
+ if expression1 { statements1 } 
+ else if expression2 { statements2 }
+ else { statements3 }
+\end{lstlisting}
+\noindent In all cases the 'expression1' is evaluated.  If it is non-zero, the  'substatements1' is executed. In the second case, the 'statements2' is executed only if the 'expression1' is 0. In the third case, the 'statements2' is executed only if the   'expression1' is 0 and the  'expression2' is non-zero.  In the third case, the 'statements3' is executed only if both the 'expression1' and 'expression2' are 0. As usual the 'else' ambiguity is resolved by connecting an else with the last encountered elseless if.  Sample code:
+
+\begin{lstlisting}
+var v1 = 5;
+var v2 = 6;
+if v1 < v2
+{
+	return v1;
+}	
+else if v1 == v2
+{
+	return v1+v2;
+}
+else
+{
+	return v2;
+}
+\end{lstlisting}
+
+
+\paragraph{While statement}
+The form of while statement:
+\begin{lstlisting}
+while expression { statements }
+\end{lstlisting}
+\noindent The  'statements' is executed repeatedly as long as the value of the 'expression' remains non-zero. The test takes place before each execution of the 'statement'. Sample code:
+
+\begin{lstlisting}
+while 1
+{
+	print "hello world";
+}
+\end{lstlisting}
+
+\paragraph{For statement}
+The form of for statement:
+\begin{lstlisting}
+for specialexpression { statements }
+\end{lstlisting}
+\noindent The special expression specifies the condition of the loop including initialization, test, and iteration step. It has two form:
+\begin{lstlisting}
+ var id = constant1 : constant2
+\end{lstlisting}
+'id' is an identifier while  'constant1' and 'constant2' are \textbf{var} type constant.  It means the \textbf{var} variable 'id' starts with 'constant1'  and increase value 1 for each iteration of the for loop  untill larger than 'constant2'.
+or 
+\begin{lstlisting}
+ var id = constant1 : constant2  : constant3
+\end{lstlisting}
+'id' is an identifier while  'constant1', 'constant2' and 'constant3' are \textbf{var} type constant.  It means the \textbf{var} variable 'id' starts with 'constant1'  and increase value 'constant2' for each iteration of the for loop  untill larger than 'constant3'.\\
+Sample code:
+\begin{lstlisting}
+for var i = 1:5
+{
+	print(i);
+}
+\end{lstlisting}
+
+
+\paragraph{Break statement}
+The form of break statement:
+\begin{lstlisting}
+break;
+\end{lstlisting}
+\noindent This statement causes termination of the enclosing while and for statement. It controls to pass the statement following the terminated statement. Sample code:
+
+\begin{lstlisting}
+for var i = 1:5
+{
+	if i == 2
+	{
+		break;
+	}
+}
+\end{lstlisting}
+
+
+\paragraph{Continue statement}
+The form of continue statement:
+
+\begin{lstlisting}
+continue;
+\end{lstlisting}
+
+\noindent This statement causes control to pass to the loop-continuation portion of the enclosing while and for statement. In other words, this leads to the end of the loop. Sample code:
+
+\begin{lstlisting}
+for var i = 1:5
+{
+	if i == 2
+	{
+		continue;
+	}
+}
+\end{lstlisting}
+
+
+\paragraph{Return statement}
+The form of return statement:
+\begin{lstlisting}
+return expression;
+\end{lstlisting}
+The value of the expression is returned to the caller of the function.   
+
+
+\begin{lstlisting}
+function foo()
+{
+	return 0;
+}
+\end{lstlisting}
+
+\paragraph{Empty statement}
+The form of empty statement:
+
+\begin{lstlisting}
+ ;
+\end{lstlisting}
+
+ 
+
+\paragraph{Bullt-in Functions}
+In LFLA language, several built-in functions are provided.
+\begin{itemize}
+\item sqrt(var x) :
+ Returns the positive square root of a var value . Sample code:
+\begin{lstlisting}
+  var x = 9;
+  var result = sqrt(x);
+  # result = 3.0
+\end{lstlisting}
+\item ceil(var x)
+: Returns the smallest integer value that is greater than or equal to the argument. Sample code:
+\begin{lstlisting}
+  var x = 8.8
+  var result = ceil(x);
+  # result = 9
+\end{lstlisting}
+
+\item floor(var x)
+: Returns the largest integer value that is less than or equal to the argument. Sample code:
+\begin{lstlisting}
+  var x = 8.8;
+  var result = floor(x);
+  # result = 8
+\end{lstlisting}
+
+\item dim(vector v)
+: Returns the dimension of a vector. Sample code:
+\begin{lstlisting}
+  vector v = [1, 2, 3];
+  var result = dim(v);
+  # result = 3
+\end{lstlisting}
+
+\item dim(vecspace vs)
+: Returns the dimension of a vector space. Sample code:
+\begin{lstlisting}
+  vector w = [2,1,1];
+  vector u = [1,0,0];
+  vecspace vs = L(w,u);
+  var  result = dim(vs);
+  # result = 2
+\end{lstlisting}
+
+\item dim(affspace  affs)
+: Returns the dimension of an affine vector space. Sample code:
+\begin{lstlisting}
+  vector w = [2,1,1];
+  vector u = [1,0,0];
+  vector t = [0,0,1];
+  vecspace vs = L(w,u);
+  affspace affs = affspace(t,vs);
+  var  result = dim(affs);
+  # result = 2
+\end{lstlisting}
+
+\item size(matrix m)
+: Returns the size of a matrix. Return type is an array of type var of length two. Sample code:
+\begin{lstlisting}
+  matrix m = [1, 2; 3, 4;];
+  result = size(m);
+  # result = [2, 2]
+\end{lstlisting}
+
+\item basis(vecspace vs)
+: Return one basis of a vector space. Return type is an array of vector. Sample code:
+\begin{lstlisting}
+  vector v1 = [1, 0];
+  vector v2 = [0, 1];
+  vecspace vs = L (v1, v2 );
+  var[] result = basis(vs);
+  # result = {[1, 0], [0, 1] }
+\end{lstlisting}
+
+\item rank(matrix m)
+: Returns the rank of a matrix. Sample code:
+\begin{lstlisting}
+  matrix m = [1, 2, 3; 2, 4, 6;];
+  var result = rank(m);
+  # result  = 1
+\end{lstlisting}
+
+\item trace(matrix m)
+: Returns the trace of a square matrix. Sample code:
+\begin{lstlisting}
+  matrix m = [1, 2, 3; 4, 5, 6; 7, 8, 9;];
+  var result = trace(m);
+  # result =  15
+\end{lstlisting}
+
+\item eigenValue(matrix m)
+: Returns the eigenvalues of a matrix. Return type is an array of var value. Sample code:
+\begin{lstlisting}
+  matrix m = [3, 2, 4; 2, 0, 2; 4, 2, 3;];
+  var result[3] = eigenValue(m);
+  # result  = [8, -1];
+\end{lstlisting}
+
+\item image(matrix m)
+: Returns the image of a matrix. Return type is vecspace. Sample code:
+\begin{lstlisting}
+  matrix m = [1, 2; 3, 4;];
+  vecspace result = image(m);
+  #  result =  L( [1, 3] , [2, 4] )
+\end{lstlisting}
+
+\item solve(matrix m, vector b)
+: Solve the linear equation given by the coefficient matrix m and target vector b, i.e. given $m\cdot x = b$, solve x. Its return type is affspace. Sample code:
+\begin{lstlisting}
+   matrix m = [1,2;3,6;]; 
+   vector b = [3,9];
+   affspace result = solveEquation(m,b);
+   # result = affspace([1,1] L([-2,1]));
+\end{lstlisting}
+\end{itemize}
+
+
+
+
+
+%----------------------------------------------------------------------
+
+\end{document}
+
