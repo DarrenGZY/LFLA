@@ -2,6 +2,12 @@
     open Ast 
     open Lexing
     open Parsing 
+
+    exception ParseErr of string
+
+    let error msg start finish  = 
+        Printf.sprintf "(line %d: char %d..%d): %s" start.pos_lnum 
+            (start.pos_cnum -start.pos_bol) (finish.pos_cnum - finish.pos_bol) msg
 %}
 
 %token VSCONST PRINT DIM SIZE BASIS RANK TRACE IMAGE EVALUE CEIL FLOOR SQRT SOLVE 
@@ -40,7 +46,8 @@ programs :
     /* nothing */                   { [] }
     | programs funtion_declaration  { Function($2)::$1 }
     | programs global_normal_declaration   { Variable($2)::$1 } 
-
+    | error     
+        { raise ( ParseErr (error "syntax error" (Parsing.symbol_start_pos ()) (Parsing.symbol_end_pos ()))) }
 funtion_declaration :
     FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE statement_list  RBRACE { 
         {   fname=$2; 
@@ -60,11 +67,7 @@ parameter_list :
         { Lvardecl({vname = $4; value = Notknown; data_type = $3; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
     | parameter_list COMMA primitive_type ID LBRACK RBRACK      
         { Larraydecl({aname = $4; elements = []; data_type = $3; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
-
-function_statements : 
-    /* nothing */                                       { [] }
-    | function_statements local_normal_declaration      { Local($2)::$1 }
-    | function_statements statement                     { Body($2)::$1 }
+    | error { raise ( ParseErr (error "syntax error" (Parsing.symbol_start_pos ()) (Parsing.symbol_end_pos ()))) }
 
 local_normal_declaration :
     local_normal_declaration_expression SEMI { $1 }
@@ -128,6 +131,8 @@ vector_elements_list :
     | MINUS LITERAL                           { [String.concat "" ["-";$2]] }
     | vector_elements_list COMMA LITERAL    { $3::$1 }
     | vector_elements_list COMMA MINUS LITERAL  { (String.concat "" ["-";$4])::$1 }
+    | error 
+        { raise ( ParseErr (error "syntax error" (Parsing.symbol_start_pos ()) (Parsing.symbol_end_pos ()))) }
 
 matrix_declaration_expression :
     MATRIX ID   
@@ -145,6 +150,7 @@ matrix_declaration_expression :
             {vname = $2; value = Expression(Matrix, $4); data_type = Matrix; 
             pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum } 
         }
+
 
 matrix_elements_list :
     vector_elements_list SEMI       { [List.rev $1] }
@@ -323,7 +329,6 @@ expression:
     | ID    LPAREN  arguments_opt RPAREN                { Call($1, $3) } 
     | LPAREN    expression  RPAREN                      { $2 }
     | builtin   LPAREN  arguments_opt  RPAREN           { Callbuiltin($1, $3) }
-    | PRINT     LPAREN  arguments_opt  RPAREN           { Callbuiltin(Print, $3) } 
 
 builtin:
     DIM         { Dim }
@@ -337,6 +342,9 @@ builtin:
     | FLOOR     { Floor }
     | SQRT      { Sqrt }
     | SOLVE     { Solve }
+    | PRINT     { Print }
+    | error     { raise ( ParseErr (error "syntax error" (Parsing.symbol_start_pos ()) (Parsing.symbol_end_pos ()))) }
+
 /* normal identifier and array identifier */
 element:
     | ID                          { Nid($1) }
@@ -358,4 +366,4 @@ primitive_type:
     | MATRIX    { Matrix }
     | INSPACE   { InSpace }
     | AFFSPACE  { AffSpace }
-
+    | error     { raise ( ParseErr (error "syntax error" (Parsing.symbol_start_pos ()) (Parsing.symbol_end_pos ()))) }

@@ -1,11 +1,24 @@
-{ open Parser }
+{ 
+    open Lexing
+    open Parser 
+    (* 
+     * update line number in the context 
+     * *)
+    let next_line lexbuf =
+        let pos = lexbuf.lex_curr_p in
+        lexbuf.lex_curr_p <-
+            { pos with pos_bol = lexbuf.lex_curr_pos;
+                       pos_lnum = pos.pos_lnum+1
+            }
+}
 
 let Exp = 'e'('+'|'-')?['0'-'9']+
 
 rule token = parse 
-[' ' '\t' '\r' '\n' ] { token lexbuf }
-| "###"     { comment lexbuf }
-| '#'       { line_comment lexbuf }
+ [' ' '\t' ]            { token lexbuf }
+| ['\r' '\n']| "\r\n"   { next_line lexbuf; token lexbuf }
+| "###"                 { comment lexbuf }
+| '#'                   { line_comment lexbuf }
 (* constructor key words and built-in functions*)
 | 'L'       { VSCONST }
 | "dim"     { DIM }
@@ -81,7 +94,7 @@ rule token = parse
 | ['0'-'9']+ | ('.'['0'-'9']+Exp? | ['0'-'9']+ ('.'['0'-'9']*Exp? | Exp))as num  { LITERAL(num) }
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as id { ID(id) }
 | eof       { EOF }
-| _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
+| _ as c { raise (Failure("illegal character " ^ Char.escaped c)) }
 
 and comment = parse
  "###"      { token lexbuf }
