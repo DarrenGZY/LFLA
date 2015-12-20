@@ -268,7 +268,12 @@ and type_of env  = function
                             ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
                                 (Matrix, Vector) -> Vector
                                 | _ -> raise(Failure("in action fail in type checking")))
-                | Print -> Unit)
+                | Print -> 
+                        if (List.length el) <> 1 then
+                            raise(Failure("wrong arguments in builtin functions(type checking)"))
+                        else
+                            let _ = type_of env (List.hd el) in
+                                Unit)
    (* | Vsconst(eList) ->
             if check_list env Vector eList then
                VecSpace
