@@ -1,0 +1,15 @@
+function foo()
+{
+    var a;
+    for a = 1:5
+    {
+        return a;
+    }
+}
+
+function main()
+{
+    var a = foo();
+    print(a);
+}
+

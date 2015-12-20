@@ -1,7 +1,8 @@
-function othonomalising (vector bases[], inspace ips, var n)
+function othonomalising (vector[] bases, inspace ips, var n)
 {
     vector vec;
-    for var i = 1:n
+    var i;
+    for i = 1:n
     {
         vec = basis[i];
         for var j=1:i

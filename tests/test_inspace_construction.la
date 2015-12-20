@@ -1,6 +1,6 @@
 function main()
 {
-     vector v1 = [1,0,0];
+    vector v1 = [1,0,0];
     vector v2 = [0,1,0];
     vector v3 = [0,0,1];
    
