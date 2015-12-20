@@ -121,6 +121,7 @@ type func_decl = {
     fname : string;
     params : lNormal_decl list;
     body : stmt list;
+    ret_type : prim_type;
 }
 
 type program_stmt =

@@ -53,7 +53,8 @@ funtion_declaration :
     FUNCTION ID LPAREN parameter_list_opt RPAREN LBRACE statement_list  RBRACE { 
         {   fname=$2; 
             params=$4; 
-            body= List.rev $7 } }
+            body= List.rev $7;
+            ret_type = Unit } }
 
 parameter_list_opt :
     /* nothing */       { [] }

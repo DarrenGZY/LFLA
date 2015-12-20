@@ -136,14 +136,14 @@ and type_of env  = function
             else 
                 raise(Failure("in call not defined function"))
         in
-        let rec check_two_lists env list1 list2 = 
+        let rec check_two_lists env list1 list2 fdecl= 
             (*let length1 = List.length list1 in
             let length2 = List.length list2 in
             if length1 <> length2 then
                 raise(Failure("in call fail in type checking(" ^ string_of_int length1 ^"and " ^ string_of_int length2 ^ "not in same length"))
             else*)
             match list1, list2 with
-                [],[] -> Unit
+                [],[] -> fdecl.ret_type
                 | hd1::tl1, [] -> raise(Failure("in call fail in type checking(not same length)"))
                 | [], hd2::tl2 -> raise(Failure("in call fail in type checking(not same length)")) 
                 | hd1::tl1, hd2::tl2 -> 
@@ -157,9 +157,9 @@ and type_of env  = function
                     if typ1 <> typ2 then
                         raise(Failure("in call fail in type checking(not match)"))
                     else
-                        check_two_lists env tl1 tl2
+                        check_two_lists env tl1 tl2 fdecl
         in
-        check_two_lists env fdecl.params eList
+        check_two_lists env fdecl.params eList fdecl
     | Callbuiltin(f, el) ->
             (match f with
                 | Sqrt | Ceil | Floor ->
@@ -176,7 +176,7 @@ and type_of env  = function
                             raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
                             let typ = type_of env (List.hd el) in
-                            if typ <> Var && typ <> VecSpace && typ <> AffSpace then
+                            if typ <> Var && typ <> Vector && typ <> VecSpace && typ <> AffSpace then
                                 raise(Failure("in builtin fail in type checking"))
                             else
                                 Var
