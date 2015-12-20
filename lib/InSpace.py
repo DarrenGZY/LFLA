@@ -46,7 +46,13 @@ class InSpace:
 		_u = np.linalg.solve(lvecs,u)
 		v = np.array(v)
 		_v = np.linalg.solve(lvecs,v)
-		return np.transpose(_u) * np.array(self.matrix) * _v
+		product = np.matrix(_u) * self.matrix * np.transpose( np.matrix(_v))
+
+                (p_row, p_col) = product.shape
+                if (p_row != 1) or (p_col != 1):
+                    print "dimension problems in inner product"
+                    sys.exit(0)
+                return product.item((0,0))
 
 	def dim(self):
 		return len(self.vectors)
