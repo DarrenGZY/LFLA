@@ -5,19 +5,70 @@ let type_of_id env s =
     if is_local_var s env then
         let decl = find_local_var s env in
             match decl with
-                Lvardecl(var) -> var.data_type
-                | Larraydecl(arr) -> arr.data_type
+                Lvardecl(var) -> (var.data_type, 0)
+                | Larraydecl(arr) -> (arr.data_type, arr.length)
     else if is_global_var s env then
         let decl = find_global_var s env in
             match decl with
-                Gvardecl(var) -> var.data_type
-                | Garraydecl(arr) -> arr.data_type
+                Gvardecl(var) -> (var.data_type, 0)
+                | Garraydecl(arr) -> (arr.data_type, arr.length)
     else
-        raise(Failure("not defined identifier when type checking"))
+        raise(Failure("not_defined_id"))
 
+(* check if s is a valid array index , input is string, output is the int number of s*)
+let valid_index env s = 
+    try int_of_string s
+        with (Failure "int_of_string") ->
+            if is_local_var s env then
+                let decl = find_local_var s env in
+                    (match decl with
+                        | Larraydecl(arr) -> raise(Failure("not valid array index"))
+                        | Lvardecl(var) ->
+                            if var.data_type <> Var then
+                                raise(Failure("not valid array index"))
+                            else
+                                match var.value with
+                                    | VecValue(_) | MatValue(_) 
+                                    | VecSpValue(_) | InSpValue(_,_) 
+                                    | AffSpValue(_,_) | Expression(_,_) | Notknown -> raise(Failure("not valid array index")) 
+                                    |  VValue(s) -> 
+                                        try int_of_string s with
+                                        (Failure "int_of_string") -> raise(Failure("not valid array index")))
+                                    
+            else if is_global_var s env then
+                let decl = find_global_var s env in
+                    match decl with
+                        | Garraydecl(arr) -> raise(Failure("not valid array index"))
+                        | Gvardecl(var) ->
+                            if var.data_type <> Var then
+                                raise(Failure("not valid array index"))
+                            else
+                                match var.value with
+                                    | VecValue(_) | MatValue(_) 
+                                    | VecSpValue(_) | InSpValue(_,_) 
+                                    | AffSpValue(_,_) | Expression(_,_) | Notknown -> raise(Failure("not valid array index")) 
+                                    |  VValue(s) -> 
+                                        try int_of_string s with
+                                        (Failure "int_of_string") -> raise(Failure("not valid array index"))
+            else
+                raise(Failure("not valid array index"))
 let type_of_element env = function
-    Nid(s) -> type_of_id env s
-    |Arrayid(s1, s2) -> type_of_id env s1 
+    Nid(s) -> 
+        let typ, _ = type_of_id env s in typ
+    |Arrayid(s1, s2) -> 
+            let typ, len = type_of_id env s1 in
+            let index = valid_index env s2 in
+            if index > (len-1) then
+               raise(Failure("array index is out bound"))
+            else 
+            (match typ with 
+                | VarArr -> Var
+                | VectorArr -> Vector
+                | MatrixArr -> Matrix
+                | VecSpaceArr -> VecSpace
+                | InSpaceArr -> InSpace
+                | AffSpaceArr -> AffSpace
+                | _ -> raise(Failure("wrong array type")) )
 
 let rec check_list env typ = function
     [] -> true
@@ -31,9 +82,7 @@ let rec check_list env typ = function
 and type_of env  = function
     Literal(s) -> Var
     | Id(el) ->
-        (match el with
-            Nid(s) -> type_of_id env s
-            | Arrayid(s1, s2) -> type_of_id env s1)
+            type_of_element env el
     | Binop(e1, op, e2) -> 
         (match op with
         | Add ->  (match (type_of env e1, type_of env e2) with
@@ -68,14 +117,14 @@ and type_of env  = function
                         | _ -> raise(Failure("in comparasion fail in type checking")))
         )
     | Assign(id, e) ->
-        let id_type = type_of_id env id in
+        let id_type,_ = type_of_id env id in
         let expr_type = type_of env e in
             if id_type = expr_type then
                 id_type
             else
                 raise(Failure("in assign fail in type checking"))
     | AssignArr(id, eList) ->
-        let id_type = type_of_id env id in
+        let id_type,_ = type_of_id env id in
         if check_list env id_type eList then
            id_type
         else

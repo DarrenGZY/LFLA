@@ -89,7 +89,7 @@ type array_decl = {
     aname : string;
     elements : expr list;
     data_type : prim_type;
-    length : int;
+    mutable length : int;
     pos : int;
 }
 
