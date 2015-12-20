@@ -4,7 +4,7 @@ function foo()
    if 3 > 2
     {
         vector b = [1,2];
-        return b;
+        return 3;
     } 
     else
     {
@@ -14,5 +14,5 @@ function foo()
 
 function main()
 {
-    foo();
+    print(foo());
 }

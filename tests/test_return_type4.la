@@ -1,0 +1,18 @@
+function foo()
+{
+    var a = 2;
+    while(a < 4)
+    {
+        print(a);
+        return a;
+    }
+
+    vector b = [1,2];
+    return 2;
+}
+
+function main()
+{
+    var a = foo();
+    print(a);
+}
