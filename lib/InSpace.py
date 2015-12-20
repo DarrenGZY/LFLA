@@ -1,4 +1,5 @@
 from Core import *
+import numpy as np
 
 class InSpace:
 	"""A class of inner product space
@@ -14,7 +15,7 @@ class InSpace:
 		else:
 			self.vectors = vecs
 		if mat is None:
-			self.matrix = []
+			self.matrix = np.matrix([[]])
 		else:
 			self.matrix = mat
 
@@ -34,7 +35,9 @@ class InSpace:
 		 # WARNING: this test is not so rubust
 		 # when vectors has only one vector, 
 		 # then the length simply return the dimension of the vector
-		if len(self.vectors) != len(self.matrix[0]):
+	        
+                (row, col) = self.matrix.shape
+                if len(self.vectors) != row:
 			print "Please check dimensions of vectors and matrix"
 			sys.exit(0)
 
@@ -43,7 +46,7 @@ class InSpace:
 		_u = np.linalg.solve(lvecs,u)
 		v = np.array(v)
 		_v = np.linalg.solve(lvecs,v)
-		return np.transpose(_u) * self.matrix * _v
+		return np.transpose(_u) * np.array(self.matrix) * _v
 
 	def dim(self):
 		return len(self.vectors)
