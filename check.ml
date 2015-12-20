@@ -176,7 +176,7 @@ and type_of env  = function
                             raise(Failure("wrong arguments in builtin functions(type checking)"))
                         else
                             let typ = type_of env (List.hd el) in
-                            if typ <> Var && typ <> Vector && typ <> VecSpace && typ <> AffSpace then
+                            if typ <> Var && typ <> Vector && typ <> VecSpace && typ <> AffSpace && typ <> InSpace then
                                 raise(Failure("in builtin fail in type checking"))
                             else
                                 Var
@@ -231,6 +231,7 @@ and type_of env  = function
                         else
                             ( match (type_of env (List.hd el), type_of env (List.nth el 1)) with
                                 (Vector, VecSpace) -> Var
+                                | (Vector, AffSpace) -> Var
                                 | _ -> raise(Failure("in belongs fail in type checking")))
                 | LieBracket ->
                         if (List.length el) <> 2 then
