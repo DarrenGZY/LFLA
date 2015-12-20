@@ -146,3 +146,17 @@ let real_type = function
     | AffSpaceArr -> AffSpace
     | Unit -> Unit 
 
+let array_type = function
+    Var -> VarArr
+    | Vector -> VectorArr
+    | Matrix -> MatrixArr
+    | VecSpace -> VecSpaceArr
+    | InSpace -> InSpaceArr
+    | AffSpace -> AffSpaceArr
+    | VarArr -> VarArr
+    | VectorArr -> VectorArr
+    | MatrixArr -> MatrixArr
+    | VecSpaceArr -> VecSpaceArr
+    | InSpaceArr -> InSpaceArr
+    | AffSpaceArr -> AffSpaceArr
+    | Unit -> Unit

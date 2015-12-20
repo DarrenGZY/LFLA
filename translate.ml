@@ -201,7 +201,7 @@ let translate_local_normal_decl env local_var =
            
     | Larraydecl(a) -> 
         let length = List.length a.elements in
-        if length <> a.length then
+        if length <> 0 && length <> a.length then  (* length = 0 occurs only when a is function param *)
             raise(Failure("array length not match"))
         else
         let pExprs, env = traverse_exprs env a.elements in
@@ -247,7 +247,7 @@ let translate_global_normal_decl env global_var =
            
     | Garraydecl(a) -> 
         let length = List.length a.elements in
-        if length <> a.length then
+        if length <> 0 && length <> a.length then  (* length = 0 occurs only when a is a function param *)
             raise(Failure("array length not match"))
         else
         let pExprs, env = traverse_exprs env a.elements 
@@ -290,8 +290,11 @@ and translate_stmt env= function
             P_expr(pExpr), env
     | Return(expr) -> 
         let pExpr, env = translate_expr env expr in
-        let _ = type_of env expr in
-            P_return(pExpr), env 
+        let typ = type_of env expr in
+            if typ <> env.return_type then
+                raise(Failure("function return type doesn't match"))
+            else
+                P_return(pExpr), env 
     | If(e, s1, s2) -> 
         let pExpr, env = translate_expr env e in
             let typ = type_of env e in
@@ -368,10 +371,20 @@ let rec traverse_func_stmts env = function
         let p_tl, env = traverse_func_stmts env tl in
         (p_func_stmt::p_tl), env
 
+let rec find_func_return_type env body= 
+    match body with
+        [] -> Unit , { env with return_type = Unit }
+        | hd::tl -> 
+                (match hd with 
+                    Return(e) -> let typ = type_of env e in
+                        typ, { env with return_type = typ }
+                    | _ -> find_func_return_type env tl)
+
 (* translate function declaration and update symbol tables *)
 let translate_func_decl env fdecl =
     if (not (is_func fdecl.fname env)) then
         let pParams, env = traverse_local_vars env fdecl.params in (* give empty local_vars table *)
+        let ret_typ, env = find_func_return_type env fdecl.body in (* find function return type and update env *) 
         let pStmts, env = traverse_stmts env fdecl.body in
         let global_funcs' = StringMap.add fdecl.fname fdecl env.global_funcs in
         let env' = { env with global_funcs = global_funcs' }    

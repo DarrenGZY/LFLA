@@ -8,6 +8,7 @@
     let error msg start finish  = 
         Printf.sprintf "(line %d: char %d..%d): %s" start.pos_lnum 
             (start.pos_cnum -start.pos_bol) (finish.pos_cnum - finish.pos_bol) msg
+   
 %}
 
 %token VSCONST PRINT DIM SIZE BASIS RANK TRACE IMAGE EVALUE CEIL FLOOR SQRT SOLVE 
@@ -62,11 +63,11 @@ parameter_list :
     primitive_type ID                                           
         { [ Lvardecl({vname = $2; value = Notknown; data_type = $1; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum })] }
     | primitive_type LBRACK RBRACK ID                           
-        { [ Larraydecl({ aname = $4; elements = []; data_type = $1; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})] } 
+        { [ Larraydecl({ aname = $4; elements = []; data_type = array_type $1; length = max_int; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})] } 
     | parameter_list COMMA primitive_type ID                    
         { Lvardecl({vname = $4; value = Notknown; data_type = $3; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
     | parameter_list COMMA primitive_type ID LBRACK RBRACK      
-        { Larraydecl({aname = $4; elements = []; data_type = $3; length = 0; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
+        { Larraydecl({aname = $4; elements = []; data_type = array_type $3; length = max_int; pos = let pos_start = Parsing.symbol_start_pos () in pos_start.pos_lnum})::$1 }
     | error { raise ( ParseErr (error "syntax error" (Parsing.symbol_start_pos ()) (Parsing.symbol_end_pos ()))) }
 
 local_normal_declaration :
