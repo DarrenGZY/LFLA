@@ -354,11 +354,11 @@ All these comparison operators are only applied to expression of type  \textbf{v
 
 \subsubsection{Linear algebra domain operators}
 \paragraph{Belongs: @}
-It is an binary operator applied to expression of type  \textbf{vector} with \textbf{vecspace} . It is used in the following form:
+It is an binary operator applied to expression of type  \textbf{vector} with \textbf{vecspace} or \textbf{affspace}. It is used in the following form:
 \begin{lstlisting}
      expr1 @  expr2
 \end{lstlisting}
-'expr1' should be \textbf{vector} type expression while 'expr2'  a \textbf{vecspace} type expression. It return 1 if the  vector (left operand) belongs to the vector space (right operand). Otherwise return 0. 
+'expr1' should be \textbf{vector} type expression while 'expr2'  a \textbf{vecspace} or \textbf{affspace} type expression. It return 1 if the  vector (left operand) belongs to the vector space or affine space (right operand). Otherwise return 0. 
  
 \paragraph{LieBracket: [[ $\cdot$ ,  $\cdot$ ]] }
 It is an binary operator applied to expression of type \textbf{matrix} . It is used in the following form:
@@ -699,6 +699,19 @@ In LFLA language, several built-in functions are provided.
   affspace affs = affspace(t,vs);
   var  result = dim(affs);
   # result = 2
+\end{lstlisting}
+
+\item dim(inspace  ins)
+: Returns the dimension of an inner product  space. Sample code:
+\begin{lstlisting}
+   vector v1 = [1,0,0];
+   vector v2 = [0,1,0];
+   vector v3 = [0,0,1]; 
+   matrix mat = [1,0,0;0,1,0;0,0,1;];
+   vector vecs[3] = {v1, v2, v3};
+   inspace ins = inspace(vecs, mat); 
+   var result = dim(ins);
+  # result = 3
 \end{lstlisting}
 
 \item size(matrix m)
