@@ -1,0 +1,11 @@
+function foo()
+{
+    var a[3] = {1,2,3};
+    return a[0];
+}
+
+function main()
+{
+    var a = foo();
+    print(a);
+}

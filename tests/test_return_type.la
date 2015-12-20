@@ -1,0 +1,18 @@
+function foo()
+{
+   var a = 2;
+   if 3 > 2
+    {
+        vector b = [1,2];
+        return b;
+    } 
+    else
+    {
+        return a;
+    }
+}
+
+function main()
+{
+    foo();
+}

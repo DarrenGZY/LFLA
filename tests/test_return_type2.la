@@ -1,0 +1,12 @@
+function foo()
+{
+    var a = 1;
+    return a;
+}
+
+function main()
+{
+    var b = foo();   
+    #vector c = foo(); # not allowed
+    print(b);
+}

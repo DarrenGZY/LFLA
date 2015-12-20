@@ -1,0 +1,10 @@
+function foo(var a, var b)
+{
+    print(a);
+}
+
+function main()
+{
+    var a;
+    foo(a, a);
+}
