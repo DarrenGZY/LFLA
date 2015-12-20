@@ -12,6 +12,11 @@
 *.la.out
 *.la.diff
 *.log
+*.aux
+*.log
+*.pdf
+*.synctex.gz
+*.toc
 parser.ml
 scanner.ml
 .merlin
