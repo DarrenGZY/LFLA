@@ -1,7 +1,7 @@
-function main()
-{
-    var a = 2;
-    
+var i = 4;
+
+function foo(var a)
+{   
     if a > 2
     {
         var b = a+2;
@@ -10,10 +10,18 @@ function main()
     else
     {
         var c = 2;
-        if a == 2
+        if a > 0
         {
             c = c+2;
         }
         print(c);
     }
+    
+    print(i);
+
+}
+
+function main()
+{
+    foo(1);
 }
