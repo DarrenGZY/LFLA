@@ -25,3 +25,4 @@ function main()
 {
     foo(1);
 }
+
