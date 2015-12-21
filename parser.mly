@@ -321,8 +321,8 @@ expression:
     | expression ACTION     expression  { Callbuiltin(Action, [$1;$3]) }
     | ID     LIN expression  COMMA   expression  RIN     { Callbuiltin(Inpro, [Id(Nid($1));$3;$5]) }
     | LLBRACK   expression  COMMA   expression  RRBRACK { Callbuiltin(LieBracket, [$2;$4]) }   
-    | ID    ASSIGN  expression                          { Assign($1, $3) }
-    | ID    ASSIGN  LBRACE array_elements_list RBRACE   { AssignArr($1, $4) } 
+    | element    ASSIGN  expression                          { Assign($1, $3) }
+    | element    ASSIGN  LBRACE array_elements_list RBRACE   { AssignArr($1, $4) } 
     | LBRACK vector_elements_list_opt RBRACK            { ExprValue(VecValue($2)) }
     | LBRACK matrix_elements_list RBRACK                { ExprValue(MatValue($2)) }
     | INSPACE LPAREN expression COMMA expression RPAREN { ExprValue(InSpValue($3, $5)) }

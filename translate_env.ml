@@ -57,3 +57,8 @@ let is_defined_var vname env =
         true
     else
         false
+
+let is_defined_element el env =
+    match el with 
+        Nid(s) -> is_defined_var s env
+        |Arrayid(s1, s2) -> is_defined_var s1 env 

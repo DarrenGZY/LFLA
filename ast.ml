@@ -61,8 +61,8 @@ type expr =
     Literal of string
   | Id of elem
   | Binop of expr * op * expr
-  | Assign of string * expr
-  | AssignArr of string * expr list
+  | Assign of elem * expr
+  | AssignArr of elem * expr list
   | Call of string * expr list
   | Callbuiltin of builtin_func * expr list
   | ExprValue of prim_value

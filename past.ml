@@ -56,8 +56,8 @@ type pExpr =
   | P_lieBracket of pExpr * pExpr
   | P_inpro of pExpr * pExpr * pExpr
   | P_transpose of pExpr
-  | P_assign of string * pExpr
-  | P_assignArr of string * pExpr list
+  | P_assign of pElem * pExpr
+  | P_assignArr of pElem * pExpr list
   | P_call of string * pExpr list
   | P_print of pExpr
   | P_exprValue of pPrim_value

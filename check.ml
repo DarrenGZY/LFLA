@@ -84,19 +84,19 @@ and type_of env  = function
                         ( Var, Var ) -> Var
                         | _ -> raise(Failure("in comparasion fail in type checking")))
         )
-    | Assign(id, e) ->
-        let id_type,_ = type_of_id env id in
-        let expr_type = type_of env e in
-            if id_type = expr_type then
-                id_type
+    | Assign(el, e) ->
+            let el_type = type_of_element env el in
+            let expr_type = type_of env e in
+                if el_type = expr_type then
+                    el_type
+                else
+                    raise(Failure("in assign fail in type checking"))
+    | AssignArr(el, eList) ->
+            let el_type = type_of_element env el in
+            if check_list env el_type eList then
+                el_type
             else
-                raise(Failure("in assign fail in type checking"))
-    | AssignArr(id, eList) ->
-        let id_type,_ = type_of_id env id in
-        if check_list env id_type eList then
-           id_type
-        else
-           raise(Failure("in assign array fail in type checking"))
+                raise(Failure("in assign array fail in type checking"))
     | Call(fid, eList) -> 
         let fdecl = 
             if is_func fid env then

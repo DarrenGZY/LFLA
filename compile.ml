@@ -23,8 +23,8 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
     | P_belongs(e1, e2) -> string_of_expr e2 ^ ".belongs(" ^ string_of_expr e1 ^ ")"
     | P_lieBracket(e1, e2) -> "liebracket(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"
     | P_inpro(id, e1, e2) -> string_of_expr id ^ ".product(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")" 
-    | P_assign(v, e) -> v ^ " = " ^ string_of_expr e
-    | P_assignArr(v, e) -> v ^ " = [" ^ String.concat "," (List.map string_of_expr e) ^ "]"
+    | P_assign(v, e) -> string_of_elem v ^ " = " ^ string_of_expr e
+    | P_assignArr(v, e) -> string_of_elem v ^ " = [" ^ String.concat "," (List.map string_of_expr e) ^ "]"
     | P_call(f, el) ->
         f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
     | P_ceil(e) -> "ceil(" ^ string_of_expr e^ ")"

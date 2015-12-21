@@ -71,18 +71,20 @@ and translate_expr env = function
         (match (type_of env e1, o, type_of env e2) with
             Matrix, Mult_Dot, Matrix -> (P_matrixMul(pE1, pE2), env)
             |_,_,_ -> (P_binop(pE1, pO, pE2), env))
-    | Assign(id, e) -> (* TODO: update the id in symbol table *) 
-            if not (is_defined_var id env) then
+    | Assign(el, e) -> (* TODO: update the id in symbol table *) 
+            if not (is_defined_element el env) then
                raise(Failure("undefined identifier"))
             else
                 let pE, env = translate_expr env e in
-                    P_assign(id, pE), env
-    | AssignArr(id, e) -> 
-            if not (is_defined_var id env) then
+                let pEl = translate_elem env el in    
+                    P_assign(pEl, pE), env
+    | AssignArr(el, e) -> 
+            if not (is_defined_element el env) then
                 raise(Failure("undefined identifier"))
             else
                 let pE, env = traverse_exprs env e in
-                    P_assignArr(id, pE), env
+                let pEl = translate_elem env el in    
+                    P_assignArr(pEl, pE), env
     | Call(f, el) -> 
             if not (is_func f env) then
                 raise(Failure("undefined funciton"))
@@ -270,7 +272,6 @@ let translate_global_normal_decl env global_var =
             let env' = { env with global_vars = global_vars' } in
             P_Arraydecl(p_array), env'
 
-(* only updates the return type field in env *)
 let rec find_return_exprs env ret_exprs body= 
     match body with
         [] -> ret_exprs
