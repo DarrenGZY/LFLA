@@ -21,7 +21,7 @@ function main()
     vector v2 = [2.3, 2, 3];
     vector v3 = [2.3, 2, 3];
 
-    vector bases[n] = {v1,v2, v3};
+    vector bases[3] = {v1,v2, v3};
     
-    vector result[n] = othonomalising(bases, n);
+    print(othonomalising(bases, n));
 }
