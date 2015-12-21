@@ -20,11 +20,12 @@ function main()
 {
     vector v = [1,2,3];
     vector u = [2,22,3];
+    vector w = v + u;
     vector x[2] = { v, u};
+    vector y[3] = {v, u, w};
 
-    if linearIndep(x, 2)
-    {
-        print(1);
-    }
+    print(linearIndep(x, 2));
+
+    print(linearIndep(y, 3));
 }
 
