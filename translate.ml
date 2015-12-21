@@ -271,23 +271,50 @@ let translate_global_normal_decl env global_var =
             P_Arraydecl(p_array), env'
 
 (* only updates the return type field in env *)
-let rec find_func_return_type env body= 
+let rec find_return_exprs env ret_exprs body= 
     match body with
-        [] -> Unit
+        [] -> ret_exprs
         | hd::tl ->
                 (match hd with 
                     Return(e) -> 
-                        let typ = type_of env e in
-                                typ
-                    | _ -> 
-                        let _, env' = translate_stmt env hd in
-                            if env'.return_type <> env.return_type then  (* get the return type *)
-                                env'.return_type
-                            else 
-                                find_func_return_type env' tl)
+                        let ret_exprs' = e::ret_exprs in
+                            find_return_exprs env ret_exprs' tl
+                    | Block(stmts) -> 
+                            let ret_exprs1 = find_return_exprs env ret_exprs stmts in
+                            find_return_exprs env ret_exprs1 tl
+                    | Expr(e) -> 
+                            find_return_exprs env ret_exprs tl
+                    | If(e, s1, s2) ->
+                            let ret_exprs1 = find_return_exprs env ret_exprs s1 in
+                            let ret_exprs2 = find_return_exprs env ret_exprs1 s2 in
+                                find_return_exprs env ret_exprs2 tl
+                    | While(e, s) ->
+                            let ret_exprs1 = find_return_exprs env ret_exprs s in
+                                find_return_exprs env ret_exprs1 tl
+                    | For(v, e1, e2, s) ->
+                            let ret_exprs1 = find_return_exprs env ret_exprs s in
+                                find_return_exprs env ret_exprs1 tl
+                    | Continue -> 
+                            find_return_exprs env ret_exprs tl
+                    | Break ->
+                            find_return_exprs env ret_exprs tl
+                    | Decl(l) ->
+                            find_return_exprs env ret_exprs tl  
+                     
+                )
+let find_return_type env ret_exprs =
+    if (List.length ret_exprs) == 0 then
+        Unit
+    else
+    let expr = List.hd ret_exprs in
+    let ret_typ = type_of env expr in
+        if (check_list env ret_typ ret_exprs) then 
+            ret_typ
+        else
+            raise(Failure "function return type don't match")
 
 (* traverse_stmts works to translate a list of statements *)
-and traverse_stmts env = function
+let rec traverse_stmts env = function
     [] -> [], env
     | hd::tl -> 
         let pStmt, env = translate_stmt env hd in
@@ -298,19 +325,14 @@ and translate_stmt env= function
     Block(stmts) ->
         let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
         let env' = { env with scope = scope' } in
-        let ret_typ = find_func_return_type env' stmts in 
-        let pStmts, env' = traverse_stmts {env' with return_type = ret_typ} stmts in
-            P_block(pStmts), env
+        let pStmts, env' = traverse_stmts env' stmts in
+            P_block(pStmts),  env 
     | Expr(expr) -> 
         let pExpr, env = translate_expr env expr in
         let _ = type_of env expr in
             P_expr(pExpr), env
     | Return(expr) -> 
         let pExpr, env = translate_expr env expr in
-        let typ = type_of env expr in
-            if typ <> env.return_type then
-                raise(Failure("function return type doesn't match"))
-            else
                 P_return(pExpr), env 
     | If(e, s1, s2) -> 
         let pExpr, env = translate_expr env e in
@@ -320,15 +342,10 @@ and translate_stmt env= function
                 else
                     let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
                     let env' = { env with scope = scope' } in
-                    let ret_typ1 = find_func_return_type env' s1 in
-                    let pStmts1, _ = traverse_stmts {env' with return_type = ret_typ1} s1 in
-                    let ret_typ2 = find_func_return_type env' s2 in
-                    let pStmts2, env2 = traverse_stmts {env' with return_type = ret_typ2} s2 in
-                    if ((List.length s2) <> 0 ) && ret_typ1 <> ret_typ2 then
-                        raise(Failure("function return type doesn't match in if statms"))
-                    else
-                        let env = { env with return_type = ret_typ1 } in
-                            P_if(pExpr, pStmts1, pStmts2), env 
+                    let pStmts1, _ = traverse_stmts env' s1 in
+                    let pStmts2, _ = traverse_stmts env' s2 in
+                        (*let env = { env with return_type = ret_typ1 } in *)
+                            P_if(pExpr, pStmts1, pStmts2), env  
     | For(l, a1, a2, s) ->
         let typ,_ = type_of_id env l in
         if typ <> Var then
@@ -343,9 +360,8 @@ and translate_stmt env= function
                 else
                     let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
                     let env' = { env with scope = scope'; in_for = true } in
-                    let ret_typ = find_func_return_type env' s in
-                    let pStmts, _  = traverse_stmts { env' with return_type = ret_typ} s in
-                        P_for(l, pExpr1, pExpr2, pStmts), { env with return_type = ret_typ}
+                    let pStmts, _  = traverse_stmts  env' s in
+                        P_for(l, pExpr1, pExpr2, pStmts), env 
     | While(e, s) -> 
         let pExpr, env = translate_expr env e in
             let typ = type_of env e in
@@ -354,9 +370,8 @@ and translate_stmt env= function
                 else
                     let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
                     let env' = { env with scope = scope'; in_while = true } in
-                    let ret_typ = find_func_return_type env' s in
-                    let pStmts, _ = traverse_stmts { env' with return_type = ret_typ} s in
-                        P_while(pExpr, pStmts), {env with return_type = ret_typ}
+                    let pStmts, _ = traverse_stmts env' s in
+                        P_while(pExpr, pStmts), env 
     | Continue -> 
             if (not env.in_while) && (not env.in_for) then
                 raise(Failure(" continue doesn't appear in a for loop or while loop"))
@@ -400,9 +415,9 @@ let rec traverse_func_stmts env = function
 let translate_func_decl env fdecl =
     if (not (is_func fdecl.fname env)) then
         let pParams, env = traverse_local_vars env fdecl.params in (* give empty local_vars table *)
-        let ret_typ = find_func_return_type env fdecl.body in (* find function return type and update env *) 
-        let env = { env with return_type = ret_typ } in
         let pStmts, env = traverse_stmts env fdecl.body in
+        let ret_exprs = find_return_exprs env [] fdecl.body in
+        let ret_typ = find_return_type env ret_exprs in
         let fdecl' = { fdecl with ret_type = ret_typ } in
         let global_funcs' = StringMap.add fdecl'.fname fdecl' env.global_funcs in
         let env' = { env with global_funcs = global_funcs' }    

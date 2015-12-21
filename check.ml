@@ -18,40 +18,8 @@ let type_of_id env s =
 (* check if s is a valid array index , input is string, output is the int number of s*)
 let valid_index env s = 
     try int_of_string s
-        with (Failure "int_of_string") ->
-            if is_local_var s env then
-                let decl = find_local_var s env in
-                    (match decl with
-                        | Larraydecl(arr) -> raise(Failure("not valid array index"))
-                        | Lvardecl(var) ->
-                            if var.data_type <> Var then
-                                raise(Failure("not valid array index"))
-                            else
-                                match var.value with
-                                    | VecValue(_) | MatValue(_) 
-                                    | VecSpValue(_) | InSpValue(_,_) 
-                                    | AffSpValue(_,_) | Expression(_,_) | Notknown -> raise(Failure("not valid array index")) 
-                                    |  VValue(s) -> 
-                                        try int_of_string s with
-                                        (Failure "int_of_string") -> raise(Failure("not valid array index")))
-                                    
-            else if is_global_var s env then
-                let decl = find_global_var s env in
-                    match decl with
-                        | Garraydecl(arr) -> raise(Failure("not valid array index"))
-                        | Gvardecl(var) ->
-                            if var.data_type <> Var then
-                                raise(Failure("not valid array index"))
-                            else
-                                match var.value with
-                                    | VecValue(_) | MatValue(_) 
-                                    | VecSpValue(_) | InSpValue(_,_) 
-                                    | AffSpValue(_,_) | Expression(_,_) | Notknown -> raise(Failure("not valid array index")) 
-                                    |  VValue(s) -> 
-                                        try int_of_string s with
-                                        (Failure "int_of_string") -> raise(Failure("not valid array index"))
-            else
-                raise(Failure("not valid array index"))
+        with (Failure "int_of_string") -> -1
+
 let type_of_element env = function
     Nid(s) -> 
         let typ, _ = type_of_id env s in typ
