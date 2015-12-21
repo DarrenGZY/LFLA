@@ -24,11 +24,11 @@ class VecSpace:
 	def belongs(self, vec):
 		self.vectors.append(vec)
 		if linearIndependent(self.vectors):
-			print "Not belongs to this vectors spaces"
+			#print "Not belongs to this vectors spaces"
 			del self.vectors[-1] # delete temporally added vector
 			return 0
 		else:
-			print "Belongs to this vectors spaces"
+			#print "Belongs to this vectors spaces"
 			del self.vectors[-1] # delete temporally added vector
 			return 1
 

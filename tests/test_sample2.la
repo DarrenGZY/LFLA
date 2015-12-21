@@ -1,27 +1,40 @@
 function othonomalising (vector[] bases, inspace ips, var n)
 {
     vector vec;
+         
+    bases[0] = bases[0] /.(sqrt(ips<<bases[0],bases[0]>>));  
+    
     var i;
     for i = 1:n
     {
         vec = bases[i];
         var j;
-        for j=1:i
+        for j= 0:i
         {
             vec = vec - ips<<bases[i], bases[j]>>*.bases[j];
         }
         bases[i]=vec/.(sqrt(ips<<vec, vec>>));
     }
+    return bases;
 }
 
 function main()
 {
     var n = 3;
     vector v1 = [1,2,3];
-    vector v2 = [2.3, 2, 3];
-    vector v3 = [2.3, 2, 3];
+    vector v2 = [2.3, 2, 4];
+    vector v3 = [1,0,0];
 
-    vector bases[3] = {v1,v2, v3};
-    
-    print(othonomalising(bases, n));
+    vector bases[3] = {v1,v2,v3};
+   
+    vector v4 = [1,0,0];
+    vector v5 = [0,1,0];
+    vector v6 = [0,0,1];
+   
+    matrix mat = [1,0,0;0,1,0;0,0,1;];
+    vector vecs[3] = {v4, v5, v6};
+    inspace ins = inspace(vecs, mat);
+ 
+    print(othonomalising(bases,ins, n));
 }
+
