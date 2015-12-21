@@ -4,12 +4,13 @@ function othonomalising (vector[] bases, inspace ips, var n)
     var i;
     for i = 1:n
     {
-        vec = basis[i];
-        for var j=1:i
+        vec = bases[i];
+        var j;
+        for j=1:i
         {
-            vec = vec - <<bases[i], bases[j]>>*.bases[j];
+            vec = vec - ips<<bases[i], bases[j]>>*.bases[j];
         }
-        bases[i] = vec/.sqrt(ips<<vec, vec>>);
+        bases[i]=vec/.(sqrt(ips<<vec, vec>>));
     }
 }
 

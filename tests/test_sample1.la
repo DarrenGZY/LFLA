@@ -16,7 +16,6 @@ function linearIndep(vector[] vectors, var n)
     return 1;
 }
 
-###
 function main()
 {
     vector v = [1,2,3];
@@ -29,4 +28,3 @@ function main()
     }
 }
 
-###
