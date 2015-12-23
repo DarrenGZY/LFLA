@@ -1,0 +1,6 @@
+function main()
+{
+    matrix a = [1,2,4;3,3,4;];
+    matrix b = [3,3,3;];
+    matrix c[2] = {a,b};
+}

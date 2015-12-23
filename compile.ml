@@ -1,12 +1,12 @@
 open Past
 
-module StringMap = Map.Make(String)
-
+(* generate code for element *)
 let string_of_elem = function
     | P_nid(s) -> s
     | P_arrayid(s1, s2) -> s1 ^ "[" ^ s2 ^ "]"
 
-let rec string_of_expr = function (*TODO: Add symbol table as argument*)
+(* generate code for expression *)
+let rec string_of_expr = function 
     P_literal(l) -> l
     | P_id(el) -> string_of_elem el
     | P_transpose(e) -> "np.transpose(" ^ string_of_expr e ^ ")"
@@ -47,7 +47,7 @@ let rec string_of_expr = function (*TODO: Add symbol table as argument*)
     | P_action(e1, e2) -> "np.transpose(np.array(" ^ string_of_expr e1 ^ "*" ^ "np.transpose(np.mat(" ^ string_of_expr e2 ^ "))))"
     | P_noexpr -> ""
     | P_matrixMul(e1, e2) -> "np.multiply(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"
-
+(* generate code for prim value *)
 and string_of_prim_value = function
     P_Value(s) -> s
     | P_VecValue(s) -> "np.array([" ^ String.concat "," s ^ "])"
@@ -58,7 +58,7 @@ and string_of_prim_value = function
     | P_AffSpValue(e1, e2) -> "AffSpace(" ^ string_of_expr e1 ^ "," ^ string_of_expr e2 ^ ")"      
     | P_Expression(e) -> string_of_expr e
     | P_Notknown -> ""   
-
+(* generate code for prim type *)
 let string_of_prim_type = function
     P_var -> "0"
     | P_vector -> "np.array([])"
@@ -74,6 +74,10 @@ let string_of_prim_type = function
     | P_affSpaceArr -> "[]"
     | P_unit -> ""
 
+(* input: declaration
+ *        number of indent
+ * output: python code for declaration
+ * *)
 let string_of_normal_decl num_ident decl = 
     let spaces = 4 in
     match decl with
@@ -85,7 +89,10 @@ let string_of_normal_decl num_ident decl =
     | P_Arraydecl(a) -> 
             (String.make (num_ident*spaces) ' ') ^ a.p_aname ^ "=[" ^ String.concat "," (List.map string_of_expr a.p_elements) ^ "]\n"
 
-(* num_ident indicates the number of tabs at the begin of the statement, each tab is three spaces *)
+(* input: statement
+ *        number of indent
+ * output: python code for statment
+ * *)
 let rec string_of_stmt num_ident stmt = 
     let spaces = 4 in 
     match stmt with 
@@ -107,26 +114,21 @@ let rec string_of_stmt num_ident stmt =
     | P_break -> (String.make (num_ident*spaces) ' ') ^ "break "
     | P_decl(d) -> string_of_normal_decl num_ident d
 
-
-
+(* generate code for function parameters *)
 let string_of_params = function
     P_Vardecl(v) -> v.p_vname
     | P_Arraydecl(a) -> a.p_aname
-
-
-let string_of_func_stmt = function
-    P_Local(l) -> string_of_normal_decl 1 l
-    | P_Body(s) -> string_of_stmt 1 s
-
+(* generate code for function declaration *)
 let string_of_func_decl fdecl =
     "def " ^ fdecl.p_fname ^ "(" ^ String.concat "," (List.map string_of_params fdecl.p_params) ^  
     ") :\n" ^ String.concat "" (List.map (string_of_stmt 1) fdecl.p_body) ^ "\n"
 
+(* generate code for program statement *)
 let string_of_program_stmt = function
     P_Variable(v) -> string_of_normal_decl 0 v
     | P_Function(f) -> string_of_func_decl f
 
-(* input is ast tree(normal_decl list * func_decl list), output is a python file *)
+(* generate code for whole program *)
 let compile program = 
     String.concat "" (List.map string_of_program_stmt program) ^
     "main()" 
