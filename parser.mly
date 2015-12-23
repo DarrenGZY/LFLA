@@ -93,7 +93,6 @@ variable_declaration_expression :
     | inspace_declaration_expression    { $1 }
     | affspace_declaration_expression   { $1 }
 
-
 var_declaration_expression :
     VAR ID                      
         { 
@@ -271,10 +270,8 @@ array_declaration_expression :
         }
 
 array_elements_list :
-    ID                                  { [Id(Nid($1))] }
-    | LITERAL                           { [Literal($1)] }
-    | array_elements_list COMMA ID      { Id(Nid($3))::$1 }
-    | array_elements_list COMMA LITERAL { Literal($3)::$1 }
+    | expression                           { [$1] }
+    | array_elements_list COMMA expression { $3::$1 }
 
 
 statement :

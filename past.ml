@@ -1,38 +1,18 @@
+(* operators *)
 type pOp = Padd | Psub | Pmult | Pdiv | Padd_Dot | Psub_Dot | Pmult_Dot 
         | Pdiv_Dot | Pequal | Pneq | Pless | Pleq | Pgreater | Pgeq
         | Pand | Por  
-
-(* store var type value *)
-type pVar_value = 
-    P_int of int
-  | P_float of float 
-
-(* store vector type value *)
-type pVec_value = 
-    pVar_value list
-
-(* store matrix type value *)
-type pMat_value = 
-    pVar_value list list
-
-(* store vector space type value *)
-type pVecspace_value =
-    pVec_value list
-
+(* 
+ * element, normal id or 
+ * array id with index 
+ * *)
 type pElem = 
   | P_nid of string  (* normal identifier *)
   | P_arrayid of string * string (* array identifier *)
-(*
-type pBuiltin_func = 
-    P_dim
-  | P_size
- (* | P_vsconst *)
-  | P_basis
-  | P_trace
-  | P_image
-  | P_rank
-  | P_evalue
-*)
+
+(* primitive types, seperate 
+ * noraml types and array types 
+ * *)
 type pPrim_type = 
     P_var
   | P_vector
@@ -48,6 +28,7 @@ type pPrim_type =
   | P_affSpaceArr
   | P_unit
 
+(* expression *)
 type pExpr =
     P_literal of string
   | P_id of pElem
@@ -76,6 +57,7 @@ type pExpr =
   | P_action of pExpr * pExpr
   | P_noexpr
 
+(* value of primitive type *)
 and pPrim_value = 
     P_Value of string
   | P_VecValue of string list
@@ -87,6 +69,12 @@ and pPrim_value =
   | P_Expression of pExpr
   | P_Notknown
 
+(* variable declaration
+ * p_vname : name of variable
+ * p_value : value of variable
+ * p_data_type : type of variable
+ * p_pos : position in original code(not used)
+ * *)
 type pVar_decl = {
     p_vname : string;
     p_value : pPrim_value;
@@ -94,6 +82,13 @@ type pVar_decl = {
     p_pos : int;
 }
 
+(* array declaration
+ * p_aname : name of array identifier
+ * p_elements : expression list represents the elements of array
+ * p_length : length of the array
+ * p_data_type : type of variable
+ * p_pos : position in original code(not used)
+ * *)
 type pArray_decl = {
     p_aname : string;
     p_elements : pExpr list;
@@ -107,6 +102,7 @@ type pNormal_decl =
     P_Vardecl of pVar_decl
   | P_Arraydecl of pArray_decl
 
+(* statement *)
 type pStmt =
     P_block of pStmt list
   | P_expr of pExpr
@@ -118,18 +114,22 @@ type pStmt =
   | P_break
   | P_decl of pNormal_decl
 
-type pFunction_stmt =
-    P_Local of pNormal_decl
-  | P_Body of pStmt
-
+(* function declaration 
+ * p_fname : name of function
+ * p_params : list of local normal declarations
+ * p_body : main part of function, a list of statments
+ * p_ret_type : return type of function
+ *)
 type pFunc_decl = {
     p_fname : string;
     p_params : pNormal_decl list;
     p_body : pStmt list;
 }
 
+(* combine gloval variable declaration and funciton declaration *)
 type pProgram_stmt =
     P_Variable of pNormal_decl
   | P_Function of pFunc_decl
 
+(* root of past *)
 type pProgram = pProgram_stmt list

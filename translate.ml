@@ -5,7 +5,10 @@ open Translate_env
 
 (* module StringMap = Map.Make(String) *)
 
-(* translate ast operator to python ast operator *)
+(* input : ast operator
+ * output : past operator
+ * translate ast operator to python ast operator 
+ * *)
 let translate_op = function
     Add -> Padd
     | Sub -> Psub
@@ -24,7 +27,9 @@ let translate_op = function
     | And -> Pand
     | Or -> Por
 
-(* translate ast prim type to python ast prim type *)
+(* input : ast operator
+ * output : past operator
+ * translate ast prim type to python ast prim type *)
 let translate_prim_type = function
     Var -> P_var
     | Vector -> P_vector
@@ -40,7 +45,11 @@ let translate_prim_type = function
     | AffSpaceArr -> P_affSpaceArr
     | Unit -> P_unit
 
-(* translate ast element to python ast element, and need to check symbol tables *)
+(* input: ast element
+ * output: past element
+ * translate ast element to python ast element, and
+ * check symbol tables, throw exception if they are not defined
+ * *)
 let translate_elem env = function
     | Nid(s) -> 
         if is_defined_var s env then
@@ -51,15 +60,20 @@ let translate_elem env = function
             P_arrayid(s1, s2)
         else raise(Failure ("undeclared identifier " ^ s1))
 
-(* env = (global_var, global_funcs, local_vars) *)
-(* traverse_exprs works to translate a list of expression *)
+(* input: env->translate_env and ast expression list
+ * output: past expression list and updated env
+ * traverse_exprs works to translate a list of expression 
+ * *)
 let rec traverse_exprs env = function
     [] -> [], env
     | hd::tl -> 
         let pE, env = translate_expr env hd in
         let pTl, env = traverse_exprs env tl in
         pE::pTl, env
-(* translate ast expr to python ast expr and update symbol tables *)
+(* input: ast expression and translate environment
+ * output: past expression and updated environment
+ * translate ast expr to python ast expr and do some basic checks
+ * *)
 and translate_expr env = function 
     Literal(l) -> (P_literal(l), env)
     | Id(el) -> 
@@ -138,7 +152,11 @@ and translate_expr env = function
             P_exprValue(pV), env
     | Noexpr -> P_noexpr, env
 
-(*TODO: if prim value is needed *)
+(* input: ast prim_value and translate environment
+ * output: past prim_value and updated environment
+ * translate ast prim_value to past prim_value
+ * do type checking during translation
+ * *)
 and translate_prim_value env = function
     VValue(s) -> P_Value(s), env
     | VecValue(s) -> P_VecValue(s), env 
@@ -173,15 +191,17 @@ and translate_prim_value env = function
                     else
                         P_AffSpValue(pE1, pE2), env 
     | Expression(typ, e) -> 
-        let pExpr, env = translate_expr env e in
-            let typ' = type_of env e in
-                if typ' <> typ then
-                    raise(Failure("in construct fail in type checking"))
-                else
-                    P_Expression(pExpr), env
+            let pExpr, env = translate_expr env e in
+                let typ' = type_of env e in
+                    if typ' <> typ then
+                        raise(Failure("in construct fail in type checking"))
+                    else
+                        P_Expression(pExpr), env
     | Notknown -> P_Notknown, env
    
-(* translate local variables to python ast variables *)
+(* input: ast local declaration and translate environment
+ * output: past local declaration and updated environment
+ * translate local variables to python ast variables *)
 let translate_local_normal_decl env local_var = 
     match local_var with
     Lvardecl(v) ->
@@ -226,8 +246,9 @@ let translate_local_normal_decl env local_var =
         let env' = { env with scope = scope' } in
         P_Arraydecl(p_array), env'
 
-
-(* translate global variables to python ast variables *)
+(* input: ast global declaration and translate environment
+ * output: past global declaration and updated environment
+ * translate global variables to python ast variables *)
 let translate_global_normal_decl env global_var = 
     match global_var with
     Gvardecl(v) ->
@@ -272,6 +293,12 @@ let translate_global_normal_decl env global_var =
             let env' = { env with global_vars = global_vars' } in
             P_Arraydecl(p_array), env'
 
+(* input: return expression list, 
+ *        function body statements,
+ *        translate environment
+ * output: return expression list
+ * collect all return expressions in function
+ * *)
 let rec find_return_exprs env ret_exprs body= 
     match body with
         [] -> ret_exprs
@@ -303,6 +330,11 @@ let rec find_return_exprs env ret_exprs body=
                             find_return_exprs env ret_exprs tl  
                      
                 )
+(* input: return expression list,
+ *        translate environment
+ * output: prim_type 
+ * find the return type and check the consistancy
+ * *)
 let find_return_type env ret_exprs =
     if (List.length ret_exprs) == 0 then
         Unit
@@ -314,14 +346,23 @@ let find_return_type env ret_exprs =
         else
             raise(Failure "function return type don't match")
 
-(* traverse_stmts works to translate a list of statements *)
+(* input: ast statments list
+ *        translate environment
+ * output: past statements list
+ * translate a list of statements 
+ * *)
 let rec traverse_stmts env = function
     [] -> [], env
     | hd::tl -> 
         let pStmt, env = translate_stmt env hd in
         let pTl, env = traverse_stmts env tl in
             pStmt::pTl, env
-(* translate ast stmt to python ast statement *)
+(* input: ast statement
+ *        translate environment
+ * output: past statement
+ * translate ast stmt to python ast statement 
+ * do type checking during translation
+ * *)
 and translate_stmt env= function
     Block(stmts) ->
         let scope' = { parent = Some(env.scope); vars = StringMap.empty } in
@@ -395,24 +436,11 @@ let rec traverse_local_vars env = function
         let p_tl, env = traverse_local_vars env tl in
         p_local::p_tl, env
 
-(* translate function statements *)
-let translate_func_stmt env = function
-   Local(s) -> 
-        let pVar, env = translate_local_normal_decl env s in
-            P_Local(pVar), env 
-   | Body(s) -> 
-        let pStmt, env = translate_stmt env s in
-            P_Body(pStmt), env  
-
-(* translate a list of funciton statements *)
-let rec traverse_func_stmts env = function
-    [] -> [], env
-   | hd::tl ->
-        let p_func_stmt, env = translate_func_stmt env hd in
-        let p_tl, env = traverse_func_stmts env tl in
-        (p_func_stmt::p_tl), env
-
-(* translate function declaration and update symbol tables *)
+(* input: ast function declaration 
+ *        translate environment
+ * output: past function declaration
+ * translate function declaration 
+ * and update symbol tables *)
 let translate_func_decl env fdecl =
     if (not (is_func fdecl.fname env)) then
         let pParams, env = traverse_local_vars env fdecl.params in (* give empty local_vars table *)
@@ -440,7 +468,10 @@ let translate_program_stmt env = function
            let env' = { env with scope = scope' } in
            let func, env' = translate_func_decl env' f
                     in P_Function(func), env'
-
+(* input: whole ast
+ * output: whole past
+ * translate the whole ast to past
+ * *)
 let translate program =
     let rec traverse_program env = function
         [] -> [], env
@@ -454,7 +485,6 @@ let translate program =
                 scope = scope'; 
                 global_vars = StringMap.empty; 
                 global_funcs = StringMap.empty;
-                return_type = Unit;
                 in_while = false;
                 in_for = false;
              }

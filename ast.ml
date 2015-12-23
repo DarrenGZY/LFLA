@@ -1,28 +1,16 @@
+(* operators *)
 type op = Add | Sub | Mult | Div | Add_Dot | Sub_Dot | Mult_Dot 
         | Div_Dot | Equal | Neq | Less | Leq | Greater | Geq
         | And | Or  
-
-(* store var type value *)
-type var_value = 
-    Int of int
-  | Float of float 
-
-(* store vector type value *)
-type vec_value = 
-    var_value list
-
-(* store matrix type value *)
-type mat_value = 
-    var_value list list
-
-(* store vector space type value *)
-type vecspace_value =
-    vec_value list
-
+(* 
+ * element, normal id or 
+ * array id with index 
+ * *)
 type elem = 
   | Nid of string  (* normal identifier *)
   | Arrayid of string * string (* array identifier *)
 
+(* builtin functions *)
 type builtin_func = 
     Sqrt
   | Ceil
@@ -42,6 +30,9 @@ type builtin_func =
   | Print
   | Action
 
+(* primitive types, seperate 
+ * noraml types and array types 
+ * *)
 type prim_type = 
     Var
   | Vector
@@ -57,6 +48,8 @@ type prim_type =
   | AffSpaceArr
   | Unit
 
+(* expressions 
+ * *)
 type expr =
     Literal of string
   | Id of elem
@@ -68,6 +61,7 @@ type expr =
   | ExprValue of prim_value
   | Noexpr
 
+(*  value of primitive types *)
 and prim_value = 
     VValue of string
   | VecValue of string list
@@ -78,6 +72,12 @@ and prim_value =
   | Expression of prim_type * expr
   | Notknown
 
+(* variable declaration
+ * vname : name of variable
+ * value : value of variable
+ * data_type : type of variable
+ * pos : position in original code(not used)
+ * *)
 type var_decl = {
     vname : string;
     value : prim_value;
@@ -85,6 +85,13 @@ type var_decl = {
     pos : int;
 }
 
+(* array declaration
+ * aname : name of array identifier
+ * elements : expression list represents the elements of array
+ * length : length of the array
+ * data_type : type of variable
+ * pos : position in original code(not used)
+ * *)
 type array_decl = {
     aname : string;
     elements : expr list;
@@ -93,15 +100,21 @@ type array_decl = {
     pos : int;
 }
 
-(* combine variable declarations and array declarations *)
+(* combine variable declarations and array declarations 
+ * only represent global declaration
+ * *)
 type gNormal_decl = 
     Gvardecl of var_decl
   | Garraydecl of array_decl
 
+(* combine variable declarations and array declarations 
+ * only represent local declaration
+ * *)
 type lNormal_decl = 
     Lvardecl of var_decl
   | Larraydecl of array_decl 
 
+(* statements *)
 type stmt =
     Block of stmt list
   | Expr of expr
@@ -113,10 +126,12 @@ type stmt =
   | Break
   | Decl of lNormal_decl 
 
-type function_stmt =
-    Local of lNormal_decl
-  | Body of stmt
-
+(* function declaration 
+ * fname : name of function
+ * params : list of local normal declarations
+ * body : main part of function, a list of statments
+ * ret_type : return type of function
+ *)
 type func_decl = {
     fname : string;
     params : lNormal_decl list;
@@ -124,14 +139,18 @@ type func_decl = {
     ret_type : prim_type;
 }
 
+(* combine gloval variable declaration and funciton declaration *)
 type program_stmt =
     Variable of gNormal_decl
   | Function of func_decl
 
-(*type program = normal_decl list * func_decl list*)
-
 type program = program_stmt list
 
+(* input : prim_type
+ * output : prim_type
+ * get the real data type if it is a array type 
+ * otherwise remain same
+ * *)
 let real_type = function
     Var -> Var
     | Vector -> Vector
@@ -147,6 +166,11 @@ let real_type = function
     | AffSpaceArr -> AffSpace
     | Unit -> Unit 
 
+(* input : prim_type
+ * output : prim_type
+ * get the array data if it is a normal type
+ * otherwise remain same
+ * *)
 let array_type = function
     Var -> VarArr
     | Vector -> VectorArr

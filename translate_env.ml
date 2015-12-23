@@ -2,19 +2,28 @@ open Ast
 
 module StringMap = Map.Make(String)
 
+(* symbol table used for scope
+ * parent: parent scope
+ * vars: local variables table
+ * *)
 type symbol_table = {
     parent : symbol_table option;
     vars : lNormal_decl StringMap.t;
 }
 
+(* translation environment
+ * scope: used for scope rule check
+ * gloval_vars: global variable table
+ * global_funcs: defined function table
+ * in_while: if it is in a while loop
+ * in_for: if it is in a for loop
+ * *)
 type translate_env = {
     scope : symbol_table;
 
     global_vars : gNormal_decl StringMap.t;
 
     global_funcs : func_decl StringMap.t;
-
-    return_type : prim_type;
 
     in_while : bool;
 
@@ -38,26 +47,26 @@ let rec is_scope_var vname scope =
        (match (scope.parent) with
         Some(parent) -> is_scope_var vname parent
         | None -> false)
-
+(* check if it is a local variable *)
 let is_local_var vname env = 
     is_scope_var vname env.scope
-
+(* find the variable declaration *)
 let rec find_scope_var vname scope =
     try StringMap.find vname scope.vars 
     with Not_found ->
         match (scope.parent) with
         Some(parent) -> find_scope_var vname parent
         | None -> raise Not_found
-
+(* find the variable declaration *)
 let find_local_var vname env = 
     find_scope_var vname env.scope
-
+(* check if the variable is defined *)
 let is_defined_var vname env =
     if is_local_var vname env || is_global_var vname env then
         true
     else
         false
-
+(* check if the element if defined *)
 let is_defined_element el env =
     match el with 
         Nid(s) -> is_defined_var s env

@@ -1,6 +1,12 @@
 open Ast
 open Translate_env
 
+(* input: string of identifier
+ *        trsnalte environment
+ * output: (type, length)
+ * if it is an array identifier, return length of array,
+ * otherwise return 0.
+ * *) 
 let type_of_id env s = 
     if is_local_var s env then
         let decl = find_local_var s env in
@@ -15,11 +21,14 @@ let type_of_id env s =
     else
         raise(Failure("not_defined_id"))
 
-(* check if s is a valid array index , input is string, output is the int number of s*)
+(* check if s is a valid array index *)
 let valid_index env s = 
     try int_of_string s
         with (Failure "int_of_string") -> -1
 
+(* get the type of element 
+ * if it is an array type, return it real type
+ *)
 let type_of_element env = function
     Nid(s) -> 
         let typ, _ = type_of_id env s in typ
@@ -38,6 +47,11 @@ let type_of_element env = function
                 | AffSpaceArr -> AffSpace
                 | _ -> raise(Failure("wrong array type")) )
 
+(* input: a list of expressions
+ *        target type
+ *        translate environment
+ * output: true or false
+ * check if a list of expression have same target type *)
 let rec check_list env typ = function
     [] -> true
     | hd::tl ->
@@ -46,7 +60,9 @@ let rec check_list env typ = function
                 false
             else check_list env typ tl
     
-(* find the type of a  expression *)
+(* find the type of a expression 
+ * and do checking during get the type
+ * *)
 and type_of env  = function
     Literal(s) -> Var
     | Id(el) ->
@@ -105,11 +121,6 @@ and type_of env  = function
                 raise(Failure("in call not defined function"))
         in
         let rec check_two_lists env list1 list2 fdecl= 
-            (*let length1 = List.length list1 in
-            let length2 = List.length list2 in
-            if length1 <> length2 then
-                raise(Failure("in call fail in type checking(" ^ string_of_int length1 ^"and " ^ string_of_int length2 ^ "not in same length"))
-            else*)
             match list1, list2 with
                 [],[] -> fdecl.ret_type
                 | hd1::tl1, [] -> raise(Failure("in call fail in type checking(not same length)"))
@@ -249,6 +260,7 @@ and type_of env  = function
                 typ
     | Noexpr -> Unit
 
+(* get the type of prim value *)
 and type_of_value env = function
     VValue(s) -> Var
     | VecValue(s) -> Vector
